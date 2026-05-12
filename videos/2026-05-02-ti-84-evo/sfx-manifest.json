@@ -1,0 +1,53 @@
+{
+  "provider": "elevenlabs",
+  "composition_id": "Ti84Evo",
+  "fps": 30,
+  "cues": [
+    {
+      "id": "intro_whoosh",
+      "fires_at": "composition_start",
+      "duration_s": 1.2278,
+      "prompt": "Short whoosh transition, clean tech-editorial, rising pitch",
+      "path_rel": "sfx/Ti84Evo/intro_whoosh.mp3",
+      "duration_frames": 37
+    },
+    {
+      "id": "outro_stinger",
+      "fires_at": "composition_end",
+      "duration_s": 1.5151,
+      "prompt": "Short outro stinger, clean editorial close, descending",
+      "path_rel": "sfx/Ti84Evo/outro_stinger.mp3",
+      "duration_frames": 45
+    },
+    {
+      "id": "transition_1",
+      "fires_at": "scene_boundary",
+      "from_scene": "scene1",
+      "to_scene": "scene2",
+      "duration_s": 0.7314,
+      "prompt": "Short subtle tick or pop, editorial scene transition, clean",
+      "path_rel": "sfx/Ti84Evo/transition_1.mp3",
+      "duration_frames": 22
+    },
+    {
+      "id": "transition_2",
+      "fires_at": "scene_boundary",
+      "from_scene": "scene2",
+      "to_scene": "scene3",
+      "duration_s": 0.7314,
+      "prompt": "Short subtle tick or pop, editorial scene transition, clean",
+      "path_rel": "sfx/Ti84Evo/transition_2.mp3",
+      "duration_frames": 22
+    },
+    {
+      "id": "transition_3",
+      "fires_at": "scene_boundary",
+      "from_scene": "scene3",
+      "to_scene": "scene4",
+      "duration_s": 0.7314,
+      "prompt": "Short subtle tick or pop, editorial scene transition, clean",
+      "path_rel": "sfx/Ti84Evo/transition_3.mp3",
+      "duration_frames": 22
+    }
+  ]
+}

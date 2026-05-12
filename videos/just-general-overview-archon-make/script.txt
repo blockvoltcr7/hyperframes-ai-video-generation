@@ -1,0 +1,7 @@
+AI coding is POWERFUL. <break time="0.35s"/> But it's chaotic. <break time="0.35s"/> Archon makes it AGENTIC. <break time="0.4s"/> Repeatable workflows, every time. <break time="0.4s"/>
+
+Archon has 21 thousand GitHub stars and 17 built-in workflows. <break time="0.4s"/> Open source, MIT licensed, FREE FOREVER. <break time="0.4s"/>
+
+Three core workflows. <break time="0.3s"/> PIV — plan, implement, validate. <break time="0.45s"/> Fix, auto-repair GitHub issues. <break time="0.45s"/> Review, 5 parallel agents on every PR. <break time="0.4s"/>
+
+Get started at archon dot DIY. <break time="0.4s"/> Subscribe for more AI tools.

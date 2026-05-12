@@ -1,0 +1,35 @@
+{
+  "provider": "elevenlabs",
+  "model_id": "eleven_multilingual_v2",
+  "voice_id": "GZLfIirM0SFTLjHFw5ZQ",
+  "composition_id": "HowVectorDatabasesWork",
+  "fps": 30,
+  "scenes": [
+    {
+      "id": "scene1",
+      "path": "voiceover/HowVectorDatabasesWork/scene1.mp3",
+      "duration_s": 6.6351,
+      "duration_frames": 199
+    },
+    {
+      "id": "scene2",
+      "path": "voiceover/HowVectorDatabasesWork/scene2.mp3",
+      "duration_s": 8.542,
+      "duration_frames": 256
+    },
+    {
+      "id": "scene3",
+      "path": "voiceover/HowVectorDatabasesWork/scene3.mp3",
+      "duration_s": 12.1208,
+      "duration_frames": 364
+    },
+    {
+      "id": "scene4",
+      "path": "voiceover/HowVectorDatabasesWork/scene4.mp3",
+      "duration_s": 6.6351,
+      "duration_frames": 199
+    }
+  ],
+  "total_duration_s": 33.9331,
+  "total_duration_frames": 1018
+}

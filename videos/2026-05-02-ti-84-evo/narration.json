@@ -1,0 +1,22 @@
+{
+  "composition_id": "Ti84Evo",
+  "fps": 30,
+  "scenes": [
+    {
+      "id": "scene1",
+      "text": "The TI-84 — the calculator millions of students carry to every exam — just received its most significant hardware upgrade in years."
+    },
+    {
+      "id": "scene2",
+      "text": "The Evo packs a three-times faster processor and a fifty percent larger display — three-twenty by two-forty pixels with sixteen-bit color. USB-C replaces the aging port, and a cleaner icon-based interface reduces clutter."
+    },
+    {
+      "id": "scene3",
+      "text": "A new Points of Interest Trace feature automatically flags key values while you analyze functions. The updated Lines and Conics app adds equation templates and direct intersection tracing — and a yellow help bar offers contextual guidance without revealing answers."
+    },
+    {
+      "id": "scene4",
+      "text": "The Evo is approved for the SAT, ACT, AP, and IB exams. Every retail purchase includes a free four-year online calculator license — an eighty-dollar value bundled in."
+    }
+  ]
+}

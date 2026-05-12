@@ -1,0 +1,22 @@
+{
+  "composition_id": "Archon",
+  "fps": 30,
+  "scenes": [
+    {
+      "id": "scene1",
+      "text": "Your AI coding agent does something different every single time. Archon changes that."
+    },
+    {
+      "id": "scene2",
+      "text": "Archon is an open-source workflow engine — YAML files that define every phase of AI-assisted coding: planning, implementation, validation, and PR creation. Think Dockerfiles for AI coding. Same workflow, same sequence, every run."
+    },
+    {
+      "id": "scene3",
+      "text": "Mix deterministic bash steps with AI-powered nodes. Choose from 17 built-in workflows — issue fixing, PR review, feature development, and more. Trigger from CLI, Slack, Discord, Telegram, or GitHub webhooks."
+    },
+    {
+      "id": "scene4",
+      "text": "MIT licensed. No lock-in. Install in 30 seconds at archon.diy."
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "provider": "elevenlabs",
+  "composition_id": "HowVectorDatabasesWork",
+  "fps": 30,
+  "cues": [
+    {
+      "id": "intro_whoosh",
+      "fires_at": "composition_start",
+      "duration_s": 1.2278,
+      "prompt": "Futuristic digital power-up, AI system initializing, rising electronic swoosh, punchy and energetic",
+      "path_rel": "sfx/HowVectorDatabasesWork/intro_whoosh.mp3",
+      "duration_frames": 37
+    },
+    {
+      "id": "outro_stinger",
+      "fires_at": "composition_end",
+      "duration_s": 1.5151,
+      "prompt": "Satisfying digital completion chime, workflow success, clean futuristic resolution, uplifting",
+      "path_rel": "sfx/HowVectorDatabasesWork/outro_stinger.mp3",
+      "duration_frames": 45
+    },
+    {
+      "id": "transition_1",
+      "fires_at": "scene_boundary",
+      "from_scene": "scene1",
+      "to_scene": "scene2",
+      "duration_s": 0.7314,
+      "prompt": "Quick digital swoosh, fast data transfer sound, sharp and modern, energetic scene cut",
+      "path_rel": "sfx/HowVectorDatabasesWork/transition_1.mp3",
+      "duration_frames": 22
+    },
+    {
+      "id": "transition_2",
+      "fires_at": "scene_boundary",
+      "from_scene": "scene2",
+      "to_scene": "scene3",
+      "duration_s": 0.7314,
+      "prompt": "Quick digital swoosh, fast data transfer sound, sharp and modern, energetic scene cut",
+      "path_rel": "sfx/HowVectorDatabasesWork/transition_2.mp3",
+      "duration_frames": 22
+    },
+    {
+      "id": "transition_3",
+      "fires_at": "scene_boundary",
+      "from_scene": "scene3",
+      "to_scene": "scene4",
+      "duration_s": 0.7314,
+      "prompt": "Quick digital swoosh, fast data transfer sound, sharp and modern, energetic scene cut",
+      "path_rel": "sfx/HowVectorDatabasesWork/transition_3.mp3",
+      "duration_frames": 22
+    }
+  ]
+}

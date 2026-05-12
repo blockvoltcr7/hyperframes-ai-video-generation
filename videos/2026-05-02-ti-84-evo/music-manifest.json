@@ -1,0 +1,10 @@
+{
+  "provider": "elevenlabs",
+  "composition_id": "Ti84Evo",
+  "fps": 30,
+  "path": "music/Ti84Evo.mp3",
+  "duration_s": 57.9918,
+  "duration_frames": 1740,
+  "prompt": "understated, upbeat tech-explainer bed, no drums, no vocals, cinematic, subtle. Topic: Ti-84 Evo",
+  "volume": 0.2
+}
