@@ -49,7 +49,7 @@ export CLAUDE_BIN_PATH="$HOME/.local/bin/claude"
 $env:CLAUDE_BIN_PATH = "$env:USERPROFILE\.local\bin\claude.exe"
 ```
 
-You do **NOT** need to run `archon setup` — that's for the source-install path. The binary just works against this repo's pre-configured `.archon/` directory.
+You do **NOT** need to run `archon setup` — that's only for the source-install path (which clones the Archon repo). The binary just works against this repo's pre-configured `.archon/` directory. On first workflow run, Archon lazily creates `~/.archon/archon.db` (SQLite, single file, no schema setup required).
 
 ### 3. Install system deps
 
