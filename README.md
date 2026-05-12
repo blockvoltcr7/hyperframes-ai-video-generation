@@ -6,7 +6,15 @@ Turn a topic prompt into a polished, AI-voiced vertical YouTube Short. One comma
 archon workflow run create-archon-short --no-worktree "What is Archon for Beginners?"
 ```
 
-That's it. The Archon DAG researches the topic, drafts a paced narration, generates ElevenLabs TTS, edits an HTML+GSAP composition, lints it, and opens a browser preview at `http://localhost:3002`. Render is always manual — `npx hyperframes render videos/<slug>` when you're ready.
+That's it. The Archon workflow researches the topic, drafts a paced narration, generates ElevenLabs TTS, edits an HTML+GSAP composition, lints it, and opens a browser preview at `http://localhost:3002`. Render is always manual — `npx hyperframes render videos/<slug>` when you're ready.
+
+> ## 🚀 Just tell your coding agent to do it
+>
+> The fastest way through this whole README is to **not** read it yourself. Open this repo in [Claude Code](https://claude.ai/code) (or any agentic coding tool) and paste:
+>
+> > _"Read the README and set everything up so I can generate my first video. The topic is: **[your idea or URL here]**."_
+>
+> The agent will install the system deps, walk you through the API keys it needs, run `archon workflow run create-archon-short`, and hand you the preview URL. You just supply the topic.
 
 The stack: **[Archon](https://archon.diy)** (workflow harness) + **[Claude Code](https://claude.ai/code)** (planning + composition editing) + **[HyperFrames](https://hyperframes.heygen.com/)** (HTML/GSAP video framework) + **[ElevenLabs](https://elevenlabs.io)** (voice with word-level timestamps). Total runtime per short: ~20-30 min depending on research depth.
 
@@ -100,7 +108,7 @@ archon workflow run create-archon-short --no-worktree "Your topic here"
 
 ## What the workflow does
 
-A three-node Archon DAG (`.archon/workflows/create-archon-short.yaml`):
+A three-node Archon workflow (`.archon/workflows/create-archon-short.yaml`):
 
 1. **`parse-input`** (bash + bun) — derives `{topic, slug, duration, title}` from the topic phrase.
 2. **`precheck`** (bash) — verifies `templates/shorts/archon/` exists, `videos/<slug>/` doesn't, `npx` is on PATH.
@@ -164,7 +172,7 @@ videos/<slug>/
 ```
 .
 ├── .archon/
-│   ├── workflows/create-archon-short.yaml      ← the DAG
+│   ├── workflows/create-archon-short.yaml      ← the workflow definition
 │   ├── commands/create-archon-short.md         ← AI command driving the playbook
 │   ├── plans/port-create-archon-short.md       ← origin-port reference
 │   └── config.yaml
