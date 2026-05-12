@@ -1,85 +1,163 @@
-# create-archon-short
+# hyperframes-ai-video-generation
 
-Archon workflow that turns a topic prompt into a vertical YouTube Short rendered with [HyperFrames](https://hyperframes.heygen.com/). Each run spawns a self-contained `videos/<slug>/` project from `templates/shorts/archon/` — Archon-branded dark-blue / cyan-magenta aesthetic — researches the topic, drafts a paced narration, generates TTS, edits `index.html` with content sync'd to spoken-word frames, lints, and opens a browser preview. Render is always manual.
-
-> Despite the repo name, this stack is **HyperFrames** (HTML/GSAP), not Remotion. Branch `video/hyperframes` is the active one; older Remotion-based work lives on prior branches in this repo's history.
-
-## Run
+Turn a topic prompt into a polished, AI-voiced vertical YouTube Short. One command, fire and forget.
 
 ```bash
-# Default 30s short
 archon workflow run create-archon-short --no-worktree "What is Archon for Beginners?"
-
-# Override duration in the topic
-archon workflow run create-archon-short --no-worktree "duration 45s, GPT-5 vs Claude coding showdown"
-
-# Render the rendered MP4 (always manual — workflow never auto-renders)
-npx hyperframes render videos/<slug> -o videos/<slug>/out/<slug>.mp4
 ```
 
-`--no-worktree` is required (the workflow pins `worktree.enabled: false` so video artifacts land on the working branch instead of an isolated checkout).
+That's it. The Archon DAG researches the topic, drafts a paced narration, generates ElevenLabs TTS, edits an HTML+GSAP composition, lints it, and opens a browser preview at `http://localhost:3002`. Render is always manual — `npx hyperframes render videos/<slug>` when you're ready.
+
+The stack: **[Archon](https://archon.diy)** (workflow harness) + **[Claude Code](https://claude.ai/code)** (planning + composition editing) + **[HyperFrames](https://hyperframes.heygen.com/)** (HTML/GSAP video framework) + **[ElevenLabs](https://elevenlabs.io)** (voice with word-level timestamps). Total runtime per short: ~20-30 min depending on research depth.
+
+## Quick Start
+
+Three install commands, one config file, one workflow run.
+
+### 1. Install Claude Code
+
+```bash
+# macOS / Linux / WSL
+curl -fsSL https://claude.ai/install.sh | bash
+
+# Windows (PowerShell)
+irm https://claude.ai/install.ps1 | iex
+```
+
+Then `claude /login` once to authenticate.
+
+### 2. Install Archon (binary, no setup wizard needed)
+
+```bash
+# macOS / Linux
+curl -fsSL https://archon.diy/install | bash
+
+# Windows (PowerShell)
+irm https://archon.diy/install.ps1 | iex
+
+# Homebrew
+brew install coleam00/archon/archon
+```
+
+Point Archon at Claude Code (binary installs don't bundle it):
+
+```bash
+# macOS / Linux / WSL — add to ~/.bashrc or ~/.zshrc
+export CLAUDE_BIN_PATH="$HOME/.local/bin/claude"
+
+# Windows (PowerShell profile)
+$env:CLAUDE_BIN_PATH = "$env:USERPROFILE\.local\bin\claude.exe"
+```
+
+You do **NOT** need to run `archon setup` — that's for the source-install path. The binary just works against this repo's pre-configured `.archon/` directory.
+
+### 3. Install system deps
+
+You need Node ≥18, Python ≥3.10, ffmpeg, jq, and bun.
+
+```bash
+# macOS (Homebrew)
+brew install node python ffmpeg jq oven-sh/bun/bun
+
+# Windows (winget + bun installer)
+winget install OpenJS.NodeJS Python.Python.3.12 Gyan.FFmpeg jqlang.jq
+irm bun.sh/install.ps1 | iex
+
+# Linux (Debian / Ubuntu)
+sudo apt install -y nodejs npm python3 python3-pip ffmpeg jq
+curl -fsSL https://bun.sh/install | bash
+```
+
+Then the Python TTS deps:
+
+```bash
+pip install elevenlabs python-dotenv
+```
+
+### 4. Clone + configure
+
+```bash
+git clone https://github.com/coleam00/hyperframes-ai-video-generation
+cd hyperframes-ai-video-generation
+cp .env.example .archon/.env
+```
+
+Open `.archon/.env` and fill in:
+
+- `ELEVENLABS_API_KEY` — your key from [elevenlabs.io](https://elevenlabs.io)
+- `ELEVENLABS_VOICE_ID` — either your clone's ID or a preset (Brian `nPczCjzI2devNBz1zQrb` is the documented default)
+- The other 7 settings ship with the **tested-good defaults** for shorts (see "Voice tuning" below for what they mean).
+
+### 5. Run it
+
+```bash
+archon workflow run create-archon-short --no-worktree "Your topic here"
+```
+
+20-30 minutes later the studio opens with the finished short. Render with `npx hyperframes render videos/<slug> -o videos/<slug>/out/<slug>.mp4`.
+
+---
 
 ## What the workflow does
 
+A three-node Archon DAG (`.archon/workflows/create-archon-short.yaml`):
+
 1. **`parse-input`** (bash + bun) — derives `{topic, slug, duration, title}` from the topic phrase.
-2. **`precheck`** (bash) — verifies `templates/shorts/archon/`, no existing `videos/<slug>/`, `npx` on PATH.
-3. **`create-short`** (Claude) — runs the playbook in `.claude/skills/diy-yt-creator/new-archon-short.md`:
+2. **`precheck`** (bash) — verifies `templates/shorts/archon/` exists, `videos/<slug>/` doesn't, `npx` is on PATH.
+3. **`create-short`** (Claude) — runs the playbook at `.claude/skills/diy-yt-creator/new-archon-short.md`:
    - Researches the topic (WebFetch + WebSearch grounding)
-   - Drafts a script paced to hit the duration target (heteronym audit; banned-phrase check)
-   - Generates TTS via edge-tts (`en-US-AndrewNeural` default, `+25%` rate)
-   - Computes phase-transition anchors from the transcript word-boundaries
-   - Edits `videos/<slug>/index.html` — title, content, GSAP timeline values, audio elements
+   - Drafts narration paced to the duration target — with mandatory SSML `<break>` tags between sentences and natural abbreviations (MIT, not M I T)
+   - Generates ElevenLabs TTS via `python scripts/elevenlabs-tts.py --shorts --no-chunk` — single-call mode for cross-sentence prosody
+   - Computes phase-transition anchors via `python scripts/compute_timings.py` (strips break tags, filters phantom punctuation)
+   - Edits `videos/<slug>/index.html` — title, content, GSAP timeline anchors, audio element
    - Runs `npx hyperframes lint` + `inspect` until clean
    - Launches `npx hyperframes preview` in the background
    - Prints the preview URL + the manual `render` command
 
-Total: 20–30 minutes for a 30s short, depending on research depth.
+## Voice tuning
 
-## Setup
+The defaults in `.env.example` are the tested sweet spot for an Instant Voice Clone on shorts:
 
-1. **Install Archon** — see https://archon.diy/docs
-2. **Install Claude Code** — `curl -fsSL https://claude.ai/install.sh | bash`
-3. **System deps:** Node ≥18, pnpm (`npm i -g pnpm`), Python ≥3.10 with `pip install edge-tts`, ffmpeg, jq, bun
-4. **Archon credentials** in `~/.archon/.env` (machine-wide, gitignored):
-   ```
-   ANTHROPIC_API_KEY=sk-ant-...
-   # OR
-   CLAUDE_CODE_OAUTH_TOKEN=...
-   ```
+| Setting | Default | Effect of going up | Effect of going down |
+|---|---|---|---|
+| `ELEVENLABS_STABILITY=0.40` | | More monotone | Phoneme artifacts ("incoherent words") |
+| `ELEVENLABS_STYLE=0.70` | | Artifacts return at high style + low stability | Flatter, less excitement |
+| `ELEVENLABS_SIMILARITY_BOOST=0.75` | | Locks to reference timbre, suppresses prosody | Drifts further from the reference voice |
+| `ELEVENLABS_SPEED_SHORTS=1.15` | | Compresses phonemes + sentence-final intonation (sentences sound mid-thought) | Slower, more breathing room |
+| `ELEVENLABS_MODEL_ID=eleven_multilingual_v2` | | `eleven_v3` is more expressive but drifts further from clone voice | `eleven_turbo_v2_5` is faster + cheaper but flatter |
 
-Verify install:
-```bash
-archon validate workflows create-archon-short    # → ok
-archon validate commands create-archon-short     # → ok
-npx hyperframes lint templates/shorts/archon     # → 0 errors, 0 warnings
-```
+See the comment block inside `.env.example` for the full tuning matrix. If a clone sounds monotone, the first knob is stability ↓. If it sounds garbled, stability ↑ first.
+
+Script-level rules (enforced by the playbook): SSML `<break time="0.35s"/>` between sentences, `<break time="0.4s"/>` at phase boundaries (NOT 0.65s — causes re-entry artifacts), natural abbreviations only, selective CAPS on 1-2 power words per phase.
 
 ## Output
 
 ```
 videos/<slug>/
-├── index.html              ← root composition
+├── index.html              ← root composition (HTML + GSAP timeline)
 ├── meta.json, hyperframes.json, DESIGN.md, README.md
-├── script.txt              ← narration source
+├── script.txt              ← narration source (with <break> tags inline)
 ├── audio/
-│   ├── narration.wav       ← edge-tts output
-│   ├── narration.mp3
-│   └── narration-chunks/   ← per-sentence intermediates (gitignored)
-├── transcript.json         ← word-level timestamps (may be empty if edge-tts service degrades)
+│   ├── narration.wav       ← ElevenLabs TTS (MP3 decoded to PCM via ffmpeg)
+│   ├── narration.mp3       ← compressed copy
+│   └── narration-chunks/   ← per-chunk intermediates if you use chunked mode (gitignored)
+├── transcript.json         ← word-level timestamps from ElevenLabs alignment
 ├── assets/
 │   ├── archon-logo.png
 │   └── sfx/                ← per-video SFX subset (synced from shared/audio/sfx/)
 └── out/                    ← rendered MP4 (gitignored)
 ```
 
-`videos/<slug>/` is committed to git so each generation is a permanent gallery entry. Only the rendered MP4 (`out/`), per-sentence TTS chunks, and HyperFrames waveform caches are gitignored.
+`videos/<slug>/` is committed to git so every generation is a permanent gallery entry. Only the rendered MP4, per-chunk TTS intermediates, and HyperFrames waveform caches are gitignored.
 
 ## Customization
 
-- **Voice** — edit step 5+6 of `.archon/commands/create-archon-short.md`. Safe choices: `en-US-AndrewNeural` (default), `BrianNeural`, `GuyNeural`. **Never** use `*MultilingualNeural` voices — they emit empty WordBoundary arrays and break the transcript step silently.
+- **Voice ID** — set `ELEVENLABS_VOICE_ID` in `.archon/.env`. Documented presets: Brian `nPczCjzI2devNBz1zQrb`, Adam (legacy) `pNInz6obpgDQGcFmaJgB`, Daniel `onwK4e9ZLuTAKqWW03F9`. Or use your own clone's ID.
+- **Voice tuning matrix** — see `.env.example` and the table above.
 - **Default duration** — edit `let duration = 30;` in `.archon/workflows/create-archon-short.yaml` (the `parse-input` JS).
-- **Range guard** — same file: `if (duration < 10 || duration > 300)` clamps to 10s–5min.
-- **Slug stopwords** — same file: `STOPWORDS` Set; add product / company names so they don't bloat slugs.
+- **Range guard** — same file: `if (duration < 10 || duration > 300)` clamps to 10s-5min.
+- **Slug stopwords** — same file: `STOPWORDS` Set; add product/company names so they don't bloat slugs.
+- **Script style rules** — `.claude/skills/diy-yt-creator/new-archon-short.md` step 4 documents break-tag layout, CAPS guidance, abbreviation conventions.
 
 ## Repo layout
 
@@ -91,30 +169,38 @@ videos/<slug>/
 │   ├── plans/port-create-archon-short.md       ← origin-port reference
 │   └── config.yaml
 ├── .claude/
-│   ├── rules/                                  ← 11 project-wide rules the AI follows
+│   ├── rules/                                  ← project-wide rules the AI follows
 │   └── skills/
 │       ├── diy-yt-creator/                     ← the playbook
 │       ├── hyperframes/                        ← framework patterns (palettes, refs)
 │       ├── hyperframes-cli/                    ← CLI command reference
-│       ├── archon/                             ← Archon workflow authoring docs
-│       └── visual-diagrams/                    ← generic diagram design system
+│       └── archon/                             ← Archon workflow authoring docs
 ├── templates/shorts/archon/                    ← seed copied into videos/<slug>/ on every run
 ├── scripts/
-│   ├── edge-tts-fallback.py                    ← TTS + transcript in one shot
+│   ├── elevenlabs-tts.py                       ← single-call ElevenLabs TTS with MP3 + ffmpeg decode
+│   ├── tts_lib.py                              ← chunked-generation lib (delta-regen + alignment)
+│   ├── compute_timings.py                      ← derives phase boundaries, slam_t, hero entrance, etc.
+│   ├── list_voices.py                          ← list available ElevenLabs preset voices
+│   ├── edge-tts-fallback.py                    ← TTS fallback (no API key needed)
 │   └── sync-video-sfx.sh                       ← syncs shared SFX into per-video assets/sfx/
-├── shared/audio/                               ← SFX library (9 cinematic cues + MANIFEST)
+├── shared/audio/                               ← SFX library (cinematic cues + MANIFEST)
 └── videos/<slug>/                              ← one folder per generated short
 ```
 
 ## Caveats
 
-- **edge-tts WordBoundary degradation** — the service occasionally returns empty `[]` boundaries across all voices. The playbook estimates phase boundaries from character proportions in that case (±1s accuracy). Re-time when the service recovers, or port `scripts/elevenlabs-tts.py` from the source repo for production use.
-- **Bun on Windows + multi-line `bun -e`** — Archon spawns inline bun scripts via Node's `execFile`; on Windows, bun truncates the script at the first newline (silent — exit 0, no error). The `parse-input` node uses a bash wrapper (`mktemp` + `bun run`) to avoid this. See CLAUDE.md → Gotchas before refactoring.
-- **AI fabrication risk** — if WebFetch / WebSearch fails, the playbook may invent statistics. If you spot fabrications, restart with a source URL embedded in the topic ("Archon 1.0 launch — see https://archon.diy/blog/1.0").
+- **ElevenLabs PCM output is Pro-tier only.** `scripts/tts_lib.py` requests `mp3_44100_128` (available on Creator and below) and decodes to PCM via ffmpeg. If you're on Pro and want pure PCM, edit `tts_lib.py` to switch `output_format`.
+- **Phantom punctuation in transcripts.** ElevenLabs occasionally emits a standalone `.` word around `<break>` tags. `clean_sync_data` in `tts_lib.py` filters these defensively so phase-boundary math doesn't drift.
+- **Break-tag re-entry artifacts.** Phase-boundary `<break>` durations of 0.65s+ can cause an audible click/breath when the model resumes. The playbook uses 0.4s for phase breaks and 0.35s for inter-sentence breaks — proven artifact-free in 20+ test runs.
+- **Speed ceiling is 1.15.** Going to 1.20 compresses phonemes (more garbled output) AND flattens sentence-final intonation (sentences sound mid-thought, like they didn't end).
+- **Bun on Windows + multi-line `bun -e`.** Archon spawns inline bun scripts via Node's `execFile`; on Windows, bun truncates the script at the first newline (silent — exit 0, no error). The `parse-input` node uses a bash wrapper (`mktemp` + `bun run`) to avoid this. See `CLAUDE.md` → Gotchas before refactoring.
+- **AI fabrication risk.** If WebFetch / WebSearch fails, the playbook may invent statistics. If you spot fabrications, restart with a source URL embedded in the topic ("Archon 1.0 launch — see https://archon.diy/blog/1.0").
+- **Repo name is historical.** This stack pivoted from Remotion to HyperFrames mid-2026. The repo name reflects the original Remotion-based project; the active stack on `main` is HyperFrames.
 
 ## Provenance
 
-Ported from `diy-yt-creator-hyperframes` per `.archon/plans/port-create-archon-short.md`. The plan documents which files to copy, which to skip, and the verify steps. Deviations on this branch:
-- `parse-input` rewritten as `bash:` node (was `script: runtime: bun`) — fix for the Windows `bun -e` multi-line truncation bug.
-- Bash node timeouts bumped from 10–15s to 30s — Windows bash startup + jq spawn × 3 routinely overruns shorter limits.
-- Skipped optional `shared/logos/` (84 brand wordmarks) — only needed for non-Archon branded shorts.
+Ported from `diy-yt-creator-hyperframes`. The original Remotion-based work lives on prior branches; current `main` is HyperFrames + ElevenLabs single-call with the tuned settings matrix documented above. Voice settings, break-tag durations, and the MP3 + ffmpeg decode pipeline were all validated over a live tuning session — see git log for the iteration history.
+
+## License
+
+MIT
