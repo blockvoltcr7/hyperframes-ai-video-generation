@@ -7,6 +7,13 @@
 .archon/mcp/
 .archon/state/
 .archon/.env
+.archon/.env.*
+.archon/.run-logs/
+
+# Iteration backups — useful locally during tuning, never commit
+**/*.bak
+**/*.bak-*
+**/.bak-*
 
 # Local Claude Code state (keep project skills, ignore per-user settings)
 .claude/settings.local.json
@@ -31,6 +38,7 @@ __pycache__/
 **/.waveform-cache/
 **/out/
 **/renders/
+videos/**
 
 # TTS chunk intermediates — large + regenerable from narration.txt + edge-tts
 videos/*/audio/narration-chunks/

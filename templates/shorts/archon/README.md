@@ -19,24 +19,13 @@ Each phase is mutex-visible (only one at a time), separated by a blur + crossfad
 
 ## Provenance — colors come from Archon source
 
-All accents are traceable to canonical Archon assets in `dynamous/Archon`, not eyeballed:
+All accents are traceable to canonical Archon assets in `coleam00/Archon`, not eyeballed:
 
 - Theme tokens: `packages/web/src/index.css` — `:root` OKLCH variables (`--background`, `--surface`, `--primary`, `--accent-bright`, `--node-prompt`, `--success`, `--warning`, `--error`).
 - Logo gradient: `assets/logo.png` — magenta → purple → cyan-green shield. The cyan + magenta accents in the slam word, stat pills, and CTA pull from this gradient.
 - Typography: `--font-sans: 'Inter'`, `--font-mono: 'JetBrains Mono'` — declared in Archon's web shell.
 
 If you re-tune the palette, edit [DESIGN.md](./DESIGN.md) first (which holds the OKLCH origin per token), then propagate hex values into `index.html`'s `--cyan`, `--magenta`, etc.
-
-## Add Dynamous promotion? (opt-in, ask each new video)
-
-Before you wire content, decide:
-
-> **"Add Dynamous promotion to this Short? (y/N — default no)"**
-
-- **No** (default) — skip this section. Proceed to "Spawn a new Archon-themed video" below.
-- **Yes** — open [`videos/_template-wiring-snippet.md`](../../../videos/_template-wiring-snippet.md) and follow Step 0 onward. Wires the persistent badge (artifact 1) + endcard (artifact 2). Optionally also the module interstitial (artifact 3) when the topic matches a curriculum module, and the discount bubble (artifact 4) when the platform is visibly on screen.
-
-Existing videos are NOT retroactively touched. The decision is per video. Record the choice in `videos/<slug>/meta.json` as `"dynamousPromotion": true|false` for later audit.
 
 ## Spawn a new Archon-themed video from this template
 

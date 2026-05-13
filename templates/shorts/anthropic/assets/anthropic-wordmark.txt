@@ -1,0 +1,12 @@
+ANTHROPIC wordmark placeholder
+==============================
+
+This template uses a CSS-rendered wordmark in the top banner, not an image
+file. See #top-banner-wordmark in index.html.
+
+If you want an SVG wordmark instead:
+  1. Drop an anthropic-wordmark.svg into this assets/ folder.
+  2. Replace the #top-banner-content div in index.html with:
+     <img id="top-banner-logo" src="assets/anthropic-wordmark.svg" alt="Anthropic" />
+  3. Update the #top-banner CSS rules (remove #top-banner-icon /
+     #top-banner-wordmark; use the pattern documented in DESIGN.md).

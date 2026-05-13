@@ -1,0 +1,10 @@
+Brand wordmark placeholder
+==========================
+
+This template renders the top banner via CSS (#top-banner-wordmark in index.html)
+with the placeholder text "YOUR BRAND". To customize:
+
+  1. Edit the text in index.html (search for "YOUR BRAND" in the markup).
+  2. Or drop an SVG logo here and replace #top-banner-content with a single
+     <img id="top-banner-logo" src="assets/your-logo.svg" alt="Your Brand" />.
+     See DESIGN.md for the CSS pattern.

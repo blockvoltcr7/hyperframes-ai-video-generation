@@ -33,7 +33,7 @@ Append a dedicated final phase (commonly `#phaseN-thumb` or `#phase-end`) AFTER 
      data-start="28.0" data-duration="2.0" data-track-index="9">
 
   <!-- Brand chrome (top-left) -->
-  <img id="thumb-brand" class="clip" src="assets/dynamous-mark.svg"
+  <img id="thumb-brand" class="clip" src="assets/brand-mark.svg"
        data-start="0" data-duration="2" data-track-index="1"
        style="position:absolute; top:60px; left:60px; height:48px;">
 
@@ -105,7 +105,7 @@ If any answer is "no", the final frame fails the rule. Rework before render.
 ## Where this rule applies
 
 - All vertical Shorts (`templates/shorts/<style>/`, every `videos/<slug>/` with 1080×1920 canvas).
-- Includes derivatives — Anthropic, Archon, Dynamous, Google, news-explainer, claude-code-version, and any future shorts variants.
+- Includes derivatives — Anthropic, Archon, Google, news-explainer, claude-code-version, and any future shorts variants.
 
 ## Where this rule does NOT apply
 

@@ -25,8 +25,6 @@ Authority order, narrowest wins:
 | `CLI` | "C L I" | `C L I` | True initialism |
 | `IDE` | "I D E" | `I D E` | True initialism |
 | `JWT` | "J W T" | `J W T` | True initialism |
-| `dynamous` | "die-nuh-mus" | `dynamous` | Brand reads correctly natively |
-| `coleam00` | "Cole" (the founder's first name) | `Cole` | The GitHub handle is `coleam00` but the person is "Cole". Use the name, not the handle, in spoken script |
 | `Claude` | "klod" | `Claude` | Reads correctly natively |
 | `Anthropic` | "an-thrah-pik" | `Anthropic` | Reads correctly natively |
 

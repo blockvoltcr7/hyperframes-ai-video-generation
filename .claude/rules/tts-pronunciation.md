@@ -52,7 +52,6 @@ These are NOT heteronyms but consistent TTS failures on our content.
 | `CI/CD` | see-eye-stroke-see-dee | C I C D | Spell as `C I C D` |
 | `OK` | oh-kay (sometimes oh-kuh) | okay | Spell as `okay` |
 | `AI` | (none — natively correct) | ay-eye | **Keep as `AI`** — ElevenLabs `eleven_multilingual_v2` pronounces it correctly. Spelling `A I` works too but is unnecessary noise. |
-| `dynamous.ai` | dynamous-AY-EYE | dynamous-dot-AY-EYE | Spell as `dynamous dot AI` (already enforced by phase 2a) |
 
 These are NOT exhaustive. Every new tech term encountered should be probe-tested with a single-chunk TTS before committing the whole script.
 

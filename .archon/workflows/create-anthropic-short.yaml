@@ -1,0 +1,168 @@
+# create-anthropic-short — spawn a previewable HyperFrames Short from a topic,
+# in the Anthropic dark-stage aesthetic (warm orange + cream + purple).
+#
+# DAG flow (identical shape to create-archon-short):
+#   parse-input (bash, bun) -> precheck (bash) -> create-short (command, AI)
+#
+# Default video duration is 30s. Topic is the whole $ARGUMENTS message minus
+# the duration phrase, if present.
+#
+# Run with:
+#   archon workflow run create-anthropic-short --no-worktree "Opus 4 launch"
+#   archon workflow run create-anthropic-short --no-worktree "duration 45s, MCP explained"
+#
+# Why --no-worktree: video artifacts (videos/<slug>/audio/narration.wav,
+# transcript.json, the rendered MP4) belong on the working branch. Running
+# this inside a worktree would dump them into the worktree's checkout which
+# then has to be merged back. Pin worktree.enabled: false at the workflow
+# level so the CLI rejects --branch / --from and only allows in-place runs.
+
+name: create-anthropic-short
+description: |
+  Use when: User wants to spawn a vertical YouTube Short in the Anthropic
+  dark-stage aesthetic (warm orange + cream + purple, near-black canvas) from
+  a topic prompt.
+  Triggers: "create anthropic short", "new anthropic short", "make an anthropic
+            short about", "anthropic short for", "generate anthropic short video".
+  Does: Parses the topic and an optional duration (default 30s) -> derives a
+        kebab-case slug -> copies templates/shorts/anthropic/ to videos/<slug>/ ->
+        researches the topic and drafts a script.txt (with SSML break tags)
+        paced to hit the duration target -> generates ElevenLabs TTS narration
+        (single-call mode with inline word-level alignment) -> computes phase
+        transition anchors via scripts/compute_timings.py -> edits index.html
+        with real content sync'd to spoken-word frames -> lints and inspects
+        until both pass cleanly -> opens preview in the browser. Never
+        auto-renders; user always triggers render manually.
+  NOT for: Other template aesthetics (use templates/shorts/archon for Archon
+            workflow content), long-form videos, auto-rendering, modifying the
+            template itself.
+
+provider: claude
+model: sonnet
+
+worktree:
+  enabled: false   # Video artifacts must land on the working branch — see header
+
+nodes:
+  # ── Layer 0 ─────────────────────────────────────────────────────────────────
+  # Parse the user's message into { topic, slug, duration, title } JSON.
+  # Default duration: 30s. Duration can appear as "30s", "30 seconds",
+  # "duration 30", "duration: 45s", "45-second", etc.
+  - id: parse-input
+    bash: |
+      set -euo pipefail
+      # Bun on Windows truncates `bun -e <multi-line script>` at the first
+      # newline when spawned via Node's execFile (Archon's mechanism — only
+      # line 1 runs, every later statement is silently dropped, exit code is
+      # still 0). Workaround: write the JS to a tmp file and invoke
+      # `bun run <file>`. Bash's "$ARGUMENTS" handles topic quoting safely.
+      TMP=$(mktemp --suffix=.js)
+      trap 'rm -f "$TMP"' EXIT
+      cat > "$TMP" <<'JS'
+      const raw = (process.argv[2] ?? '').trim();
+      if (!raw) {
+        console.error('No topic provided. Usage: archon workflow run create-anthropic-short --no-worktree "<topic>"');
+        process.exit(1);
+      }
+
+      const patterns = [
+        /\bduration\s*[:=]?\s*(\d{1,3})\s*(?:s|sec|seconds?)?\b/i,
+        /\b(\d{1,3})\s*-?\s*seconds?\b/i,
+        /\b(\d{1,3})\s*s\b/i,
+      ];
+      let duration = 30;
+      let durationPhrase = null;
+      for (const pat of patterns) {
+        const m = raw.match(pat);
+        if (m) { duration = parseInt(m[1], 10); durationPhrase = m[0]; break; }
+      }
+      if (duration < 10 || duration > 300) {
+        console.error(`Duration ${duration}s out of range (10-300s)`);
+        process.exit(1);
+      }
+
+      let topic = raw;
+      if (durationPhrase) topic = topic.replace(durationPhrase, ' ');
+      topic = topic
+        .replace(/^\s*(?:please\s+)?(?:create|make|spawn|generate|build|produce)\s+(?:an?\s+)?(?:anthropic\s+)?(?:short|video)\s*(?:about|on|for|covering)?\s*/i, '')
+        .replace(/^\s*anthropic\s+short\s+(?:about|on|for)\s+/i, '')
+        .replace(/,\s*(?:$|with\s+)/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (!topic) {
+        console.error('Could not extract a topic from the input');
+        process.exit(1);
+      }
+
+      const STOPWORDS = new Set([
+        'the','a','an','of','for','to','with','about','on','in','and','or',
+        'is','are','was','were','be','it','this','that','from','as','by','at',
+      ]);
+      const tokens = topic
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, ' ')
+        .split(/\s+/)
+        .filter((w) => w && !STOPWORDS.has(w));
+      const slug = tokens.slice(0, 6).join('-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+      if (!slug) {
+        console.error('Could not derive a slug from the topic');
+        process.exit(1);
+      }
+
+      const title = topic
+        .split(/\s+/)
+        .map((w) => (w.length <= 2 ? w : w[0].toUpperCase() + w.slice(1)))
+        .join(' ');
+
+      console.log(JSON.stringify({ topic, slug, duration, title }));
+      JS
+      bun --no-env-file run "$TMP" "$ARGUMENTS"
+    timeout: 30000
+
+  # ── Layer 1 ─────────────────────────────────────────────────────────────────
+  # Verify preconditions BEFORE we start the expensive AI work:
+  #   - templates/shorts/anthropic/ exists
+  #   - videos/<slug>/ does NOT already exist (refuse to overwrite)
+  #   - npx hyperframes is reachable
+  - id: precheck
+    depends_on: [parse-input]
+    bash: |
+      set -euo pipefail
+
+      slug=$(echo $parse-input.output | jq -r '.slug')
+      duration=$(echo $parse-input.output | jq -r '.duration')
+      topic=$(echo $parse-input.output | jq -r '.topic')
+
+      if [ -z "$slug" ] || [ "$slug" = "null" ]; then
+        echo "FATAL: parse-input did not produce a slug"
+        exit 1
+      fi
+
+      if [ ! -d templates/shorts/anthropic ]; then
+        echo "FATAL: templates/shorts/anthropic does not exist in this repo"
+        exit 1
+      fi
+
+      if [ -d "videos/$slug" ]; then
+        echo "FATAL: videos/$slug already exists. Pick a different topic or delete the existing folder first."
+        exit 1
+      fi
+
+      if ! command -v npx >/dev/null 2>&1; then
+        echo "FATAL: npx is not on PATH — install Node.js + pnpm first"
+        exit 1
+      fi
+
+      echo "OK slug=$slug duration=${duration}s topic=\"$topic\""
+    timeout: 30000
+
+  # ── Layer 2 ─────────────────────────────────────────────────────────────────
+  # The actual video-creation work — one big AI session that follows the
+  # create-anthropic-short playbook end-to-end. Long idle timeout because TTS,
+  # transcription, and lint can each take a minute or two.
+  - id: create-short
+    command: create-anthropic-short
+    depends_on: [precheck]
+    context: fresh
+    idle_timeout: 1800000   # 30 minutes per idle stretch

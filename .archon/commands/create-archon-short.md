@@ -119,15 +119,9 @@ parameter substitutions for THIS run are:
   ```json
   {
     "id": "$parse-input.output.slug",
-    "name": "<refined title>",
-    "dynamousPromotion": false
+    "name": "<refined title>"
   }
   ```
-- Step 3.5 (Dynamous promotion) — **skip the prompt**. This workflow does
-  NOT ask interactively. Default to `"dynamousPromotion": false`. If the
-  user wants the promotion wired, they should run the
-  `/diy-yt-creator:new-archon-short` Claude Code skill instead — that path
-  prompts.
 - Step 4 (draft the script) — Branch B (inline drafting) only. Pipeline
   artifacts (`scripts/full-script.md`, `plan.md`,
   `retention-strategy.md`) will not exist on a fresh spawn. Target
@@ -268,8 +262,8 @@ Before declaring the workflow complete, all of the following MUST be true:
       genuinely about Archon) replaced with real content; transition
       timestamps, slam-shake offsets, and gradient drift anchor all
       recomputed from the transcript; `<audio id="narration">` wired.
-- [ ] `videos/$parse-input.output.slug/meta.json` has the real slug,
-      refined title, and `"dynamousPromotion": false`.
+- [ ] `videos/$parse-input.output.slug/meta.json` has the real slug and
+      refined title.
 - [ ] `npx hyperframes lint videos/$parse-input.output.slug` → **0 errors**.
 - [ ] `npx hyperframes inspect videos/$parse-input.output.slug` → **no
       overflow**.

@@ -25,9 +25,8 @@ This file contains the complete YouTube description ready for copy-paste upload.
 <Hook paragraph — keyword-rich opening, 1-3 sentences>
 
 ----
-🚀 Want to learn agentic coding with live daily events and workshops?
-Check out Dynamous AI: https://dynamous.ai/?code=646a60
-Get 10% off here 👉 https://shorturl.smartcode.diy/dynamous_ai_10_percent_discount
+<Optional brand CTA block — 1-3 lines, wrapped in ---- separators above and below,
+ placed ABOVE Chapters. Omit the separators entirely if there is no CTA.>
 ----
 
 Key Changes in This Release:
@@ -49,17 +48,12 @@ $ claude update    (or other primary CTA — context-dependent)
 #Hashtag1 #Hashtag2 …    (15-25 hashtags)
 ```
 
-**CRITICAL: Dynamous CTA Format** — The Dynamous block MUST be wrapped in `----`
-separators (four dashes) above and below, placed ABOVE Chapters (between hook
-paragraph and Chapters). This exact format is mandatory:
+## Optional brand CTA block
 
-```
-----
-🚀 Want to learn agentic coding with live daily events and workshops?
-Check out Dynamous AI: https://dynamous.ai/?code=646a60
-Get 10% off here 👉 https://shorturl.smartcode.diy/dynamous_ai_10_percent_discount
-----
-```
+If the video has a brand call-to-action to include, wrap it in `----` separators
+(four dashes) above and below, placed ABOVE Chapters (between hook paragraph and
+Chapters). The `----` separators are mandatory when a CTA block is present; omit
+them entirely when there is no CTA.
 
 **MANDATORY: "Chapters" Header Line** — The chapter list MUST be preceded by the
 word `Chapters` on its own line. YouTube uses this as a signal for chapter
@@ -290,18 +284,6 @@ description must be comprehensively keyword-optimized, not just the first line.
 
 9. **Resource links with context**: Don't just drop URLs — add keyword-rich
    anchor text: `Release Notes (v2.1.123): https://...` not just `https://...`.
-
-## Brand Links (MANDATORY)
-
-Always use these exact links — never use placeholders:
-
-| Brand | Link |
-|-------|------|
-| Dynamous AI | <pre>🚀 Want to learn agentic coding with live daily events and workshops?<br/>Check out Dynamous AI: https://dynamous.ai/?code=646a60<br/>Get 10% off here 👉 https://shorturl.smartcode.diy/dynamous_ai_10_percent_discount</pre> |
-
-When generating YouTube descriptions, scripts mentioning Dynamous, or any CTA
-referencing the course, **always include the full link above**. Never use
-`[link in description]` or similar placeholders.
 
 ## Thumbnail: Version Badge Must Be LARGE
 
