@@ -186,40 +186,72 @@ The repo ships **three templates** out of the box at `templates/shorts/`:
 
 **The classic template is the brand-neutral default.** Use it for any topic that isn't specifically about Archon or Anthropic — you'll need to swap the `YOUR BRAND` wordmark and `your-domain.com` CTA for your own (one-line CSS edits, documented in the template's README).
 
-All three templates share the same 4-phase narrative shape (Hero → Stat row → Cards → CTA), the same 11-step playbook, the same TTS pipeline, the same `compute_timings.py` math. The deltas are: CSS palette, brand strings, default CTA URL, and a per-template pronunciation map.
+All three templates share the same **4-phase rhythm** (Phase 1 → 2 → 3 → 4 across ~24s), the same playbook contract (phase IDs `#phase1-4`, timing constants `T1/T2/T3` and `P2/P3/P4`, the `slam_t` shake anchor, the audio insertion point), and the same `compute_timings.py` math.
+
+**What can differ between templates:** the *visual pattern inside each phase*. Two templates can share Phase 2 as "the 6-12s slot" but use completely different layouts to fill it — `archon/` uses a side-by-side stat-pill row; `anthropic/` uses a single oversized metric with a hairline rule; you could write one that uses a full-screen quote with attribution. Same rhythm, different scene design.
+
+Think of the phase contract as the song's tempo and bar count, and the per-template HTML/CSS as the chord voicing and instrumentation.
 
 ### Adding your own template (let your coding agent do it)
 
-If neither template fits — you want a different brand, palette, or visual identity — **the fastest path is to ask your coding agent to clone one and re-skin it**. Open this repo in Claude Code (or any agentic coding tool) and use one of the two prompt patterns below depending on how much input you have.
+If neither shipped template fits, **ask your coding agent to clone one and modify it**. Three options below, ordered by how much design effort the agent is taking on. Pick the one that matches what you actually want — they get progressively more transformative.
 
-#### Option A — you have your brand specs ready
+> **Heads-up before you start:** Option A and Option B produce a template that looks like the source template with a new coat of paint. If your goal is "my videos shouldn't look identical to Archon's or Anthropic's videos," you want **Option C**. The shipped templates intentionally share scene layouts within their phases — that's the reskin path. Visually distinct scenes are a separate, larger design pass.
 
-Use this when you already know your palette, brand name, and CTA URL. Most concrete, fewest decisions delegated to the agent:
+#### Option A — reskin only (you have your brand specs ready)
+
+Use this when you already know your palette, brand name, and CTA URL, and you're fine with the source template's scene layouts. Fastest path, fewest decisions delegated:
 
 > _"Create a new short template at `templates/shorts/<your-brand>/` by cloning `templates/shorts/anthropic/` and restyling it for **\<your brand name\>**. Specifically:_
 >
 > 1. _Palette: `--bg = <hex>`, `--accent-1 = <hex>` (hero/signature accent), `--accent-2 = <hex>` (CTA), `--accent-3 = <hex>` (secondary), `--accent-4 = <hex>` (workhorse). The hero gradient text-fill should be `--accent-1 → --accent-2`._
 > 2. _Top banner: CSS-rendered wordmark reading **"\<BRAND IN ALL CAPS\>"** in the hero gradient, OR drop an SVG into `assets/` and follow the swap pattern in `templates/shorts/anthropic/DESIGN.md`._
 > 3. _Default CTA URL: **<your-domain>**._
-> 4. _Update `meta.json`, `hyperframes.json`, `DESIGN.md`, `README.md`, `PRONUNCIATION.md` for the new brand. Keep class names (`.cyan`, `.magenta`, etc.) identical to the anthropic template so `compute_timings.py` and the playbook work unchanged._
+> 4. _Update `meta.json`, `hyperframes.json`, `DESIGN.md`, `README.md`, `PRONUNCIATION.md` for the new brand. Keep class names (`.cyan`, `.magenta`, etc.) and phase IDs (`#phase1-4`, `#p1-hero`, `#p2-pill-1/2`, `#p3-card-1/2/3`, `#p4-url`, the `T1/T2/T3` and `P2/P3/P4` timing constants, `slam_t`, `shake_offsets`) identical to the source so `compute_timings.py` and the playbook work unchanged._
 > 5. _Add a sibling playbook at `.claude/skills/diy-yt-creator/new-<brand>-short.md` mirroring `new-anthropic-short.md` — same 11 steps, just with the new template path, palette names, and CTA URL._
 > 6. _Add an Archon workflow at `.archon/workflows/create-<brand>-short.yaml` and command at `.archon/commands/create-<brand>-short.md` mirroring the anthropic versions. Keep the parse-input logic identical; only the workflow name, description, template path, and command reference change._
 > 7. _Add the new template's row to the table in this repo's README and to `.claude/skills/diy-yt-creator/SKILL.md`._
 > 8. _Run `npx hyperframes lint templates/shorts/<your-brand>` to confirm clean."_
 
-#### Option B — let the agent design it for you (use the shipped templates as reference)
+**Result:** Same scenes as the source template, your brand colors and wordmark. ~5-10 minutes.
 
-Use this when you don't want to pick hex codes yourself, or you want the agent to study a website / brand guide and translate that into a working template. Hand it the inspiration and let it derive the rest:
+#### Option B — agent-designed reskin (you supply the vibe, agent picks the palette)
 
-> _"Look at the two existing short templates at `templates/shorts/archon/` and `templates/shorts/anthropic/` as reference for the structure and design system. Then design a new short template for **\<your brand or vibe — e.g. "Linear", "a cyberpunk dev tool with green-on-black terminal vibes", "my SaaS company's brand at https://example.com">**. You decide the palette, the gradient direction, the wordmark treatment, and the CTA URL — pick choices that match the brand's actual identity (visit the site if a URL was provided; otherwise use your judgment). Then create the template at `templates/shorts/<slug>/` along with the playbook, workflow YAML, command file, and SKILL.md entry. Mirror the file structure of the anthropic template exactly. When you're done, show me the palette you picked and why, run `npx hyperframes lint templates/shorts/<slug>` to confirm it's clean, and tell me how to invoke the new workflow."_
+Use this when you don't want to pick hex codes yourself but still want a reskin (same scene layouts, your brand). Hand the agent inspiration and let it derive the palette:
 
-This path delegates more taste to the agent. It works best when the brand has a discoverable identity online (website, logo, brand site) or a well-known aesthetic the model can draw on. The agent will report back with the choices it made so you can override anything that doesn't feel right.
+> _"Look at the existing short templates at `templates/shorts/archon/` and `templates/shorts/anthropic/` as reference for the structure and design system. Then design a new short template for **\<your brand or vibe — e.g. "Linear", "a cyberpunk dev tool with green-on-black terminal vibes", "my SaaS company's brand at https://example.com">**. You decide the palette, the gradient direction, the wordmark treatment, and the CTA URL — pick choices that match the brand's actual identity (visit the site if a URL was provided; otherwise use your judgment). Keep the scene layouts and all timing-contract IDs from the source template unchanged — this is a reskin pass, not a redesign. Create the template at `templates/shorts/<slug>/` along with the playbook, workflow YAML, command file, and SKILL.md entry. When you're done, show me the palette you picked and why, run `npx hyperframes lint templates/shorts/<slug>` to confirm it's clean, and tell me how to invoke the new workflow."_
 
-Both options take **5-15 minutes of wall-clock time** depending on how specific you are. The agent will copy the files, do the find-and-replace, run lint, and report what changed.
+**Result:** Same scenes as the source template, agent-picked brand identity. ~10-15 minutes.
 
-### Going further — bigger structural changes
+#### Option C — redesign the scenes (different layouts, same phase rhythm)
 
-If you want to change the *shape* of the video (not just the brand) — different number of phases, different card counts in phase 3, a hub-and-spoke structural pattern instead of phase mutex, a long-form 16:9 layout — that's a bigger lift. The cleanest pattern is still "clone an existing template, then modify," but you'll also need to update `scripts/compute_timings.py` to compute boundaries for your new phase count, and rewrite the GSAP timeline math in `index.html`. Ask the agent to walk you through it:
+**Use this when you want your videos to look visually distinct from the shipped templates** — not just a color swap, but actually different scene compositions in each phase. This is the answer to "why does my Anthropic short look just like the Archon one?"
+
+The phase rhythm stays the same (4 phases, same timing windows, same playbook contract). What changes is *what fills each phase visually*. Concrete examples of layout substitutions that work without breaking the playbook:
+
+| Phase | Default (archon-style) | Possible alternatives |
+|---|---|---|
+| **Phase 1 — Hero** | Overline + pre-line + gradient slam word + caption pill | Full-bleed quote + tiny attribution; oversized number + label; brand logo entrance + tagline |
+| **Phase 2 — Insight slot** | Side-by-side stat pill row (2 stats) | Single oversized metric + hairline rule (anthropic now); split-screen comparison; pull-quote with attribution; vertical stack of 3 micro-stats |
+| **Phase 3 — Detail slot** | Color-card grid (3 feature cards) | Typographic chapter list (anthropic now); horizontal timeline strip; hub-and-spoke diagram; before/after pair; receipt-style itemized list |
+| **Phase 4 — CTA** | Overline + URL pill + subscribe arrow | QR code + URL; multi-line manifesto end-card; logo lock-up with URL beneath |
+
+Sample prompt to redesign two scenes against a fresh template:
+
+> _"I want a new short template at `templates/shorts/<brand>/` cloned from `templates/shorts/anthropic/`, but with **visually distinct scene layouts** — not just a reskin. Redesign:_
+>
+> - _**Phase 2** as **\<one of: single oversized metric / split-screen comparison / pull-quote / micro-stat stack\>** — different from both Archon's pill-row and Anthropic's single-metric layout._
+> - _**Phase 3** as **\<one of: horizontal timeline strip / hub-and-spoke / before-after pair / receipt list\>** — different from both Archon's card grid and Anthropic's chapter list._
+>
+> _Keep Phase 1 and Phase 4 the same shape as the source (hero slam + CTA URL — these are the load-bearing thumbnail moments). Critically: **preserve the playbook contract** — the phase IDs `#phase1-4`, the inner element IDs the playbook fills (`#p1-hero`, `#p1-caption`, `#p2-headline`, `#p2-overline`, `#p3-overline`, and a sensible mapping for the new P2/P3 elements like `#p2-pill-1/2` or `#p2-metric` and `#p3-card-1/2/3`), the timing constants `T1/T2/T3` and `P2/P3/P4`, `slam_t`, `shake_offsets`, and the audio insertion point at the end of the body. The playbook will read your new structure and fill it; just keep enough IDs intact that it can find its anchors. Then write the playbook at `.claude/skills/diy-yt-creator/new-<brand>-short.md`, the workflow YAML, and the command file. Run `npx hyperframes lint templates/shorts/<brand>` until clean."_
+
+**Result:** Visually unique scenes that still play nicely with the playbook and `compute_timings.py`. ~20-40 minutes depending on layout complexity.
+
+For an in-repo reference: the **anthropic template's Phase 2 (single oversized metric) and Phase 3 (typographic chapter list)** are concrete examples of Option C applied to a real template. Compare `templates/shorts/anthropic/index.html` against `templates/shorts/archon/index.html` to see what "redesigned scenes within the same phase rhythm" actually looks like in code.
+
+### Going further — change the phase rhythm itself
+
+Option C keeps the 4-phase rhythm and only changes what's inside each phase. If you want to change the *rhythm itself* — different phase count (3-phase or 5-phase), different total duration, a hub-and-spoke structural pattern instead of phase mutex, a long-form 16:9 layout — that's a bigger lift. You'll need to update `scripts/compute_timings.py` to compute boundaries for your new phase count and rewrite the GSAP timeline math in `index.html`. Ask the agent to walk you through it:
 
 > _"I want a 5-phase short template (Hero → Problem → Solution → Receipt → CTA) instead of the 4-phase default. Clone `templates/shorts/archon/`, add a `#phase5` div, extend the GSAP timeline with `T4`/`P5` anchors, update `scripts/compute_timings.py` to compute boundaries for 5 phases (the current logic assumes 4), and write a playbook for it."_
 

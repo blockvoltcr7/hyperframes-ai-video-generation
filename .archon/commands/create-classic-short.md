@@ -133,29 +133,46 @@ parameter substitutions for THIS run are:
   Prepend the leading HTML comment from `PRONUNCIATION.md` to
   `videos/<slug>/script.txt`.
 
-- Step 5 + 6 (TTS + transcript, single command) -- **this workflow uses
-  ElevenLabs production voice** loaded from the user's `.env`. Run:
+- Step 5 + 6 (TTS + transcript, single command) -- **pick the TTS engine
+  based on what's configured in `.env`**:
+
+  **Default: Kokoro (free, local).** If the user has not configured
+  `ELEVENLABS_API_KEY`, OR has any `KOKORO_*` vars set, use Kokoro:
+  ```bash
+  python scripts/kokoro-tts.py videos/$parse-input.output.slug --shorts
+  ```
+  Apache-licensed, runs on CPU. No API key. First run downloads a ~325MB
+  model from Hugging Face. Native word-level timestamps come back inline.
+
+  Optional env (loaded from `.env` and `.archon/.env`; all have sensible
+  defaults):
+  - `KOKORO_VOICE` (default `af_heart` -- American female)
+  - `KOKORO_LANG_CODE` (default `a` -- American English)
+  - `KOKORO_SPEED_SHORTS` (default `1.15`)
+
+  If `kokoro` or `soundfile` is missing, surface install:
+  ```bash
+  pip install kokoro soundfile numpy
+  ```
+  Also requires `espeak-ng` system-wide (one-time install per machine; see
+  the repo README's "Quick Start step 3" if it's missing).
+
+  **Alternative: ElevenLabs (paid, premium quality, voice cloning).** If
+  the user has `ELEVENLABS_API_KEY` configured and you've confirmed that
+  is their preferred engine, use:
   ```bash
   python scripts/elevenlabs-tts.py videos/$parse-input.output.slug --shorts --no-chunk
   ```
-  The script reads `videos/<slug>/script.txt`, writes
-  `videos/<slug>/audio/narration.wav` and `videos/<slug>/transcript.json`
-  (word-level timestamps from ElevenLabs's `with-timestamps` endpoint).
+  Same output contract as Kokoro -- writes `narration.wav` and a
+  same-shape `transcript.json`. Required env if you take this path:
+  `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`, `ELEVENLABS_MODEL_ID`,
+  plus voice settings (`STABILITY`, `SIMILARITY_BOOST`, `STYLE`,
+  `USE_SPEAKER_BOOST`).
 
-  Required env (loaded from `.env` via `python-dotenv` -- already configured
-  at both `.env` and `~/.archon/.env`):
-  - `ELEVENLABS_API_KEY`
-  - `ELEVENLABS_VOICE_ID`
-  - `ELEVENLABS_MODEL_ID` (e.g. `eleven_multilingual_v2`)
-  - Optional voice settings: `ELEVENLABS_STABILITY`,
-    `ELEVENLABS_SIMILARITY_BOOST`, `ELEVENLABS_STYLE`,
-    `ELEVENLABS_USE_SPEAKER_BOOST`
-
-  If `elevenlabs` or `python-dotenv` is missing, surface the install command
-  to the user and stop:
-  ```bash
-  pip install elevenlabs python-dotenv
-  ```
+  Either way the script reads `videos/<slug>/script.txt` and writes
+  `videos/<slug>/audio/narration.wav` plus `videos/<slug>/transcript.json`
+  with word-level timestamps -- the downstream step (`compute_timings.py`)
+  is engine-agnostic.
 
 - Step 7 (compute phase boundaries) -- run:
   ```bash

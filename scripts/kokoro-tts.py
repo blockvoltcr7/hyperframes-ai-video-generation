@@ -68,15 +68,28 @@ KOKORO_SAMPLE_RATE = 24_000
 # similar to what we saw with ElevenLabs.
 PHASE_BREAK_SECONDS = 0.4
 
-# SSML break tags and Scene markers — strip before sending to Kokoro.
+# Markup that must be stripped before sending text to Kokoro:
+#   - <!-- ... --> HTML comments — playbooks prepend a multi-line pronunciation
+#     comment block to script.txt for human readers. ElevenLabs API treats these
+#     as inert whitespace, but Kokoro reads them verbatim if not stripped.
+#   - <break /> SSML tags — Kokoro doesn't process SSML; we use phase splits
+#     to insert deterministic silence between phase blocks instead.
+#   - [SCENE: ...] markers — scene-boundary breadcrumbs for the operator only.
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 _BREAK_TAG_RE = re.compile(r"<break\s[^>]*/?>", re.IGNORECASE)
 _SCENE_TAG_RE = re.compile(r"\[SCENE:[^\]]*\]\s*\n?", re.IGNORECASE)
 _LETTER_OR_DIGIT_RE = re.compile(r"[A-Za-z0-9]")
 
 
 def strip_markup(text: str) -> str:
-    """Remove SSML `<break>` tags and `[SCENE:]` markers; collapse blank-line runs."""
-    cleaned = _BREAK_TAG_RE.sub("", text)
+    """Strip HTML comments, SSML `<break>` tags, and `[SCENE:]` markers.
+
+    Order matters: strip HTML comments FIRST because the leading
+    pronunciation-overrides comment block in playbook-generated script.txt
+    can otherwise leave a stray `-->` that Kokoro would still try to read.
+    """
+    cleaned = _HTML_COMMENT_RE.sub("", text)
+    cleaned = _BREAK_TAG_RE.sub("", cleaned)
     cleaned = _SCENE_TAG_RE.sub("", cleaned)
     cleaned = re.sub(r"[ \t]+", " ", cleaned)         # collapse intra-line whitespace
     cleaned = re.sub(r"\n{3,}", "\n\n", cleaned)      # collapse 3+ newlines to 2

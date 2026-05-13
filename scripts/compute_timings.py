@@ -35,6 +35,7 @@ import sys
 from pathlib import Path
 
 
+_HTML_COMMENT_RE = re.compile(r'<!--.*?-->', re.DOTALL)
 _BREAK_TAG_RE = re.compile(r'<break\s[^>]*/?>', re.IGNORECASE)
 _LETTER_OR_DIGIT_RE = re.compile(r'[A-Za-z0-9]')
 
@@ -43,18 +44,34 @@ def strip_breaks(text: str) -> str:
     return _BREAK_TAG_RE.sub('', text)
 
 
+def strip_html_comments(text: str) -> str:
+    """Remove `<!-- ... -->` blocks (multi-line aware).
+
+    Playbooks prepend a pronunciation-overrides comment header to script.txt
+    for human readers. Without stripping it here, the comment block would be
+    counted as an additional phase (4 narration phases + 1 comment = 5), and
+    the phase-count assertion below would fail.
+    """
+    return _HTML_COMMENT_RE.sub('', text)
+
+
 def real_token_count(text: str) -> int:
     """Count tokens that contain at least one letter or digit.
 
-    Filters em-dashes and other standalone punctuation that ``re.findall(r'\S+')``
+    Filters em-dashes and other standalone punctuation that ``re.findall(r'\\S+')``
     would otherwise count as a word, throwing off phase boundaries.
     """
     return len([t for t in re.findall(r'\S+', text) if _LETTER_OR_DIGIT_RE.search(t)])
 
 
 def split_phases(script: str) -> list[str]:
-    """Split script.txt into phase blocks on blank lines, after stripping breaks."""
-    return [strip_breaks(b).strip() for b in re.split(r'\n\s*\n', script) if b.strip()]
+    """Split script.txt into phase blocks on blank lines.
+
+    Strips HTML comments first (so the pronunciation-overrides header doesn't
+    register as a phase), then SSML `<break>` tags (not spoken words).
+    """
+    cleaned = strip_html_comments(script)
+    return [strip_breaks(b).strip() for b in re.split(r'\n\s*\n', cleaned) if b.strip()]
 
 
 def filter_real_words(transcript: list[dict]) -> list[dict]:
