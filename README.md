@@ -28,6 +28,49 @@ The stack: **[Archon](https://archon.diy)** (workflow harness) + **[Claude Code]
 
 ## Quick Start
 
+> ### 🤖 For the coding agent — ask the user these two questions first
+>
+> If you're an AI coding agent reading this README to set things up, **do not assume defaults**. Ask the user these two questions and tailor everything below to their answers.
+>
+> **1. Which TTS engine do you want — Kokoro or ElevenLabs?**
+>
+> - _Kokoro_ — free, local, no API key, Apache-licensed, ~325MB one-time model download, runs on CPU. High quality (MOS 4.5). Preset voices only — no voice cloning.
+> - _ElevenLabs_ — paid (~$5/M chars), premium quality, supports Instant Voice Cloning. Requires an `ELEVENLABS_API_KEY` from [elevenlabs.io](https://elevenlabs.io).
+>
+> Install ONLY the deps for the engine they picked (don't install both) and configure ONLY that engine's block in `.archon/.env`.
+>
+> **If they pick ElevenLabs, walk them through getting set up — don't just point them at a link.** Specifically:
+>
+> 1. **Tell them to create an ElevenLabs account** at https://elevenlabs.io. The free tier is fine for testing (10,000 chars/month ≈ 5-6 shorts); the Starter plan ($5/mo, 30,000 chars) is the realistic minimum for regular use.
+> 2. **Walk them to the API key page**: log in → click their avatar (top-right) → "API Keys" → "Create API Key" → copy the value. Tell them to paste it as `ELEVENLABS_API_KEY=...` in `.archon/.env`. **Never commit this file** — it's already gitignored.
+> 3. **Ask whether they want a preset voice or their own voice clone:**
+>    - _Preset voice_ — set `ELEVENLABS_VOICE_ID=nPczCjzI2devNBz1zQrb` (Brian, mature American male — the documented default for shorts). Other presets: Adam `pNInz6obpgDQGcFmaJgB`, Daniel `onwK4e9ZLuTAKqWW03F9`. Or run `python scripts/list_voices.py` after setup to browse.
+>    - _Voice clone_ — direct them to elevenlabs.io → "Voices" → "Add Voice" → "Instant Voice Clone", upload 1-3 minutes of clean audio (their own voice for personalized narration), then copy the new voice's ID from the voice page URL or the voice library detail panel.
+> 4. **Confirm the rest of the tuning vars are filled in** with the tested-good shorts defaults from `.env.example` (these are NOT the ElevenLabs platform defaults — the platform defaults sound flatter on shorts):
+>    - `ELEVENLABS_MODEL_ID=eleven_multilingual_v2`
+>    - `ELEVENLABS_STABILITY=0.40`
+>    - `ELEVENLABS_SIMILARITY_BOOST=0.75`
+>    - `ELEVENLABS_STYLE=0.70`
+>    - `ELEVENLABS_SPEED_SHORTS=1.15`
+>    - `ELEVENLABS_USE_SPEAKER_BOOST=true`
+> 5. **Verify**: after `.archon/.env` is filled in, run a one-line smoke test before kicking off the full workflow:
+>    ```bash
+>    python -c "import os; from dotenv import load_dotenv; load_dotenv('.archon/.env'); print('OK' if os.getenv('ELEVENLABS_API_KEY') else 'MISSING KEY')"
+>    ```
+>    If it prints `MISSING KEY`, the `.env` file isn't being read — most likely the path is wrong or the line is commented out.
+>
+> The full tuning matrix (what each knob does, when to adjust it) is in [`.env.example`](.env.example) and the ["Voice tuning"](#voice-tuning-elevenlabs) section below — surface that to the user if they ask "what does X setting do?"
+>
+> **2. Do you want to use one of the shipped templates as-is, or customize the look first?**
+>
+> - _Use shipped as-is_ — pick `classic` (brand-neutral default), `archon`, or `anthropic`. No template work needed; go straight to step 5 (run the workflow).
+> - _Customize the style only (reskin)_ — different palette, wordmark, and CTA URL, but the same scene layouts as the source template. Route to ["Adding your own template" → Option A or B](#adding-your-own-template-let-your-coding-agent-do-it).
+> - _Customize the scenes too (redesign)_ — different visual layouts inside each phase, so the video doesn't look identical to the shipped templates. Route to ["Adding your own template" → Option C](#option-c--redesign-the-scenes-different-layouts-same-phase-rhythm).
+>
+> **If they want to customize, ask a follow-up: "briefly describe what you want."** Brand name, target website, vibe, palette inspiration, any specific scene layouts they care about. One or two sentences is enough for Option B; Option C benefits from a per-phase layout direction (see the alternatives table in that section).
+>
+> Only after both answers are confirmed: proceed with the install steps below, then build/pick the template, then run the matching workflow.
+
 Three install commands, one config file, one workflow run.
 
 ### 1. Install Claude Code
