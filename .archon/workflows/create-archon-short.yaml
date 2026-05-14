@@ -54,8 +54,9 @@ nodes:
       # line 1 runs, every later statement is silently dropped, exit code is
       # still 0). Workaround: write the JS to a tmp file and invoke
       # `bun run <file>`. Bash's "$ARGUMENTS" handles topic quoting safely.
-      TMP=$(mktemp --suffix=.js)
-      trap 'rm -f "$TMP"' EXIT
+      TMP_DIR=$(mktemp -d)
+      TMP="$TMP_DIR/parse-input.js"
+      trap 'rm -rf "$TMP_DIR"' EXIT
       cat > "$TMP" <<'JS'
       const raw = (process.argv[2] ?? '').trim();
       if (!raw) {

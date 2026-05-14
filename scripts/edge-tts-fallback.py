@@ -86,7 +86,13 @@ def main() -> int:
         print(f"[edge-tts] script not found: {script_path}", file=sys.stderr)
         return 1
 
-    text = script_path.read_text(encoding="utf-8").strip()
+    raw = script_path.read_text(encoding="utf-8")
+    # Strip HTML comments (pronunciation headers) and SSML break tags before TTS.
+    # edge-tts reads <break> tags as literal text rather than silence, so we remove
+    # them and let natural sentence rhythm provide pacing.
+    text = re.sub(r"<!--.*?-->", "", raw, flags=re.DOTALL)
+    text = re.sub(r"<break[^>]*/?>", "", text)
+    text = text.strip()
     print(f"[edge-tts] voice={args.voice} rate={args.rate}")
     print(f"[edge-tts] chars={len(text)}")
 
