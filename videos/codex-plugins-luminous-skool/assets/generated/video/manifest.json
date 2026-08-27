@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "generator": "fal-image-to-video",
+  "provider": "fal.ai",
+  "assets": [
+    {
+      "id": "plugin-bundle-motion",
+      "asset": "assets/generated/video/plugin-bundle-motion-v1.mp4",
+      "kind": "generated-video",
+      "copies": [
+        "compositions/frames/assets/generated/video/plugin-bundle-motion-v1.mp4"
+      ],
+      "source": "assets/generated/plugin-bundle-hero.png",
+      "sourceSha256": "2f2f00e20154afc616c484d7ef1912f7b0df46d95887820f73729ad4efbf30f5",
+      "prompt": "Keep the camera almost locked with a very slow three-percent push forward. Animate the central modular core opening once while its six existing capability modules illuminate clockwise and the existing cool-white connection paths carry one restrained electric-blue to violet energy trace. Preserve every module, platform, path, object position, crop, dark navy palette, negative space, and the single soft-pink endpoint. Begin exactly from the supplied still and settle cleanly. Do not add text, logos, symbols, people, modules, particles, camera roll, flicker, warping, morphing, or abrupt motion.",
+      "promptSha256": "5b826ec11286105fd7c9b10f989b0fac2d1d3b1ae457c9f93d044a1b8b717ecc",
+      "provider": "fal.ai",
+      "model": "fal-ai/pixverse/c1/image-to-video",
+      "requestId": "01a044c0-a560-79d2-a991-bc8e898405e0",
+      "seed": 37241,
+      "estimatedCostUsd": 0.075,
+      "billingEstimate": {
+        "persistedPreflightEstimateUsd": 0.075,
+        "persistedEstimatedBillableSeconds": 15,
+        "currentConservativeCeilingUsd": 0.075,
+        "currentConservativeSeconds": 15,
+        "actualBillingUsd": null,
+        "status": "not-reconciled",
+        "basis": "provider-price-times-conservative-generated-seconds"
+      },
+      "pricing": {
+        "endpointId": "fal-ai/pixverse/c1/image-to-video",
+        "unitPrice": 0.005,
+        "unit": "seconds",
+        "currency": "USD",
+        "checkedAt": "2026-08-27T19:44:30.485Z"
+      },
+      "media": {
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "fps": 30,
+        "durationSeconds": 15,
+        "frameCount": 450,
+        "hasAudio": false,
+        "raw": {
+          "codec": "h264",
+          "width": 1280,
+          "height": 720,
+          "fps": 24,
+          "durationSeconds": 15.041667,
+          "frameCount": 361,
+          "hasAudio": false
+        },
+        "normalization": {
+          "applied": true,
+          "reason": "provider-output-normalized-to-plan",
+          "filter": "setpts=((450-1)/(361-1))*PTS,fps=30:round=near:eof_action=pass,trim=end_frame=450,setpts=N/(30*TB),format=yuv420p",
+          "spatial": {
+            "applied": false,
+            "method": "none",
+            "source": {
+              "width": 1280,
+              "height": 720
+            },
+            "target": {
+              "width": 1280,
+              "height": 720
+            }
+          },
+          "temporal": {
+            "applied": true,
+            "method": "full-clip-uniform-retime",
+            "sourceFrameCount": 361,
+            "sourceDurationSeconds": 15.041667,
+            "targetFrameCount": 450,
+            "targetDurationSeconds": 15,
+            "durationRatio": 0.9972298947982294,
+            "ptsRatio": 1.2472222222222222,
+            "speedMultiplier": 0.8017817371937639,
+            "endpointPolicy": "first-and-last-frame-time-aligned"
+          },
+          "codec": "libx264",
+          "crf": 18,
+          "preset": "medium",
+          "audio": "absent"
+        },
+        "sizeBytes": 2474089
+      },
+      "canonical": {
+        "sha256": "dff04d741a5affa278f489ab277ee55a8d21f058e85de87f23013979b105d962",
+        "sizeBytes": 2474089,
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "fps": 30,
+        "frameCount": 450,
+        "durationSeconds": 15,
+        "hasAudio": false
+      },
+      "rawDownload": {
+        "sha256": "3bc2bc0bb0dedab594a6ed6557f156bb6d633578dc2a806389ea80412ad2029e",
+        "sizeBytes": 2080790,
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "fps": 24,
+        "frameCount": 361,
+        "durationSeconds": 15.041667,
+        "hasAudio": false,
+        "remote": {
+          "contentType": "video/mp4",
+          "fileName": "output.mp4",
+          "fileSize": 2080790
+        }
+      },
+      "integrationFiles": [
+        "compositions/frames/02-plugin-anatomy.html",
+        "compositions/frames/03-install-path.html"
+      ],
+      "sha256": "dff04d741a5affa278f489ab277ee55a8d21f058e85de87f23013979b105d962",
+      "reviewed": true,
+      "review": {
+        "status": "approved",
+        "method": "contact-sheet-sample",
+        "sampleSeconds": [0, 5, 10, 14.5],
+        "notes": "Stable six-module assembly, clean one-shot mechanical motion, preserved negative space, no text or logo artifacts."
+      },
+      "c2pa": {
+        "status": "unsigned"
+      },
+      "generatedAt": "2026-08-27T19:47:25.086Z"
+    },
+    {
+      "id": "install-invoke-motion",
+      "asset": "assets/generated/video/install-invoke-motion-v1.mp4",
+      "kind": "generated-video",
+      "copies": [
+        "compositions/frames/assets/generated/video/install-invoke-motion-v1.mp4"
+      ],
+      "source": "assets/generated/install-invoke-path.png",
+      "sourceSha256": "438db39801b787e029b8462da322ad5d8935b8be56935b427f4db1f1e1306960",
+      "prompt": "Use a locked wide editorial camera with only a barely perceptible forward drift. Move the existing modular packages smoothly from left to right through the four existing architectural gates exactly once, illuminate each gate sequentially from electric blue through violet, and finish with the existing restrained pink endpoint glow at the workspace. Preserve every gate, package, rail, desk, object position, geometry, crop, dark negative space, and palette. Begin exactly from the supplied still and settle at the final workspace. Do not add text, logos, symbols, people, gates, packages, particles, camera roll, flicker, warping, morphing, or abrupt motion.",
+      "promptSha256": "dd72af550a2c379f82f2ca812818f2a02c4056220a97877fd752e739921e48e1",
+      "provider": "fal.ai",
+      "model": "fal-ai/pixverse/c1/image-to-video",
+      "requestId": "01a044c0-a9c5-7e00-87d1-02f328216a05",
+      "seed": 68417,
+      "estimatedCostUsd": 0.075,
+      "billingEstimate": {
+        "persistedPreflightEstimateUsd": 0.075,
+        "persistedEstimatedBillableSeconds": 15,
+        "currentConservativeCeilingUsd": 0.075,
+        "currentConservativeSeconds": 15,
+        "actualBillingUsd": null,
+        "status": "not-reconciled",
+        "basis": "provider-price-times-conservative-generated-seconds"
+      },
+      "pricing": {
+        "endpointId": "fal-ai/pixverse/c1/image-to-video",
+        "unitPrice": 0.005,
+        "unit": "seconds",
+        "currency": "USD",
+        "checkedAt": "2026-08-27T19:44:32.176Z"
+      },
+      "media": {
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "fps": 30,
+        "durationSeconds": 15,
+        "frameCount": 450,
+        "hasAudio": false,
+        "raw": {
+          "codec": "h264",
+          "width": 1280,
+          "height": 720,
+          "fps": 24,
+          "durationSeconds": 15.041667,
+          "frameCount": 361,
+          "hasAudio": false
+        },
+        "normalization": {
+          "applied": true,
+          "reason": "provider-output-normalized-to-plan",
+          "filter": "setpts=((450-1)/(361-1))*PTS,fps=30:round=near:eof_action=pass,trim=end_frame=450,setpts=N/(30*TB),format=yuv420p",
+          "spatial": {
+            "applied": false,
+            "method": "none",
+            "source": {
+              "width": 1280,
+              "height": 720
+            },
+            "target": {
+              "width": 1280,
+              "height": 720
+            }
+          },
+          "temporal": {
+            "applied": true,
+            "method": "full-clip-uniform-retime",
+            "sourceFrameCount": 361,
+            "sourceDurationSeconds": 15.041667,
+            "targetFrameCount": 450,
+            "targetDurationSeconds": 15,
+            "durationRatio": 0.9972298947982294,
+            "ptsRatio": 1.2472222222222222,
+            "speedMultiplier": 0.8017817371937639,
+            "endpointPolicy": "first-and-last-frame-time-aligned"
+          },
+          "codec": "libx264",
+          "crf": 18,
+          "preset": "medium",
+          "audio": "absent"
+        },
+        "sizeBytes": 3507122
+      },
+      "canonical": {
+        "sha256": "4538db72b261be81474518d084eb0a49872070aa6bbedcbf4038a3b5a6f4554b",
+        "sizeBytes": 3507122,
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "fps": 30,
+        "frameCount": 450,
+        "durationSeconds": 15,
+        "hasAudio": false
+      },
+      "rawDownload": {
+        "sha256": "afeee50abc661320df19f9dcf8d8c24a8237da8cc95f2eb82109572bb8df0dca",
+        "sizeBytes": 2791701,
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "fps": 24,
+        "frameCount": 361,
+        "durationSeconds": 15.041667,
+        "hasAudio": false,
+        "remote": {
+          "contentType": "video/mp4",
+          "fileName": "output.mp4",
+          "fileSize": 2791701
+        }
+      },
+      "integrationFiles": [
+        "compositions/frames/02-plugin-anatomy.html",
+        "compositions/frames/03-install-path.html"
+      ],
+      "sha256": "4538db72b261be81474518d084eb0a49872070aa6bbedcbf4038a3b5a6f4554b",
+      "reviewed": true,
+      "review": {
+        "status": "approved",
+        "method": "contact-sheet-sample",
+        "sampleSeconds": [0, 5, 10, 14.5],
+        "notes": "Coherent gate-to-workspace progression, preserved packages and endpoint, no text artifacts or structural warping."
+      },
+      "c2pa": {
+        "status": "unsigned"
+      },
+      "generatedAt": "2026-08-27T19:47:30.964Z"
+    }
+  ],
+  "generatedAt": "2026-08-27T19:47:30.964Z"
+}

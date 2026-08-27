@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "style_prompt": "Premium dark luminous editorial illustration on a deep near-black canvas (#030712 feeling), atmospheric navy and electric-blue edge lighting transitioning selectively into periwinkle and violet with restrained soft pink highlights, crisp vector-quality geometry, gentle focal bloom, minimal translucent surfaces, calm negative space, high contrast, no words, no letters, no logos, no watermark, no UI labels, no factual charts, no cyberpunk grid, no decorative particles, no clutter",
+  "assets": [
+    {
+      "id": "plugin-bundle-hero",
+      "role": "illustration",
+      "scene": "plugin-anatomy",
+      "purpose": "Show a plugin as one coherent bundle with several connected capabilities",
+      "prompt": "A central luminous modular core opening into five distinct but coordinated capability modules, thin cool-white connective paths, elegant orbit-like hierarchy, wide cinematic composition with the main core slightly left of center and dark negative space for HTML labels on the right",
+      "output": "assets/generated/plugin-bundle-hero.png",
+      "size": "1536x1024",
+      "background": "opaque",
+      "quality": "high",
+      "animation": "Animate for 15 seconds with modules unfolding and blue-violet signals traveling along stable paths; preserve geometry and leave labels to HTML"
+    },
+    {
+      "id": "install-invoke-path",
+      "role": "illustration",
+      "scene": "install-and-invoke",
+      "purpose": "Visualize installation, connection, and invocation as one continuous path",
+      "prompt": "A graceful luminous pathway moving through three architectural gates into a clear active workspace, small modular packages traveling along the path, calm forward momentum, wide landscape composition with generous dark negative space above and to the left for HTML teaching steps",
+      "output": "assets/generated/install-invoke-path.png",
+      "size": "1536x1024",
+      "background": "opaque",
+      "quality": "high",
+      "animation": "Animate for 15 seconds with packages gliding through the gates, light activating sequentially, and a subtle camera push; preserve the gates and path"
+    },
+    {
+      "id": "permission-boundary",
+      "role": "illustration",
+      "scene": "permission-boundary",
+      "purpose": "Show that plugin capability is bounded by host approval and service authentication",
+      "prompt": "Two nested luminous trust boundaries around a connected capability core, an inner electric-blue approval ring and an outer violet service-access ring, one restrained pink checkpoint accent, symmetrical wide composition with large clean dark regions for HTML labels",
+      "output": "assets/generated/permission-boundary.png",
+      "size": "1536x1024",
+      "background": "opaque",
+      "quality": "high",
+      "animation": "Static plate with subtle HyperFrames parallax and light sweep"
+    }
+  ]
+}

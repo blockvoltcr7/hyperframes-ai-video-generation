@@ -1,0 +1,491 @@
+<template>
+  <style>
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #f8fafc;
+      perspective: 1800px;
+    }
+
+    [id="f04-invocation-ground"] {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(220, 231, 255, 0.024) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220, 231, 255, 0.024) 1px, transparent 1px),
+        #030712;
+      background-size: 72px 72px;
+    }
+
+    [id="f04-invocation-left-glow"],
+    [id="f04-invocation-right-glow"] {
+      position: absolute;
+      top: 65px;
+      width: 760px;
+      height: 760px;
+      border-radius: 50%;
+      opacity: 0;
+      z-index: 1;
+    }
+
+    [id="f04-invocation-left-glow"] {
+      left: 80px;
+      background: radial-gradient(circle, rgba(23, 73, 171, 0.7), rgba(59, 130, 246, 0.08) 42%, transparent 70%);
+    }
+
+    [id="f04-invocation-right-glow"] {
+      right: 80px;
+      background: radial-gradient(circle, rgba(76, 29, 149, 0.68), rgba(139, 92, 246, 0.08) 42%, transparent 70%);
+    }
+
+    [id="f04-invocation-divider"] {
+      position: absolute;
+      left: 958px;
+      top: 82px;
+      width: 4px;
+      height: 680px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, transparent, #3b82f6 12%, #818cf8 82%, transparent);
+      transform-origin: center top;
+      z-index: 6;
+    }
+
+    [id="f04-invocation-stage"] {
+      position: absolute;
+      left: 78px;
+      top: 86px;
+      width: 1764px;
+      height: 675px;
+      display: flex;
+      gap: 84px;
+      align-items: center;
+      transform-style: preserve-3d;
+      z-index: 3;
+    }
+
+    [class~="f04-invocation-panel-entry"] {
+      position: relative;
+      width: 840px;
+      height: 650px;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    [class~="f04-invocation-panel-idle"] {
+      position: absolute;
+      inset: 0;
+      will-change: transform;
+    }
+
+    [class~="f04-invocation-card"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 840px;
+      height: 650px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(220, 231, 255, 0.18);
+      border-radius: 14px;
+      background: rgba(7, 17, 31, 0.8);
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    [class~="f04-invocation-card-topline"] {
+      position: absolute;
+      left: 42px;
+      right: 42px;
+      top: 34px;
+      height: 4px;
+      border-radius: 2px;
+      background: #3b82f6;
+      opacity: 0.82;
+    }
+
+    [id="f04-invocation-right-card"] [class~="f04-invocation-card-topline"] {
+      background: #8b5cf6;
+    }
+
+    [class~="f04-invocation-heading"] {
+      position: absolute;
+      left: 44px;
+      top: 68px;
+      font-size: 31px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="f04-invocation-kicker"] {
+      position: absolute;
+      right: 44px;
+      top: 67px;
+      padding: 9px 16px;
+      border-radius: 100px;
+      background: rgba(59, 130, 246, 0.1);
+      color: #818cf8;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+    }
+
+    [class~="f04-invocation-prompt"] {
+      position: absolute;
+      left: 44px;
+      top: 135px;
+      width: 752px;
+      height: 106px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(220, 231, 255, 0.24);
+      border-radius: 14px;
+      background: rgba(3, 7, 18, 0.86);
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      font-size: 29px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    [class~="f04-invocation-prompt-icon"] {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      margin-right: 20px;
+      border-radius: 12px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(129, 140, 248, 0.3);
+      display: grid;
+      place-items: center;
+      color: #818cf8;
+      font-size: 27px;
+      font-weight: 700;
+    }
+
+    [class~="f04-invocation-caret"] {
+      display: inline-block;
+      width: 3px;
+      height: 34px;
+      margin-left: 5px;
+      border-radius: 2px;
+      background: #3b82f6;
+    }
+
+    [id="f04-invocation-route-map"] {
+      position: absolute;
+      left: 44px;
+      top: 262px;
+      width: 752px;
+      height: 176px;
+      overflow: visible;
+    }
+
+    [class~="f04-invocation-route-line"] {
+      fill: none;
+      stroke: rgba(129, 140, 248, 0.58);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-dasharray: 310;
+      stroke-dashoffset: 310;
+    }
+
+    [id="f04-invocation-capabilities"] {
+      position: absolute;
+      left: 58px;
+      top: 274px;
+      width: 724px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    [class~="f04-invocation-capability"] {
+      width: 178px;
+      height: 54px;
+      box-sizing: border-box;
+      border-radius: 100px;
+      border: 1px solid rgba(220, 231, 255, 0.18);
+      background: rgba(59, 130, 246, 0.1);
+      display: grid;
+      place-items: center;
+      color: #cbd5e1;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      transform-origin: 50% 50%;
+    }
+
+    [class~="f04-invocation-result"] {
+      position: absolute;
+      left: 217px;
+      top: 460px;
+      width: 406px;
+      height: 124px;
+      box-sizing: border-box;
+      border-radius: 14px;
+      border: 1.5px solid rgba(220, 231, 255, 0.22);
+      background: rgba(7, 17, 31, 0.94);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 21px;
+    }
+
+    [class~="f04-invocation-result-mark"] {
+      width: 54px;
+      height: 54px;
+      flex: 0 0 54px;
+      border-radius: 50%;
+      background: #3b82f6;
+      display: grid;
+      place-items: center;
+    }
+
+    [class~="f04-invocation-result-mark"] svg {
+      width: 30px;
+      height: 30px;
+      fill: none;
+      stroke: #f8fafc;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    [class~="f04-invocation-result-label"] {
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="f04-invocation-picker"] {
+      position: absolute;
+      left: 44px;
+      top: 262px;
+      width: 752px;
+      height: 178px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(220, 231, 255, 0.18);
+      border-radius: 14px;
+      background: rgba(3, 7, 18, 0.92);
+      padding: 16px;
+    }
+
+    [class~="f04-invocation-picker-row"] {
+      position: relative;
+      height: 64px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+      color: #cbd5e1;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    [id="f04-invocation-picker-selected"] {
+      background: rgba(139, 92, 246, 0);
+      border: 1px solid rgba(129, 140, 248, 0);
+      color: #f8fafc;
+    }
+
+    [class~="f04-invocation-row-kind"] {
+      padding: 7px 12px;
+      border-radius: 100px;
+      background: rgba(59, 130, 246, 0.1);
+      color: #818cf8;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
+
+    [class~="f04-invocation-inner-badge"] {
+      position: absolute;
+      top: 112px;
+      z-index: 8;
+      padding: 10px 17px;
+      border-radius: 100px;
+      background: #3b82f6;
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      transform-origin: 50% 50%;
+    }
+
+    [id="f04-invocation-left-badge"] { right: -28px; }
+    [id="f04-invocation-right-badge"] { left: -28px; background: #8b5cf6; }
+
+    [id="f04-invocation-decision"] {
+      position: absolute;
+      left: 448px;
+      top: 790px;
+      width: 1024px;
+      height: 72px;
+      border-radius: 100px;
+      border: 1.5px solid rgba(220, 231, 255, 0.2);
+      background: rgba(7, 17, 31, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      z-index: 7;
+      font-size: 23px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    [id="f04-invocation-default"] { color: #f8fafc; }
+    [id="f04-invocation-when"] { color: #cbd5e1; }
+    [id="f04-invocation-arrow"] { color: #818cf8; font-size: 30px; }
+
+    [id="f04-invocation-progress"] {
+      position: absolute;
+      left: 0;
+      top: 894px;
+      width: 1280px;
+      height: 3px;
+      background: #3b82f6;
+      transform-origin: left center;
+      z-index: 9;
+    }
+  </style>
+
+  <div data-hf-id="hf-z8ck" id="root" data-composition-id="04-invocation" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-r53t" id="f04-invocation-ground" class="clip" data-start="0" data-duration="15" data-track-index="0"></div>
+    <div data-hf-id="hf-e7ez" id="f04-invocation-left-glow" aria-hidden="true"></div>
+    <div data-hf-id="hf-4rrs" id="f04-invocation-right-glow" aria-hidden="true"></div>
+    <div data-hf-id="hf-hdlj" id="f04-invocation-divider" aria-hidden="true"></div>
+
+    <div data-hf-id="hf-nl8t" id="f04-invocation-stage">
+      <div data-hf-id="hf-2bed" id="f04-invocation-left-entry" class="f04-invocation-panel-entry">
+        <div data-hf-id="hf-xt1d" id="f04-invocation-left-idle" class="f04-invocation-panel-idle">
+          <div data-hf-id="hf-phvj" id="f04-invocation-left-card" class="f04-invocation-card" data-layout-allow-overflow="">
+            <div data-hf-id="hf-emsg" class="f04-invocation-card-topline"></div>
+            <div data-hf-id="hf-5xys" id="f04-invocation-left-heading" class="f04-invocation-heading">OUTCOME FIRST</div>
+            <div data-hf-id="hf-gjaj" class="f04-invocation-kicker">AUTO ROUTE</div>
+            <div data-hf-id="hf-tr3e" id="f04-invocation-left-prompt" class="f04-invocation-prompt">
+              <div data-hf-id="hf-ji1g" class="f04-invocation-prompt-icon">›</div>
+              <span data-hf-id="hf-2asw" id="f04-invocation-left-typed"></span><span data-hf-id="hf-6ada" class="f04-invocation-caret"></span>
+            </div>
+            <svg data-hf-id="hf-yjjy" id="f04-invocation-route-map" viewBox="0 0 752 176" aria-hidden="true">
+              <path data-hf-id="hf-ukg6" id="f04-invocation-route-1" class="f04-invocation-route-line" d="M103 40 C103 96 306 96 376 164" />
+              <path data-hf-id="hf-wd5l" id="f04-invocation-route-2" class="f04-invocation-route-line" d="M376 40 L376 164" />
+              <path data-hf-id="hf-wcvp" id="f04-invocation-route-3" class="f04-invocation-route-line" d="M649 40 C649 96 446 96 376 164" />
+            </svg>
+            <div data-hf-id="hf-y39f" id="f04-invocation-capabilities">
+              <div data-hf-id="hf-ja4o" id="f04-invocation-capability-1" class="f04-invocation-capability">SEARCH</div>
+              <div data-hf-id="hf-rkt0" id="f04-invocation-capability-2" class="f04-invocation-capability">NOTES</div>
+              <div data-hf-id="hf-7n3w" id="f04-invocation-capability-3" class="f04-invocation-capability">SYNTHESIS</div>
+            </div>
+            <div data-hf-id="hf-ugme" id="f04-invocation-left-result" class="f04-invocation-result">
+              <div data-hf-id="hf-zkcd" class="f04-invocation-result-mark"><svg data-hf-id="hf-37y7" viewBox="0 0 32 32"><path data-hf-id="hf-6xn1" d="m8 17 5 5 11-12" /></svg></div>
+              <div data-hf-id="hf-preu" class="f04-invocation-result-label">RESULT READY</div>
+            </div>
+          </div>
+        </div>
+        <div data-hf-id="hf-y222" id="f04-invocation-left-badge" class="f04-invocation-inner-badge">ROUTED</div>
+      </div>
+
+      <div data-hf-id="hf-uoqe" id="f04-invocation-right-entry" class="f04-invocation-panel-entry">
+        <div data-hf-id="hf-ap6g" id="f04-invocation-right-idle" class="f04-invocation-panel-idle">
+          <div data-hf-id="hf-jtc9" id="f04-invocation-right-card" class="f04-invocation-card">
+            <div data-hf-id="hf-jqag" class="f04-invocation-card-topline"></div>
+            <div data-hf-id="hf-vcja" id="f04-invocation-right-heading" class="f04-invocation-heading">SOURCE SPECIFIC</div>
+            <div data-hf-id="hf-h89h" class="f04-invocation-kicker">DIRECT PICK</div>
+            <div data-hf-id="hf-30nx" id="f04-invocation-right-prompt" class="f04-invocation-prompt">
+              <div data-hf-id="hf-7030" class="f04-invocation-prompt-icon">›</div>
+              <span data-hf-id="hf-lo7d" id="f04-invocation-right-typed"></span><span data-hf-id="hf-wezm" class="f04-invocation-caret"></span>
+            </div>
+            <div data-hf-id="hf-qmoa" id="f04-invocation-picker" class="f04-invocation-picker">
+              <div data-hf-id="hf-1kzr" id="f04-invocation-picker-selected" class="f04-invocation-picker-row"><span data-hf-id="hf-iukl">LAUNCH FEEDBACK</span><span data-hf-id="hf-cuqt" class="f04-invocation-row-kind">PLUGIN</span></div>
+              <div data-hf-id="hf-pqlv" class="f04-invocation-picker-row"><span data-hf-id="hf-clj3">SUMMARY</span><span data-hf-id="hf-96tn" class="f04-invocation-row-kind">SKILL</span></div>
+            </div>
+            <div data-hf-id="hf-102v" id="f04-invocation-right-result" class="f04-invocation-result">
+              <div data-hf-id="hf-shjl" class="f04-invocation-result-mark"><svg data-hf-id="hf-m0hr" viewBox="0 0 32 32"><path data-hf-id="hf-vuv5" d="m8 17 5 5 11-12" /></svg></div>
+              <div data-hf-id="hf-ucqy" class="f04-invocation-result-label">RESULT READY</div>
+            </div>
+          </div>
+        </div>
+        <div data-hf-id="hf-ki25" id="f04-invocation-right-badge" class="f04-invocation-inner-badge">SELECTED</div>
+      </div>
+    </div>
+
+    <div data-hf-id="hf-97qb" id="f04-invocation-decision">
+      <span data-hf-id="hf-jfxi" id="f04-invocation-default">DEFAULT: OUTCOME</span>
+      <span data-hf-id="hf-merf" id="f04-invocation-arrow">→</span>
+      <span data-hf-id="hf-1sut" id="f04-invocation-when">WHEN NEEDED: @</span>
+    </div>
+    <div data-hf-id="hf-hekt" id="f04-invocation-progress" aria-hidden="true"></div>
+  </div>
+
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["04-invocation"] = tl;
+
+      const byId = (id) => document.getElementById(id);
+      const typeText = (element, value, at, duration) => {
+        const state = { count: 0 };
+        tl.to(state, {
+          count: value.length,
+          duration,
+          ease: "none",
+          onUpdate: () => {
+            element.textContent = value.slice(0, Math.round(state.count));
+          }
+        }, at);
+      };
+
+      tl.fromTo(byId("f04-invocation-divider"), { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 1, duration: 0.8, ease: "power3.out" }, 0.04);
+      tl.fromTo(byId("f04-invocation-left-glow"), { opacity: 0, scale: 0.86 }, { opacity: 0.24, scale: 1, duration: 1.0, ease: "power2.out" }, 0.05);
+      tl.fromTo(byId("f04-invocation-right-glow"), { opacity: 0, scale: 0.86 }, { opacity: 0.22, scale: 1, duration: 1.0, ease: "power2.out" }, 0.18);
+      tl.fromTo(byId("f04-invocation-left-entry"), { x: -360, rotateY: 22, scale: 0.86, opacity: 0 }, { x: 0, rotateY: 12, scale: 1, opacity: 1, duration: 1.0, ease: "power3.out" }, 0.08);
+      tl.fromTo(byId("f04-invocation-right-entry"), { x: 360, rotateY: -22, scale: 0.86, opacity: 0 }, { x: 0, rotateY: -12, scale: 1, opacity: 1, duration: 1.0, ease: "power3.out" }, 0.26);
+      tl.fromTo([byId("f04-invocation-left-heading"), byId("f04-invocation-right-heading")], { opacity: 0, y: -28 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.14, ease: "power3.out" }, 0.42);
+
+      tl.fromTo(byId("f04-invocation-left-prompt"), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 3.0);
+      typeText(byId("f04-invocation-left-typed"), "Summarize the launch feedback", 3.28, 2.08);
+
+      [1, 2, 3].forEach((number, index) => {
+        const at = 4.58 + index * 0.56;
+        tl.fromTo(byId(`f04-invocation-capability-${number}`), { opacity: 0, scale: 0, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.52, ease: "power3.out" }, at);
+        tl.to(byId(`f04-invocation-route-${number}`), { strokeDashoffset: 0, duration: 0.72, ease: "power2.out" }, at + 0.14);
+      });
+      tl.fromTo(byId("f04-invocation-left-result"), { opacity: 0, scale: 0.84, y: 14 }, { opacity: 1, scale: 1, y: 0, duration: 0.62, ease: "power3.out" }, 6.3);
+      tl.fromTo(byId("f04-invocation-left-badge"), { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.52, ease: "power3.out" }, 6.62);
+
+      tl.fromTo(byId("f04-invocation-right-prompt"), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 7.2);
+      typeText(byId("f04-invocation-right-typed"), "@", 7.48, 0.26);
+      tl.fromTo(byId("f04-invocation-picker"), { opacity: 0, scale: 0.92, y: -12 }, { opacity: 1, scale: 1, y: 0, duration: 0.62, ease: "power3.out" }, 7.82);
+      tl.fromTo(byId("f04-invocation-picker-selected"), { backgroundColor: "rgba(139, 92, 246, 0)", borderColor: "rgba(129, 140, 248, 0)" }, { backgroundColor: "rgba(139, 92, 246, 0.18)", borderColor: "rgba(129, 140, 248, 0.34)", duration: 0.52, ease: "power2.out" }, 9.2);
+      tl.fromTo(byId("f04-invocation-right-badge"), { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.52, ease: "power3.out" }, 9.62);
+      tl.fromTo(byId("f04-invocation-right-result"), { opacity: 0, scale: 0.84, y: 14 }, { opacity: 1, scale: 1, y: 0, duration: 0.62, ease: "power3.out" }, 10.55);
+
+      const idlePhase = { p: 0 };
+      tl.to(idlePhase, {
+        p: Math.PI * 6,
+        duration: 9.8,
+        ease: "none",
+        onUpdate: () => {
+          const progress = idlePhase.p / (Math.PI * 6);
+          const envelope = progress < 0.8 ? 1 : (1 - progress) / 0.2;
+          const offset = Math.sin(idlePhase.p) * 2 * envelope;
+          gsap.set(byId("f04-invocation-left-idle"), { y: offset });
+          gsap.set(byId("f04-invocation-right-idle"), { y: -offset });
+        }
+      }, 2.0);
+
+      tl.fromTo(byId("f04-invocation-decision"), { opacity: 0, scale: 0.94, y: 22 }, { opacity: 1, scale: 1, y: 0, duration: 0.72, ease: "power3.out" }, 11.8);
+      tl.fromTo(byId("f04-invocation-default"), { opacity: 0, x: -28 }, { opacity: 1, x: 0, duration: 0.52, ease: "power3.out" }, 12.02);
+      tl.fromTo(byId("f04-invocation-arrow"), { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.48, ease: "power3.out" }, 12.66);
+      tl.fromTo(byId("f04-invocation-when"), { opacity: 0, x: 28 }, { opacity: 1, x: 0, duration: 0.52, ease: "power3.out" }, 13.2);
+      tl.fromTo(byId("f04-invocation-progress"), { scaleX: 0 }, { scaleX: 1, duration: 15, ease: "none" }, 0);
+    })();
+  </script>
+</template>

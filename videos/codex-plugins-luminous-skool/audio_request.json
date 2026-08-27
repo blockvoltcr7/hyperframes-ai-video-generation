@@ -1,0 +1,37 @@
+{
+  "provider": "auto",
+  "speed": 0.92,
+  "lines": [
+    {
+      "id": "01",
+      "text": "Stop thinking of a plugin as one extra tool. A Codex plugin is a reusable capability bundle—installed once, ready for an outcome."
+    },
+    {
+      "id": "02",
+      "text": "Inside that bundle can be skills that teach a workflow, connectors that reach services, MCP servers that expose tools, plus browser capabilities, hooks, and scheduled-task templates."
+    },
+    {
+      "id": "03",
+      "text": "In the desktop app, open Plugins, choose one, install it, then connect the service if prompted. In Codex CLI, open slash plugins. Start a new chat or session before using newly installed capabilities."
+    },
+    {
+      "id": "04",
+      "text": "Then choose your level of control. Describe the outcome directly and let Codex route across installed tools—or type at and select a specific plugin or bundled skill when the source matters."
+    },
+    {
+      "id": "05",
+      "text": "Plugins expand capability; they do not erase boundaries. Codex still follows its sandbox and approval policy. Connected services keep their own sign-in and access controls. Review permissions, especially before enabling hooks."
+    },
+    {
+      "id": "06",
+      "text": "Your practice loop is simple: install one plugin, connect only what it needs, start a fresh task, ask for a concrete outcome, and use at when you need precision. That is reusable workflow, not tool collecting."
+    }
+  ],
+  "bgm": {
+    "mode": "retrieve",
+    "query": "restrained futuristic educational pulse, 92 BPM, no vocals",
+    "blob": "Codex plugins turn reusable instructions and connected capabilities into outcome-driven workflows.",
+    "arc": "misconception -> anatomy -> installation -> invocation -> trust -> practice"
+  },
+  "voice": "bf_emma"
+}

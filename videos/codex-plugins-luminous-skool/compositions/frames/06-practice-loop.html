@@ -1,0 +1,447 @@
+<template>
+  <style>
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #f8fafc;
+    }
+
+    [id="f06-practice-loop-ground"] {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 55%, rgba(59, 130, 246, 0.15), transparent 28%),
+        radial-gradient(circle at 50% 55%, transparent 0 230px, rgba(129, 140, 248, 0.07) 231px 233px, transparent 234px 330px, rgba(139, 92, 246, 0.05) 331px 333px, transparent 334px),
+        linear-gradient(rgba(220, 231, 255, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220, 231, 255, 0.022) 1px, transparent 1px),
+        #030712;
+      background-size: auto, auto, 76px 76px, 76px 76px, auto;
+    }
+
+    [id="f06-practice-loop-command"] {
+      position: absolute;
+      left: 235px;
+      top: 108px;
+      width: 1450px;
+      height: 128px;
+      box-sizing: border-box;
+      border-radius: 14px;
+      border: 1.5px solid rgba(220, 231, 255, 0.24);
+      background: rgba(7, 17, 31, 0.88);
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      z-index: 6;
+    }
+
+    [id="f06-practice-loop-command-mark"] {
+      width: 62px;
+      height: 62px;
+      flex: 0 0 62px;
+      margin-right: 24px;
+      border-radius: 14px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(129, 140, 248, 0.34);
+      display: grid;
+      place-items: center;
+      color: #818cf8;
+      font-size: 34px;
+      font-weight: 700;
+    }
+
+    [id="f06-practice-loop-command-copy"] {
+      min-width: 1040px;
+      white-space: pre;
+      font-family: monospace;
+      font-size: 34px;
+      line-height: 1;
+      color: #f8fafc;
+    }
+
+    [id="f06-practice-loop-caret"] {
+      display: inline-block;
+      width: 13px;
+      height: 38px;
+      margin-left: 6px;
+      vertical-align: -7px;
+      border-radius: 2px;
+      background: #3b82f6;
+    }
+
+    [id="f06-practice-loop-submit-stage"] {
+      position: absolute;
+      right: 28px;
+      top: 29px;
+      width: 70px;
+      height: 70px;
+      display: grid;
+      place-items: center;
+      z-index: 8;
+    }
+
+    [id="f06-practice-loop-submit-burst"] {
+      position: absolute;
+      inset: 7px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.7), rgba(59, 130, 246, 0));
+      z-index: 1;
+    }
+
+    [id="f06-practice-loop-submit"] {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #3b82f6;
+      display: grid;
+      place-items: center;
+      transform-origin: 50% 50%;
+      z-index: 2;
+    }
+
+    [id="f06-practice-loop-submit"] svg {
+      width: 31px;
+      height: 31px;
+      fill: none;
+      stroke: #f8fafc;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    [id="f06-practice-loop-paths"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 900px;
+      overflow: visible;
+      z-index: 2;
+    }
+
+    [class~="f06-practice-loop-route"] {
+      fill: none;
+      stroke: url(#f06-practice-loop-route-gradient);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 620;
+      stroke-dashoffset: 620;
+      opacity: 0.7;
+    }
+
+    [id="f06-practice-loop-chip-layer"] {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+    }
+
+    [class~="f06-practice-loop-chip"] {
+      position: absolute;
+      width: 310px;
+      height: 78px;
+      box-sizing: border-box;
+      border-radius: 100px;
+      border: 1.5px solid rgba(220, 231, 255, 0.18);
+      background: rgba(7, 17, 31, 0.86);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    [class~="f06-practice-loop-chip-index"] {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      margin-right: 17px;
+      border-radius: 50%;
+      background: #2563eb;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    [class~="f06-practice-loop-chip-label"] {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      white-space: nowrap;
+    }
+
+    [id="f06-practice-loop-chip-1"] { left: 435px; top: 350px; }
+    [id="f06-practice-loop-chip-2"] { left: 805px; top: 350px; }
+    [id="f06-practice-loop-chip-3"] { left: 1175px; top: 350px; }
+    [id="f06-practice-loop-chip-4"] { left: 620px; top: 495px; }
+    [id="f06-practice-loop-chip-5"] { left: 990px; top: 495px; }
+
+    [id="f06-practice-loop-result-glow"] {
+      position: absolute;
+      left: 365px;
+      top: 310px;
+      width: 1190px;
+      height: 490px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(23, 73, 171, 0.34), rgba(139, 92, 246, 0.11) 43%, transparent 70%);
+      z-index: 1;
+    }
+
+    [id="f06-practice-loop-terminal-pulse"] {
+      position: absolute;
+      left: 470px;
+      top: 412px;
+      width: 980px;
+      height: 286px;
+      box-sizing: border-box;
+      border-radius: 20px;
+      border: 4px solid rgba(236, 72, 153, 0.76);
+      opacity: 0;
+      z-index: 4;
+    }
+
+    [id="f06-practice-loop-result"] {
+      position: absolute;
+      left: 485px;
+      top: 430px;
+      width: 950px;
+      height: 250px;
+      box-sizing: border-box;
+      border-radius: 14px;
+      border: 1.5px solid rgba(220, 231, 255, 0.25);
+      background: rgba(7, 17, 31, 0.94);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 34px;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    [id="f06-practice-loop-result"]::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #3b82f6, #818cf8 55%, #8b5cf6);
+    }
+
+    [id="f06-practice-loop-result-mark"] {
+      width: 88px;
+      height: 88px;
+      flex: 0 0 88px;
+      border-radius: 14px;
+      border: 1px solid rgba(129, 140, 248, 0.34);
+      background: linear-gradient(145deg, rgba(59, 130, 246, 0.28), rgba(139, 92, 246, 0.2));
+      display: grid;
+      place-items: center;
+    }
+
+    [id="f06-practice-loop-result-mark"] svg {
+      width: 48px;
+      height: 48px;
+      fill: none;
+      stroke: #dce7ff;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    [id="f06-practice-loop-result-label"] {
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    [class~="f06-practice-loop-tool"] {
+      position: absolute;
+      min-width: 132px;
+      height: 54px;
+      box-sizing: border-box;
+      padding: 0 22px;
+      border-radius: 100px;
+      border: 1px solid rgba(220, 231, 255, 0.13);
+      background: rgba(7, 17, 31, 0.54);
+      display: grid;
+      place-items: center;
+      color: #cbd5e1;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      z-index: 3;
+    }
+
+    [id="f06-practice-loop-tool-1"] { left: 270px; top: 440px; }
+    [id="f06-practice-loop-tool-2"] { left: 1518px; top: 414px; }
+    [id="f06-practice-loop-tool-3"] { left: 330px; top: 630px; }
+    [id="f06-practice-loop-tool-4"] { left: 1460px; top: 640px; }
+
+    [id="f06-practice-loop-final-line"] {
+      position: absolute;
+      left: 660px;
+      top: 742px;
+      width: 600px;
+      height: 82px;
+      border-radius: 100px;
+      background: #3b82f6;
+      display: grid;
+      place-items: center;
+      font-size: 31px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      z-index: 7;
+    }
+
+    [id="f06-practice-loop-progress"] {
+      position: absolute;
+      left: 0;
+      top: 894px;
+      width: 1920px;
+      height: 3px;
+      background: #3b82f6;
+      transform-origin: left center;
+      z-index: 9;
+    }
+  </style>
+
+  <div data-hf-id="hf-lhpq" id="root" data-composition-id="06-practice-loop" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-4vjh" id="f06-practice-loop-ground" class="clip" data-start="0" data-duration="15" data-track-index="0"></div>
+    <div data-hf-id="hf-xziv" id="f06-practice-loop-result-glow" aria-hidden="true"></div>
+
+    <div data-hf-id="hf-sbfi" id="f06-practice-loop-command">
+      <div data-hf-id="hf-hf5y" id="f06-practice-loop-command-mark">›</div>
+      <div data-hf-id="hf-8hvg" id="f06-practice-loop-command-copy"><span data-hf-id="hf-dyhk" id="f06-practice-loop-typed"></span><span data-hf-id="hf-nxux" id="f06-practice-loop-caret"></span></div>
+      <div data-hf-id="hf-eam2" id="f06-practice-loop-submit-stage">
+        <div data-hf-id="hf-x5rd" id="f06-practice-loop-submit-burst" aria-hidden="true"></div>
+        <div data-hf-id="hf-d9iv" id="f06-practice-loop-submit"><svg data-hf-id="hf-37y7" viewBox="0 0 32 32"><path data-hf-id="hf-yn9d" d="M16 24V8M9 15l7-7 7 7" /></svg></div>
+      </div>
+    </div>
+
+    <svg data-hf-id="hf-meaf" id="f06-practice-loop-paths" viewBox="0 0 1920 900" aria-hidden="true">
+      <defs data-hf-id="hf-mh0t">
+        <lineargradient data-hf-id="hf-w25d" id="f06-practice-loop-route-gradient" x1="0" y1="0" x2="1" y2="1">
+          <stop data-hf-id="hf-6und" offset="0" stop-color="#3B82F6" />
+          <stop data-hf-id="hf-u674" offset="0.55" stop-color="#818CF8" />
+          <stop data-hf-id="hf-a6j5" offset="1" stop-color="#8B5CF6" />
+        </lineargradient>
+      </defs>
+      <path data-hf-id="hf-hdbs" id="f06-practice-loop-route-1" class="f06-practice-loop-route" d="M590 389 L720 555" />
+      <path data-hf-id="hf-g22p" id="f06-practice-loop-route-2" class="f06-practice-loop-route" d="M960 389 L840 555" />
+      <path data-hf-id="hf-reml" id="f06-practice-loop-route-3" class="f06-practice-loop-route" d="M1330 389 L960 555" />
+      <path data-hf-id="hf-juuk" id="f06-practice-loop-route-4" class="f06-practice-loop-route" d="M775 534 L1080 555" />
+      <path data-hf-id="hf-wsy5" id="f06-practice-loop-route-5" class="f06-practice-loop-route" d="M1145 534 L1200 555" />
+    </svg>
+
+    <div data-hf-id="hf-birl" id="f06-practice-loop-chip-layer">
+      <div data-hf-id="hf-ct9g" id="f06-practice-loop-chip-1" class="f06-practice-loop-chip"><span data-hf-id="hf-yf5j" class="f06-practice-loop-chip-index" data-layout-allow-overlap="" data-layout-allow-occlusion="">1</span><span data-hf-id="hf-d9al" class="f06-practice-loop-chip-label" data-layout-allow-overlap="" data-layout-allow-occlusion="">INSTALL ONE</span></div>
+      <div data-hf-id="hf-lh5b" id="f06-practice-loop-chip-2" class="f06-practice-loop-chip"><span data-hf-id="hf-y0ui" class="f06-practice-loop-chip-index" data-layout-allow-overlap="" data-layout-allow-occlusion="">2</span><span data-hf-id="hf-rx25" class="f06-practice-loop-chip-label" data-layout-allow-overlap="" data-layout-allow-occlusion="">CONNECT LESS</span></div>
+      <div data-hf-id="hf-hj1a" id="f06-practice-loop-chip-3" class="f06-practice-loop-chip"><span data-hf-id="hf-xmjh" class="f06-practice-loop-chip-index" data-layout-allow-overlap="" data-layout-allow-occlusion="">3</span><span data-hf-id="hf-9qsd" class="f06-practice-loop-chip-label" data-layout-allow-overlap="" data-layout-allow-occlusion="">NEW TASK</span></div>
+      <div data-hf-id="hf-seix" id="f06-practice-loop-chip-4" class="f06-practice-loop-chip"><span data-hf-id="hf-0eoo" class="f06-practice-loop-chip-index" data-layout-allow-overlap="" data-layout-allow-occlusion="">4</span><span data-hf-id="hf-mk7z" class="f06-practice-loop-chip-label" data-layout-allow-overlap="" data-layout-allow-occlusion="">ASK OUTCOME</span></div>
+      <div data-hf-id="hf-pf9c" id="f06-practice-loop-chip-5" class="f06-practice-loop-chip"><span data-hf-id="hf-00dn" class="f06-practice-loop-chip-index" data-layout-allow-overlap="" data-layout-allow-occlusion="">5</span><span data-hf-id="hf-il0h" class="f06-practice-loop-chip-label" data-layout-allow-overlap="" data-layout-allow-occlusion="">USE @</span></div>
+    </div>
+
+    <div data-hf-id="hf-fym0" id="f06-practice-loop-terminal-pulse" aria-hidden="true"></div>
+    <div data-hf-id="hf-pbgs" id="f06-practice-loop-result">
+      <div data-hf-id="hf-r44y" id="f06-practice-loop-result-mark"><svg data-hf-id="hf-g3ih" viewBox="0 0 48 48"><path data-hf-id="hf-n9rx" d="M10 14h18a10 10 0 0 1 10 10v10" /><path data-hf-id="hf-qxk5" d="m32 28 6 6 6-6" /><path data-hf-id="hf-o009" d="M38 34H20A10 10 0 0 1 10 24V14" /></svg></div>
+      <div data-hf-id="hf-brzp" id="f06-practice-loop-result-label">REUSABLE WORKFLOW</div>
+    </div>
+
+    <div data-hf-id="hf-r1b6" id="f06-practice-loop-tool-1" class="f06-practice-loop-tool">TOOL</div>
+    <div data-hf-id="hf-3mh9" id="f06-practice-loop-tool-2" class="f06-practice-loop-tool">TOOL</div>
+    <div data-hf-id="hf-t6t8" id="f06-practice-loop-tool-3" class="f06-practice-loop-tool">TOOL</div>
+    <div data-hf-id="hf-k9fr" id="f06-practice-loop-tool-4" class="f06-practice-loop-tool">TOOL</div>
+    <div data-hf-id="hf-61ab" id="f06-practice-loop-final-line">BUILD THE LOOP</div>
+    <div data-hf-id="hf-8d6x" id="f06-practice-loop-progress" aria-hidden="true"></div>
+  </div>
+
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["06-practice-loop"] = tl;
+
+      const byId = (id) => document.getElementById(id);
+      const phrase = "Build one complete plugin workflow";
+      const typedState = { count: 0 };
+      const blinkState = { t: 0 };
+
+      tl.fromTo(byId("f06-practice-loop-command"), { opacity: 0, scale: 0.94, y: -22 }, { opacity: 1, scale: 1, y: 0, duration: 0.72, ease: "power3.out" }, 0.04);
+      tl.to(typedState, {
+        count: phrase.length,
+        duration: 2.15,
+        ease: "power1.inOut",
+        onUpdate: () => {
+          byId("f06-practice-loop-typed").textContent = phrase.slice(0, Math.floor(typedState.count));
+        }
+      }, 0.48);
+      tl.to(blinkState, {
+        t: 15,
+        duration: 15,
+        ease: "none",
+        onUpdate: () => {
+          const typing = blinkState.t >= 0.48 && blinkState.t <= 2.68;
+          const visible = blinkState.t < 8.5 && (typing || Math.sin((blinkState.t / 15) * Math.PI * 40) > 0);
+          byId("f06-practice-loop-caret").style.opacity = visible ? "1" : "0";
+        }
+      }, 0);
+
+      const arrivals = [3.0, 4.05, 5.1, 6.28, 7.48];
+      arrivals.forEach((at, index) => {
+        tl.fromTo(byId(`f06-practice-loop-chip-${index + 1}`), { opacity: 0, scale: 0, y: 12 }, { opacity: 1, scale: 1, y: 0, duration: 0.58, ease: "power3.out" }, at);
+      });
+
+      tl.to(byId("f06-practice-loop-submit"), { scale: 0.94, duration: 0.16, ease: "power1.in" }, 8.5);
+      tl.to(byId("f06-practice-loop-submit"), { scale: 1, duration: 0.48, ease: "back.out(1.4)" }, 8.66);
+      tl.fromTo(byId("f06-practice-loop-submit-burst"), { opacity: 0, scale: 1 }, { opacity: 0.42, scale: 3.2, duration: 0.5, ease: "power2.out" }, 8.66);
+      tl.to(byId("f06-practice-loop-submit-burst"), { opacity: 0, duration: 0.48, ease: "power2.in" }, 9.05);
+      tl.to(byId("f06-practice-loop-command"), { opacity: 0.44, y: -14, duration: 0.52, ease: "power3.out" }, 8.7);
+
+      const travel = [
+        { x: 130, y: 166 },
+        { x: -120, y: 166 },
+        { x: -370, y: 166 },
+        { x: 305, y: 21 },
+        { x: 55, y: 21 }
+      ];
+
+      travel.forEach((target, index) => {
+        const at = 8.72 + index * 0.34;
+        const chip = byId(`f06-practice-loop-chip-${index + 1}`);
+        const route = byId(`f06-practice-loop-route-${index + 1}`);
+        tl.to(route, { strokeDashoffset: 0, duration: 0.7, ease: "power2.out" }, at - 0.12);
+        tl.to(chip, { x: target.x * 0.1, y: target.y * 0.1, duration: 0.14, ease: "power3.in" }, at);
+        tl.to(chip, { x: target.x * 0.75, y: target.y * 0.75, duration: 0.12, ease: "none" }, at + 0.14);
+        tl.to(chip, { x: target.x, y: target.y, scale: 0.42, duration: 0.44, ease: "power4.out" }, at + 0.26);
+        tl.to(chip, { opacity: 0, duration: 0.32, ease: "power1.in" }, at + 0.44);
+      });
+
+      tl.fromTo(byId("f06-practice-loop-result-glow"), { opacity: 0, scale: 0.82 }, { opacity: 0.28, scale: 1, duration: 1.0, ease: "power2.out" }, 9.0);
+      tl.fromTo(byId("f06-practice-loop-result"), { opacity: 0, scale: 0.76 }, { opacity: 1, scale: 1, duration: 0.9, ease: "power3.out" }, 9.18);
+      tl.fromTo(byId("f06-practice-loop-result-mark"), { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.58, ease: "power3.out" }, 10.22);
+      tl.fromTo(byId("f06-practice-loop-result-label"), { opacity: 0, x: 34 }, { opacity: 1, x: 0, duration: 0.64, ease: "power3.out" }, 10.58);
+
+      const toolDrifts = [
+        { x: -190, y: -28 },
+        { x: 190, y: -42 },
+        { x: -160, y: 48 },
+        { x: 170, y: 54 }
+      ];
+      toolDrifts.forEach((drift, index) => {
+        const tool = byId(`f06-practice-loop-tool-${index + 1}`);
+        const at = 11.72 + index * 0.1;
+        tl.fromTo(tool, { opacity: 0, scale: 0.84 }, { opacity: 0.4, scale: 1, duration: 0.34, ease: "power3.out" }, at);
+        tl.to(tool, { x: drift.x, y: drift.y, opacity: 0.08, color: "#64748b", duration: 1.55, ease: "power2.out" }, at + 0.22);
+      });
+
+      tl.fromTo(byId("f06-practice-loop-terminal-pulse"), { opacity: 0, scale: 0.94 }, { opacity: 0.34, scale: 1.02, duration: 0.42, ease: "power2.out" }, 12.12);
+      tl.to(byId("f06-practice-loop-terminal-pulse"), { opacity: 0, scale: 1.08, duration: 0.62, ease: "power2.in" }, 12.54);
+      tl.fromTo(byId("f06-practice-loop-final-line"), { opacity: 0, scale: 0.88, y: 18 }, { opacity: 1, scale: 1, y: 0, duration: 0.68, ease: "power3.out" }, 12.72);
+      tl.fromTo(byId("f06-practice-loop-progress"), { scaleX: 0 }, { scaleX: 1, duration: 15, ease: "none" }, 0);
+    })();
+  </script>
+</template>

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "provider": "fal.ai",
+  "model": "fal-ai/pixverse/c1/image-to-video",
+  "maxCostUsd": 0.5,
+  "integrationFiles": [
+    "compositions/frames/02-plugin-anatomy.html",
+    "compositions/frames/03-install-path.html"
+  ],
+  "shots": [
+    {
+      "id": "plugin-bundle-motion",
+      "purpose": "Show a plugin bundle assembling into coordinated capabilities",
+      "referenceAssets": [
+        "assets/generated/plugin-bundle-hero.png"
+      ],
+      "startFrame": "assets/generated/plugin-bundle-hero.png",
+      "output": "assets/generated/video/plugin-bundle-motion-v1.mp4",
+      "copies": [
+        "compositions/frames/assets/generated/video/plugin-bundle-motion-v1.mp4"
+      ],
+      "prompt": "Keep the camera almost locked with a very slow three-percent push forward. Animate the central modular core opening once while its six existing capability modules illuminate clockwise and the existing cool-white connection paths carry one restrained electric-blue to violet energy trace. Preserve every module, platform, path, object position, crop, dark navy palette, negative space, and the single soft-pink endpoint. Begin exactly from the supplied still and settle cleanly. Do not add text, logos, symbols, people, modules, particles, camera roll, flicker, warping, morphing, or abrupt motion.",
+      "numFrames": 450,
+      "fps": 30,
+      "seed": 37241,
+      "camera": "nearly locked with a slow three-percent forward push",
+      "durationSeconds": 15,
+      "aspectRatio": "16:9",
+      "continuityNotes": "Preserve all module positions, right-side negative space, the central core, and the blue-violet-pink hierarchy.",
+      "audioPolicy": "none",
+      "fallback": "animated-still"
+    },
+    {
+      "id": "install-invoke-motion",
+      "purpose": "Carry modular packages through the plugin installation route",
+      "referenceAssets": [
+        "assets/generated/install-invoke-path.png"
+      ],
+      "startFrame": "assets/generated/install-invoke-path.png",
+      "output": "assets/generated/video/install-invoke-motion-v1.mp4",
+      "copies": [
+        "compositions/frames/assets/generated/video/install-invoke-motion-v1.mp4"
+      ],
+      "prompt": "Use a locked wide editorial camera with only a barely perceptible forward drift. Move the existing modular packages smoothly from left to right through the four existing architectural gates exactly once, illuminate each gate sequentially from electric blue through violet, and finish with the existing restrained pink endpoint glow at the workspace. Preserve every gate, package, rail, desk, object position, geometry, crop, dark negative space, and palette. Begin exactly from the supplied still and settle at the final workspace. Do not add text, logos, symbols, people, gates, packages, particles, camera roll, flicker, warping, morphing, or abrupt motion.",
+      "numFrames": 450,
+      "fps": 30,
+      "seed": 68417,
+      "camera": "locked wide view with a restrained forward drift",
+      "durationSeconds": 15,
+      "aspectRatio": "16:9",
+      "continuityNotes": "Preserve four-gate left-to-right order, the modular packages, upper-left negative space, and the pink final workspace.",
+      "audioPolicy": "none",
+      "fallback": "animated-still"
+    }
+  ]
+}

@@ -1,0 +1,305 @@
+<template>
+  <style>
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #f8fafc;
+    }
+
+    .inactive-cross-slot { display: none !important; }
+
+    #f02-plugin-anatomy-poster,
+    #f02-plugin-anatomy-plate {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.42;
+      filter: saturate(0.85) brightness(0.62) contrast(1.08);
+    }
+
+    #f02-plugin-anatomy-ground {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(59, 130, 246, 0.2), transparent 30%),
+        radial-gradient(circle at 74% 58%, rgba(139, 92, 246, 0.13), transparent 28%),
+        linear-gradient(180deg, rgba(3, 7, 18, 0.16), rgba(3, 7, 18, 0.9));
+    }
+
+    #f02-plugin-anatomy-vignette {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(3, 7, 18, 0.72), transparent 20%, transparent 80%, rgba(3, 7, 18, 0.72));
+    }
+
+    #f02-plugin-anatomy-network {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 900px;
+      overflow: visible;
+    }
+
+    .f02-plugin-anatomy-link {
+      fill: none;
+      stroke: rgba(220, 231, 255, 0.2);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-dasharray: 520;
+      stroke-dashoffset: 520;
+    }
+
+    #f02-plugin-anatomy-energy {
+      fill: none;
+      stroke: url(#f02-plugin-anatomy-energy-gradient);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 340 2600;
+      stroke-dashoffset: 340;
+      opacity: 0;
+      filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.9));
+    }
+
+    #f02-plugin-anatomy-hub-halo {
+      position: absolute;
+      left: 770px;
+      top: 240px;
+      width: 380px;
+      height: 380px;
+      border: 1px solid rgba(129, 140, 248, 0.22);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.13), transparent 66%);
+      opacity: 0.7;
+    }
+
+    #f02-plugin-anatomy-hub {
+      position: absolute;
+      left: 780px;
+      top: 300px;
+      width: 360px;
+      height: 260px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(220, 231, 255, 0.28);
+      border-radius: 14px;
+      background: rgba(7, 17, 31, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      z-index: 4;
+    }
+
+    #f02-plugin-anatomy-hub-mark {
+      width: 76px;
+      height: 76px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(220, 231, 255, 0.26);
+      background: linear-gradient(145deg, rgba(59, 130, 246, 0.35), rgba(139, 92, 246, 0.24));
+      display: grid;
+      place-items: center;
+    }
+
+    #f02-plugin-anatomy-hub-mark svg {
+      width: 44px;
+      height: 44px;
+      stroke: #dce7ff;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    #f02-plugin-anatomy-hub-label {
+      font-size: 47px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+
+    #f02-plugin-anatomy-hub-rule {
+      width: 60px;
+      height: 4px;
+      border-radius: 2px;
+      background: #3b82f6;
+    }
+
+    .f02-plugin-anatomy-node {
+      position: absolute;
+      width: 240px;
+      height: 110px;
+      box-sizing: border-box;
+      border: 1.5px solid rgba(220, 231, 255, 0.18);
+      border-radius: 14px;
+      background: rgba(7, 17, 31, 0.82);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 22px;
+      z-index: 3;
+    }
+
+    .f02-plugin-anatomy-node-icon {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 58px;
+      border-radius: 12px;
+      border: 1px solid rgba(129, 140, 248, 0.38);
+      background: rgba(59, 130, 246, 0.1);
+      display: grid;
+      place-items: center;
+    }
+
+    .f02-plugin-anatomy-node-icon svg {
+      width: 30px;
+      height: 30px;
+      fill: none;
+      stroke: #818cf8;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .f02-plugin-anatomy-node-label {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+
+    #f02-plugin-anatomy-node-skills { left: 380px; top: 150px; }
+    #f02-plugin-anatomy-node-connectors { left: 755px; top: 90px; width: 300px; }
+    #f02-plugin-anatomy-node-mcp { left: 1290px; top: 155px; }
+    #f02-plugin-anatomy-node-browser { left: 1410px; top: 455px; }
+    #f02-plugin-anatomy-node-hooks { left: 1135px; top: 690px; }
+    #f02-plugin-anatomy-node-schedules { left: 455px; top: 650px; width: 270px; }
+
+    #f02-plugin-anatomy-install {
+      position: absolute;
+      left: 825px;
+      top: 585px;
+      width: 270px;
+      height: 56px;
+      box-sizing: border-box;
+      border-radius: 100px;
+      background: #3b82f6;
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      z-index: 5;
+    }
+
+    #f02-plugin-anatomy-progress {
+      position: absolute;
+      left: 0;
+      top: 894px;
+      width: 640px;
+      height: 3px;
+      background: #3b82f6;
+      z-index: 5;
+    }
+  </style>
+
+  <div data-hf-id="hf-e1y3" id="root" data-composition-id="02-plugin-anatomy" data-width="1920" data-height="1080">
+    <img data-hf-id="hf-ln6y" id="f02-plugin-anatomy-poster" class="clip" data-start="0" data-duration="17" data-track-index="0" src="assets/generated/plugin-bundle-hero.png" alt="" aria-hidden="true">
+    <video data-hf-id="hf-07qt" id="f02-plugin-anatomy-plate" aria-hidden="true" class="clip generated-video-slot" muted playsinline preload="auto" src="assets/generated/video/plugin-bundle-motion-v1.mp4" poster="assets/generated/plugin-bundle-hero.png" data-start="0" data-duration="15" data-track-index="0" data-generation-shot-id="plugin-bundle-motion"></video>
+    <video data-hf-id="hf-ufzw" id="f02-plugin-anatomy-install-cross-slot" aria-hidden="true" class="generated-video-slot inactive-cross-slot" muted playsinline preload="auto" src="assets/generated/video/install-invoke-motion-v1.mp4" poster="assets/generated/install-invoke-path.png" data-start="0" data-duration="15" data-track-index="0" data-generation-shot-id="install-invoke-motion"></video>
+    <div data-hf-id="hf-sa53" id="f02-plugin-anatomy-ground" class="clip" data-start="0" data-duration="17" data-track-index="1"></div>
+    <div data-hf-id="hf-fx6h" id="f02-plugin-anatomy-vignette" aria-hidden="true"></div>
+
+    <svg data-hf-id="hf-gtjo" id="f02-plugin-anatomy-network" viewBox="0 0 1920 900" aria-hidden="true">
+      <defs data-hf-id="hf-mh0t">
+        <lineargradient data-hf-id="hf-nr6p" id="f02-plugin-anatomy-energy-gradient" x1="0" y1="0" x2="1" y2="1">
+          <stop data-hf-id="hf-6und" offset="0" stop-color="#3B82F6" />
+          <stop data-hf-id="hf-t5ez" offset="0.58" stop-color="#818CF8" />
+          <stop data-hf-id="hf-a6j5" offset="1" stop-color="#8B5CF6" />
+        </lineargradient>
+      </defs>
+      <path data-hf-id="hf-ijkj" id="f02-plugin-anatomy-link-skills" class="f02-plugin-anatomy-link" d="M960 430 L500 205" />
+      <path data-hf-id="hf-wgu3" id="f02-plugin-anatomy-link-connectors" class="f02-plugin-anatomy-link" d="M960 430 L905 145" />
+      <path data-hf-id="hf-n69s" id="f02-plugin-anatomy-link-mcp" class="f02-plugin-anatomy-link" d="M960 430 L1410 210" />
+      <path data-hf-id="hf-3dog" id="f02-plugin-anatomy-link-browser" class="f02-plugin-anatomy-link" d="M960 430 L1530 510" />
+      <path data-hf-id="hf-s3v8" id="f02-plugin-anatomy-link-hooks" class="f02-plugin-anatomy-link" d="M960 430 L1255 745" />
+      <path data-hf-id="hf-ikeu" id="f02-plugin-anatomy-link-schedules" class="f02-plugin-anatomy-link" d="M960 430 L575 705" />
+      <path data-hf-id="hf-79v6" id="f02-plugin-anatomy-energy" d="M960 430 L500 205 L905 145 L1410 210 L1530 510 L1255 745 L575 705 L960 430" />
+    </svg>
+
+    <div data-hf-id="hf-hkp7" id="f02-plugin-anatomy-hub-halo" aria-hidden="true"></div>
+    <div data-hf-id="hf-vxov" id="f02-plugin-anatomy-hub">
+      <div data-hf-id="hf-06oq" id="f02-plugin-anatomy-hub-mark" aria-hidden="true">
+        <svg data-hf-id="hf-g3ih" viewBox="0 0 48 48"><rect data-hf-id="hf-bd9q" x="7" y="7" width="15" height="15" rx="3" /><rect data-hf-id="hf-0r6h" x="26" y="7" width="15" height="15" rx="3" /><rect data-hf-id="hf-bghb" x="7" y="26" width="15" height="15" rx="3" /><path data-hf-id="hf-ey4m" d="M33.5 26v15M26 33.5h15" /></svg>
+      </div>
+      <div data-hf-id="hf-5oct" id="f02-plugin-anatomy-hub-label">PLUGIN</div>
+      <div data-hf-id="hf-4hbe" id="f02-plugin-anatomy-hub-rule"></div>
+    </div>
+
+    <div data-hf-id="hf-36jj" id="f02-plugin-anatomy-node-skills" class="f02-plugin-anatomy-node">
+      <div data-hf-id="hf-upmd" class="f02-plugin-anatomy-node-icon"><svg data-hf-id="hf-37y7" viewBox="0 0 32 32"><path data-hf-id="hf-7xlv" d="M7 6h13a4 4 0 0 1 4 4v16H11a4 4 0 0 1-4-4V6Z" /><path data-hf-id="hf-13pa" d="M11 10h9M11 15h9M11 20h6" /></svg></div>
+      <div data-hf-id="hf-wrbm" class="f02-plugin-anatomy-node-label">SKILLS</div>
+    </div>
+    <div data-hf-id="hf-13kx" id="f02-plugin-anatomy-node-connectors" class="f02-plugin-anatomy-node">
+      <div data-hf-id="hf-dw89" class="f02-plugin-anatomy-node-icon"><svg data-hf-id="hf-m0hr" viewBox="0 0 32 32"><circle data-hf-id="hf-ceq6" cx="9" cy="16" r="4" /><circle data-hf-id="hf-3xkm" cx="23" cy="9" r="4" /><circle data-hf-id="hf-szmu" cx="23" cy="23" r="4" /><path data-hf-id="hf-b545" d="m12.5 14 7-3.5M12.5 18l7 3.5" /></svg></div>
+      <div data-hf-id="hf-lsr4" class="f02-plugin-anatomy-node-label">CONNECTORS</div>
+    </div>
+    <div data-hf-id="hf-rgkn" id="f02-plugin-anatomy-node-mcp" class="f02-plugin-anatomy-node">
+      <div data-hf-id="hf-f35c" class="f02-plugin-anatomy-node-icon"><svg data-hf-id="hf-lm6q" viewBox="0 0 32 32"><path data-hf-id="hf-1mya" d="M6 11h20M6 21h20M11 6v20M21 6v20" /><circle data-hf-id="hf-cfu5" cx="11" cy="11" r="3" /><circle data-hf-id="hf-ui9t" cx="21" cy="21" r="3" /></svg></div>
+      <div data-hf-id="hf-fgy4" class="f02-plugin-anatomy-node-label">MCP</div>
+    </div>
+    <div data-hf-id="hf-zgjz" id="f02-plugin-anatomy-node-browser" class="f02-plugin-anatomy-node">
+      <div data-hf-id="hf-eoub" class="f02-plugin-anatomy-node-icon"><svg data-hf-id="hf-l7vp" viewBox="0 0 32 32"><rect data-hf-id="hf-ja6k" x="4" y="6" width="24" height="20" rx="3" /><path data-hf-id="hf-8z4w" d="M4 12h24M9 9h.1M14 9h.1" /></svg></div>
+      <div data-hf-id="hf-6je8" class="f02-plugin-anatomy-node-label">BROWSER</div>
+    </div>
+    <div data-hf-id="hf-27nn" id="f02-plugin-anatomy-node-hooks" class="f02-plugin-anatomy-node">
+      <div data-hf-id="hf-cpb6" class="f02-plugin-anatomy-node-icon"><svg data-hf-id="hf-o00w" viewBox="0 0 32 32"><path data-hf-id="hf-qxb2" d="M18 5v13a6 6 0 1 1-6-6" /><path data-hf-id="hf-gqdn" d="m14 8 4-4 4 4" /></svg></div>
+      <div data-hf-id="hf-xyqk" class="f02-plugin-anatomy-node-label">HOOKS</div>
+    </div>
+    <div data-hf-id="hf-kzyd" id="f02-plugin-anatomy-node-schedules" class="f02-plugin-anatomy-node">
+      <div data-hf-id="hf-cb05" class="f02-plugin-anatomy-node-icon"><svg data-hf-id="hf-nlpv" viewBox="0 0 32 32"><circle data-hf-id="hf-fkqf" cx="16" cy="17" r="11" /><path data-hf-id="hf-26s9" d="M16 10v7l5 3M10 4v4M22 4v4" /></svg></div>
+      <div data-hf-id="hf-ke6q" class="f02-plugin-anatomy-node-label">SCHEDULES</div>
+    </div>
+
+    <div data-hf-id="hf-bgs6" id="f02-plugin-anatomy-install">ONE INSTALL</div>
+    <div data-hf-id="hf-tpyi" id="f02-plugin-anatomy-progress" aria-hidden="true"></div>
+  </div>
+
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["02-plugin-anatomy"] = tl;
+
+      const byId = (id) => document.getElementById(id);
+
+      const nodeArrivals = [
+        [byId("f02-plugin-anatomy-node-skills"), byId("f02-plugin-anatomy-link-skills"), 3.0],
+        [byId("f02-plugin-anatomy-node-connectors"), byId("f02-plugin-anatomy-link-connectors"), 4.55],
+        [byId("f02-plugin-anatomy-node-mcp"), byId("f02-plugin-anatomy-link-mcp"), 6.25],
+        [byId("f02-plugin-anatomy-node-browser"), byId("f02-plugin-anatomy-link-browser"), 8.15],
+        [byId("f02-plugin-anatomy-node-hooks"), byId("f02-plugin-anatomy-link-hooks"), 9.85],
+        [byId("f02-plugin-anatomy-node-schedules"), byId("f02-plugin-anatomy-link-schedules"), 11.55]
+      ];
+
+      tl.fromTo(byId("f02-plugin-anatomy-plate"), { opacity: 0 }, { opacity: 0.42, duration: 1.2, ease: "power2.out" }, 0);
+      tl.fromTo(byId("f02-plugin-anatomy-hub-halo"), { opacity: 0, scale: 0.72 }, { opacity: 0.7, scale: 1, duration: 1.05, ease: "back.out(1.7)" }, 0.05);
+      tl.fromTo(byId("f02-plugin-anatomy-hub"), { opacity: 0, scale: 0.72, rotationY: -48 }, { opacity: 1, scale: 1, rotationY: 0, duration: 1.05, ease: "back.out(1.7)" }, 0.12);
+      tl.fromTo(byId("f02-plugin-anatomy-hub-rule"), { scaleX: 0 }, { scaleX: 1, duration: 0.65, ease: "power3.out" }, 0.78);
+
+      nodeArrivals.forEach(([node, line, at], index) => {
+        tl.fromTo(node, { opacity: 0, scale: 0.58 }, { opacity: 1, scale: 1, duration: 0.82, ease: "back.out(1.85)" }, at);
+        tl.to(line, { strokeDashoffset: 0, duration: 0.68, ease: "power2.out" }, at + 0.12);
+        tl.fromTo(node.querySelector('[class~="f02-plugin-anatomy-node-icon"]'), { rotationY: -70, opacity: 0.25 }, { rotationY: 0, opacity: 1, duration: 0.62, ease: "power3.out" }, at + 0.08);
+        tl.fromTo(node.querySelector('[class~="f02-plugin-anatomy-node-label"]'), { opacity: 0, x: 18 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, at + 0.25 + index * 0.015);
+      });
+
+      tl.fromTo(byId("f02-plugin-anatomy-energy"), { opacity: 0, strokeDashoffset: 340 }, { opacity: 1, strokeDashoffset: -2600, duration: 2.9, ease: "power1.inOut" }, 13.2);
+      tl.fromTo(byId("f02-plugin-anatomy-install"), { opacity: 0, scale: 0.74 }, { opacity: 1, scale: 1, duration: 0.75, ease: "back.out(1.7)" }, 14.15);
+      tl.fromTo(byId("f02-plugin-anatomy-progress"), { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 17, ease: "none" }, 0);
+    })();
+  </script>
+</template>

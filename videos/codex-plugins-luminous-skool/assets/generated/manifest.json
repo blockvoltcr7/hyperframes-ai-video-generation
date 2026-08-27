@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "generator": "hyperframes-visual-assets",
+  "assets": [
+    {
+      "id": "plugin-bundle-hero",
+      "output": "assets/generated/plugin-bundle-hero.png",
+      "provider": "codex.image_generation",
+      "model": "gpt-image-2",
+      "size": "1536x1024",
+      "background": "opaque",
+      "prompt_sha256": "44f7065f22cd7762109129b8538b8b698f0fe47ed63a8d48ebb3cef38704cfed",
+      "content_sha256": "2f2f00e20154afc616c484d7ef1912f7b0df46d95887820f73729ad4efbf30f5",
+      "accepted_at": "2026-08-27T19:22:30.031Z"
+    },
+    {
+      "id": "install-invoke-path",
+      "output": "assets/generated/install-invoke-path.png",
+      "provider": "codex.image_generation",
+      "model": "gpt-image-2",
+      "size": "1536x1024",
+      "background": "opaque",
+      "prompt_sha256": "73e73385ea2e1d9d2ea5e7a8eb51ce6ef3ca376f21915fc2cbd072d98b0b370b",
+      "content_sha256": "438db39801b787e029b8462da322ad5d8935b8be56935b427f4db1f1e1306960",
+      "accepted_at": "2026-08-27T19:22:30.066Z"
+    },
+    {
+      "id": "permission-boundary",
+      "output": "assets/generated/permission-boundary.png",
+      "provider": "codex.image_generation",
+      "model": "gpt-image-2",
+      "size": "1536x1024",
+      "background": "opaque",
+      "prompt_sha256": "06643e3b25c5e222b2066c6545801a38efaa2b2c0f9ff3fc99112f1a32ad146b",
+      "content_sha256": "fe8c3772f17cf1077738b6445a60500244134e8c4b9af87288dd1e6ca19b3367",
+      "accepted_at": "2026-08-27T19:22:30.099Z"
+    }
+  ]
+}
