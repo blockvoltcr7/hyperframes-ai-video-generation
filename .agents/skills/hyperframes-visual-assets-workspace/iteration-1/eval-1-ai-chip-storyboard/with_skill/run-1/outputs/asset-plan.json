@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "style_prompt": "Cinematic editorial technical illustration for a vertical 9:16 explainer, deep indigo and near-black palette with electric cyan, violet, and restrained warm-amber accents, sculpted silicon and translucent glass medium, soft volumetric rim lighting, macro three-quarter perspective with a 50mm editorial lens feel, crisp geometric silhouettes, subtle micro-etched texture and fine atmospheric grain, high contrast but uncluttered; no words, text, letters, numerals, logos, brand marks, watermarks, UI labels, citations, factual charts, or technical schematics",
+  "assets": [
+    {
+      "id": "agent-orchestrator-cutout",
+      "role": "illustration",
+      "scene": "phase-1-hook-and-phase-4-routing",
+      "purpose": "A reusable hero metaphor for an AI agent coordinating tools and dispatching work to specialized compute without depicting a branded product or factual interface",
+      "prompt": "Role: reusable isolated hero cutout for a portrait explainer. A luminous faceted agent core surrounded by five small tool-like satellites, with clean curved energy paths flowing downward toward an implied compute destination; centered three-quarter composition, complete silhouette, generous margin on every side, readable at mobile size, intended for a contain crop in the middle third of a 9:16 frame. Place the subject on a flat pale neutral high-contrast ground for background removal. No words, letters, numerals, logos, watermarks, UI labels, citations, or factual charts.",
+      "output": "assets/generated/agent-orchestrator-cutout.png",
+      "size": "1024x1024",
+      "background": "opaque high-contrast pale neutral ground; remove background before integration and verify real alpha",
+      "quality": "high",
+      "animation": "Mount with object-fit: contain inside a centered wrapper; use a soft mask reveal, 4% wrapper push-in, and at most 30px vertical parallax. Reuse in phase 4 with a staged crop; do not animate intrinsic image dimensions."
+    },
+    {
+      "id": "accelerator-fabric-portrait-plate",
+      "role": "atmospheric plate",
+      "scene": "phase-2-gpu-through-phase-4-routing",
+      "purpose": "A coherent visual stage that makes accelerated computation feel tangible while native HTML and SVG carry the actual GPU/TPU comparison and labels",
+      "prompt": "Role: portrait background plate for a 9:16 technical explainer. A single frozen macro scene of an abstract accelerator fabric with two unbranded silicon regions connected by luminous routed paths, one region carrying a broad field of parallel light channels and the other carrying a precise repeating matrix texture; keep both treatments impressionistic rather than schematic. Place the strongest detail in the lower half, reserve calm dark negative space across the upper third and center-left for HTML copy, and preserve a clear central vertical crop. No words, letters, numerals, logos, watermarks, UI labels, citations, or factual charts.",
+      "output": "assets/generated/accelerator-fabric-portrait-plate.png",
+      "size": "1024x1536",
+      "background": "opaque",
+      "quality": "high",
+      "animation": "Mount with object-fit: cover and lock the focal point to the vertical safe zone; animate a wrapper with a 5% push-in, no more than 40px parallax, and one restrained light sweep. Use alternate crops from the same plate across phases 2-4 instead of generating unrelated backgrounds."
+    }
+  ]
+}

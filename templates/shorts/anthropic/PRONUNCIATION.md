@@ -4,8 +4,8 @@ Per-template overrides that the Phase 2a script writer MUST apply before writing
 
 Authority order, narrowest wins:
 1. This file (Anthropic-specific)
-2. `.claude/rules/tts-pronunciation.md` -> "Acronym vs Word — disambiguation for brand / workflow tokens"
-3. `.claude/rules/tts-pronunciation.md` -> "Tech & brand pronunciation pitfalls" (generic table)
+2. `.agents/rules/tts-pronunciation.md` -> "Acronym vs Word — disambiguation for brand / workflow tokens"
+3. `.agents/rules/tts-pronunciation.md` -> "Tech & brand pronunciation pitfalls" (generic table)
 
 ## Decisions for Anthropic's surface tokens
 

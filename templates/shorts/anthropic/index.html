@@ -412,7 +412,7 @@
        PHASE 1 — HERO SLAM (0-6s)
        Orange-led. Hero word uses orange->cream gradient fill.
        ======================================================= -->
-  <div id="phase1" class="phase">
+  <div id="phase1" class="phase" data-layout-allow-overlap>
     <div class="phase-content">
       <div class="overline" id="p1-overline">ANNOUNCEMENT</div>
       <div id="p1-pre">Anthropic just shipped</div>
@@ -426,7 +426,7 @@
        One striking number, centered. Hairline rule sits
        between the headline and the metric. No pill grid.
        ======================================================= -->
-  <div id="phase2" class="phase">
+  <div id="phase2" class="phase" data-layout-allow-overlap>
     <div class="phase-content">
       <div class="overline" id="p2-overline">THE THESIS</div>
       <div id="p2-headline">It's not faster. It's better.</div>
@@ -442,7 +442,7 @@
        Number colors rotate orange → purple → cream-clay.
        No card backgrounds — the canvas does the work.
        ======================================================= -->
-  <div id="phase3" class="phase">
+  <div id="phase3" class="phase" data-layout-allow-overlap>
     <div class="phase-content">
       <div class="overline" id="p3-overline">WHAT'S NEW</div>
       <div class="chapter-list">
@@ -475,7 +475,7 @@
        PHASE 4 — CTA / URL SLAM (18-24s)
        Cream-clay closes (orange opened the video).
        ======================================================= -->
-  <div id="phase4" class="phase">
+  <div id="phase4" class="phase" data-layout-allow-overlap>
     <div class="phase-content">
       <div class="overline" id="p4-overline">TRY IT</div>
       <div id="p4-url">anthropic.com</div>
@@ -485,7 +485,7 @@
 
   <!-- =======================================================
        NARRATION + SFX
-       Rules:        .claude/rules/audio-design.md
+       Rules:        .agents/rules/audio-design.md
        Cue catalog:  shared/audio/MANIFEST.md
        Sync into this project (after you copy this template):
          bash scripts/sync-video-sfx.sh videos/<slug> impact-slam spring-pop
@@ -514,7 +514,7 @@
            data-volume="0.45"
 
   Per-cue SFX — one element per beat. data-track-index 3+ for SFX; bump per
-  concurrent cue. data-volume per .claude/rules/audio-design.md (<= 0.25).
+  concurrent cue. data-volume per .agents/rules/audio-design.md (<= 0.25).
 
     audio id="sfx-impact"
            class="clip"

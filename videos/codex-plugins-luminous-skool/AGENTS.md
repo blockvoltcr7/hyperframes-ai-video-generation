@@ -1,5 +1,50 @@
 # HyperFrames Composition Project
 
+## Project-specific production contract
+
+- This is the 90-second Luminous Color Vibe Skool lesson about Codex plugins. Preserve its six-scene story order, current scene timing, opaque instructional cards, captions, and local-only media paths.
+- Use `$hyperframes`, `$hyperframes-core`, and `$hyperframes-cli` for every revision/review cycle. Use `$media-use` for image/video treatment changes and `$fish-audio-api` before changing Fish Audio synthesis or voice configuration.
+- The current narration is Fish Audio `s2.1-pro` with the public voice `American Tech Review Voice`. Configuration lives in `fish-voice.json`; request text lives in `audio_request.json`; immutable per-line provenance lives in `assets/voice-fish/generation.json`.
+- The current generated motion comes from the reviewed Fal/PixVerse artifacts recorded in `generated-video-plan.json` and `assets/generated/video/manifest.json`. Do not submit new paid jobs merely to retime or integrate an approved local clip.
+
+## Fish Audio replacement workflow
+
+1. Keep `FISH_AUDIO_API_KEY` or `FISH_API_KEY` only in the repository `.env`; never print it or copy it into this project.
+2. Edit `audio_request.json` and `fish-voice.json` deliberately. A changed voice/model must use a new or archived ledger/output directory rather than mutating the existing ledger.
+3. Generate and atomically integrate every line:
+
+   ```bash
+   node scripts/generate-fish-voice.mjs --ids all --commit
+   ```
+
+4. The commit gate rejects narration longer than its owning scene and updates `audio_meta.json`, `audio_engine_meta.json`, `audio_request.json`, and the six `<audio>` references in `index.html`.
+5. Rebuild `caption_groups.json` and `compositions/captions.html` from the new `audio_meta.json` using the `$faceless-explainer` caption builder. Fish's native word timings are the source; do not reuse timings from the previous voice:
+
+   ```bash
+   node ../../.agents/skills/faceless-explainer/scripts/captions.mjs build --storyboard ./STORYBOARD.md --audio-meta ./audio_meta.json --hyperframes . --out ./caption_groups.json
+   ```
+6. Verify all six WAVs are mono PCM, 44.1 kHz, match the ledger hashes, and are referenced by `index.html` before running visual QA.
+
+## Generated motion integration
+
+- Scene 3 uses `assets/generated/video/install-invoke-motion-v1-17s.mp4` continuously for its full 17 seconds. It is a deterministic composition derivative of the canonical 15-second Fal output, not a new provider generation.
+- Keep the canonical `install-invoke-motion-v1.mp4`. The plan and manifest must retain the source/derivative hashes, 30 fps frame counts, exact durations, transform, and purpose.
+- The active scene-3 motion slot must not use an `<img>`, `poster`, or runtime playback-rate workaround. When media duration and scene duration differ, normalize a new local H.264/yuv420p derivative with seek-safe keyframes.
+- After any motion edit, capture an early and late scene-3 frame and require no black/stale video extraction warning before the full strict transition check.
+
+## Project verification and handoff
+
+```bash
+npm run check -- --json --strict --at-transitions
+npx --yes hyperframes@0.8.16 snapshot --at 38,43.5
+npx --yes hyperframes@0.8.16 preview --background --port 3004 --no-open
+npx --yes hyperframes@0.8.16 preview --status
+```
+
+- Preview at `http://127.0.0.1:3004/#project/codex-plugins-luminous-skool`; never rewrite the host to `localhost`.
+- Confirm the preview root returns HTTP 200 before browser handoff.
+- Preview approval is not an exported MP4. Run `npm run render` only when the user explicitly requests a render.
+
 ## Skills — USE THESE FIRST
 
 **Always invoke the relevant skill before writing or modifying compositions.** Skills encode framework-specific patterns (e.g., `window.__timelines` registration, `data-*` attribute semantics, shader-compatible CSS rules) that are NOT in generic web docs. Skipping them produces broken compositions.
@@ -34,9 +79,9 @@ The domain skills (`/hyperframes-core`, `/hyperframes-animation`, `/hyperframes-
 
 ```bash
 npm run dev          # human-operated foreground preview (blocks until stopped)
-npx hyperframes preview --background  # agent-safe persistent Studio preview
-npx hyperframes preview --status      # verify the persistent preview is listening
-npx hyperframes preview --stop        # stop it when review is finished
+npx --yes hyperframes@0.8.16 preview --background --port 3004 --no-open  # agent-safe persistent Studio preview
+npx --yes hyperframes@0.8.16 preview --status                            # verify the persistent preview is listening
+npx --yes hyperframes@0.8.16 preview --stop                              # stop it when review is finished
 npm run check        # lint + runtime + layout + motion + contrast (one command)
 npm run render       # render to MP4
 npm run publish      # publish and get a shareable link
@@ -45,7 +90,7 @@ npx hyperframes lint --json     # machine-readable output for CI
 npx hyperframes docs <topic> # reference docs in terminal
 ```
 
-> **Agents must use `npx hyperframes preview --background` for Studio handoff.** Do not rely
+> **Agents must use the pinned `preview --background --port 3004 --no-open` command above for Studio handoff.** Do not rely
 > on a shell/tool `run_in_background` wrapper around `npm run dev`: that foreground process
 > remains owned by the invoking session and can disappear while the browser stays open,
 > leaving refreshes at `ERR_CONNECTION_TIMED_OUT`. Verify with `preview --status`, keep it

@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "opaque-cutout",
+  "prompt": "An opaque AI-generated robot illustration needs to become a layered subject cutout in a 1080x1920 HyperFrames scene. Produce a production workflow and manifest example; do not run image generation or background removal.",
+  "assertions": [
+    "The workflow states that GPT Image 2 output is opaque and routes a real cutout through HyperFrames background removal.",
+    "The manifest example records provider, prompt hash, content hash, source/delivery paths, and acceptance status without inventing a seed.",
+    "The workflow verifies real alpha and inspects the composited hero frame before acceptance.",
+    "The integration uses deterministic wrapper/image transforms and preserves HTML typography separately from the raster asset."
+  ]
+}

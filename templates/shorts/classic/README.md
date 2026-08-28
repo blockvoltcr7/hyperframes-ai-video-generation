@@ -132,7 +132,7 @@ The top banner renders "YOUR BRAND" as a CSS gradient wordmark centered at 972px
 
 ## Adding SFX
 
-Each SFX is a separate `<audio>` element on its own track index, gated by `data-start` / `data-duration`. Volume is capped per [`.claude/rules/audio-design.md`](../../../.claude/rules/audio-design.md) — never exceed `0.25` on a single per-cue SFX (sonic-logo at `0.60` is the only exception).
+Each SFX is a separate `<audio>` element on its own track index, gated by `data-start` / `data-duration`. Volume is capped per [`.agents/rules/audio-design.md`](../../../.agents/rules/audio-design.md) — never exceed `0.25` on a single per-cue SFX (sonic-logo at `0.60` is the only exception).
 
 ```html
 <audio id="sfx-slam"

@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "eval_name": "ai-chip-storyboard",
+  "prompt": "Plan original visual assets for a 45-second 9:16 HyperFrames explainer about how AI agents use GPUs and TPUs. Produce asset-plan.json and integration-notes.md only; do not generate images or edit a composition.",
+  "assertions": [
+    "The plan uses generated imagery selectively and keeps words, logos, UI labels, citations, and factual charts out of generated pixels.",
+    "The plan defines one shared style prompt and complete per-asset role, scene, purpose, prompt, output, size, background, quality, and animation fields.",
+    "The notes define native HTML/SVG, registry, or verified-source fallbacks and do not silently switch to OpenAI API billing.",
+    "The notes require HTML text overlays plus snapshot and strict HyperFrames composite QA."
+  ]
+}

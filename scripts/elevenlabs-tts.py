@@ -172,10 +172,7 @@ def main() -> int:
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parent.parent
-    # Env precedence (later wins): .archon/.env, then .env. .archon/.env is
-    # where Archon-related secrets typically live in this repo, so we read it
-    # first and let a repo-root .env override on a per-key basis if present.
-    load_dotenv(repo_root / ".archon" / ".env", override=False)
+    # Load the repository-local environment.
     load_dotenv(repo_root / ".env", override=True)
     project = (repo_root / args.project_dir).resolve() if not args.project_dir.is_absolute() else args.project_dir
     script_path = project / "script.txt"

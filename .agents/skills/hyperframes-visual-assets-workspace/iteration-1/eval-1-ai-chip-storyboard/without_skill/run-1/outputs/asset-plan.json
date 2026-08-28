@@ -1,0 +1,451 @@
+{
+  "schema_version": "1.0",
+  "project": {
+    "title": "How AI Agents Use GPUs and TPUs",
+    "format": "HyperFrames vertical explainer",
+    "duration_seconds": 45,
+    "canvas": {
+      "width": 1080,
+      "height": 1920,
+      "aspect_ratio": "9:16",
+      "frame_rate": 30,
+      "safe_zone": {
+        "top_px": 240,
+        "side_px": 72,
+        "bottom_px": 150
+      }
+    },
+    "visual_system": "Classic dev-tool dark",
+    "palette": {
+      "background": "#0E1420",
+      "surface": "#181F33",
+      "primary_text": "#E8E9F0",
+      "secondary_text": "#9A9BA3",
+      "gpu_accent": "#4D8FF7",
+      "tpu_accent": "#8B7FE8",
+      "routing_accent": "#5EDBA4",
+      "cta_accent": "#7AC4F5"
+    }
+  },
+  "creative_thesis": "Show the agent as the conductor of a software loop, then descend through the model runtime into two distinct abstract compute engines. The chips are acceleration destinations, not the agent itself.",
+  "shared_style_prompt": "Original editorial 3D technical illustration for a premium vertical AI explainer, deep navy stage, compact geometric forms, warm-white ceramic details, restrained bright-blue, soft-indigo, and teal accents, soft studio rim light, crisp beveled edges, subtle depth and ambient occlusion, clean negative space, centered isolated subject, legible silhouette at phone size, sophisticated engineering aesthetic, no photoreal brand replica, no logo, no letters, no numbers, no UI, no watermark, no chart labels, no citations, no busy background.",
+  "prompt_assembly": "For optional generated-image assets, prepend shared_style_prompt to the asset prompt. Do not add text or brand instructions later in the prompt chain.",
+  "production_summary": {
+    "optional_generated_images": 3,
+    "native_html_svg_assets": 2,
+    "reuse_only_composites": 1,
+    "principle": "Generated imagery supplies memorable metaphorical cutouts only. Native HTML and SVG own all facts, words, connectors, charts, highlights, and timing-sensitive state."
+  },
+  "scenes": [
+    {
+      "id": "S1",
+      "time_range": "00:00.0-00:07.0",
+      "narrative_job": "Correct the mental model: an agent is software, not a chip.",
+      "headline_overlay": "AI AGENT ≠ CHIP",
+      "support_overlay": "It plans. The runtime computes.",
+      "asset_ids": [
+        "A01"
+      ],
+      "meaningful_visual_beats_seconds": [
+        0.0,
+        2.2,
+        4.8,
+        6.4
+      ]
+    },
+    {
+      "id": "S2",
+      "time_range": "00:07.0-00:14.0",
+      "narrative_job": "Trace a task from agent loop to model runtime to accelerator.",
+      "headline_overlay": "THE REQUEST PATH",
+      "support_overlay": "Agent loop → model runtime → accelerator",
+      "asset_ids": [
+        "A02"
+      ],
+      "meaningful_visual_beats_seconds": [
+        7.0,
+        9.1,
+        11.3,
+        13.2
+      ]
+    },
+    {
+      "id": "S3",
+      "time_range": "00:14.0-00:25.0",
+      "narrative_job": "Visualize a GPU as many parallel lanes handling tensor work.",
+      "headline_overlay": "GPU",
+      "support_overlay": "Many lanes. Parallel math.",
+      "asset_ids": [
+        "A03"
+      ],
+      "meaningful_visual_beats_seconds": [
+        14.0,
+        16.8,
+        19.5,
+        22.4,
+        24.6
+      ]
+    },
+    {
+      "id": "S4",
+      "time_range": "00:25.0-00:36.0",
+      "narrative_job": "Visualize a TPU as a dense matrix-oriented dataflow engine.",
+      "headline_overlay": "TPU",
+      "support_overlay": "Matrix-first dataflow.",
+      "asset_ids": [
+        "A04"
+      ],
+      "meaningful_visual_beats_seconds": [
+        25.0,
+        27.6,
+        30.2,
+        33.0,
+        35.4
+      ]
+    },
+    {
+      "id": "S5",
+      "time_range": "00:36.0-00:45.0",
+      "narrative_job": "Compare the accelerators without claiming the agent directly chooses hardware, then land the recap.",
+      "headline_overlay": "SAME AGENT. DIFFERENT ENGINE.",
+      "support_overlay": "Agents ask. Runtimes schedule. Chips accelerate.",
+      "asset_ids": [
+        "A05",
+        "A06"
+      ],
+      "meaningful_visual_beats_seconds": [
+        36.0,
+        38.2,
+        40.4,
+        42.2,
+        44.2
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "A01",
+      "name": "agent-orchestrator-cutout",
+      "production_mode": "generated_image_optional",
+      "role": "Hero metaphor cutout",
+      "scene": {
+        "primary": "S1",
+        "time_range": "00:00.0-00:07.0",
+        "reuse": "Small center node in S5"
+      },
+      "purpose": "Represent the agent as an abstract routing intelligence above the compute layer without depicting a humanoid robot or implying that the agent physically lives inside a chip.",
+      "prompt": "Create one isolated abstract conductor object: a hollow ceramic-white orbital ring surrounding a small teal decision core, with three smooth route arcs directing a few blank luminous task tokens downward toward an unseen compute layer. The silhouette should read as coordination and routing, not as a processor, brain, robot, face, or branded assistant. Front three-quarter view, slight downward perspective, generous transparent margin.",
+      "output": {
+        "planned_path": "assets/original/agent-orchestrator-cutout.webp",
+        "format": "WebP with alpha",
+        "color_space": "sRGB",
+        "status": "plan_only_not_generated"
+      },
+      "size": {
+        "width_px": 1024,
+        "height_px": 1024,
+        "aspect_ratio": "1:1",
+        "intended_canvas_box_px": "760x760"
+      },
+      "background": {
+        "mode": "transparent",
+        "fallback_matte": "#0E1420",
+        "shadow_policy": "Soft contact shadow isolated on alpha; no full-frame environment"
+      },
+      "quality": {
+        "tier": "high",
+        "must_pass": [
+          "Clean alpha edge at 200% zoom",
+          "No letters, symbols, logos, watermark, face, robot body, or text-like artifacts",
+          "Core and route arcs remain distinct at 360px displayed width",
+          "No clipped glow or shadow"
+        ]
+      },
+      "animation": {
+        "method": "Animate the static cutout in HTML/GSAP; do not generate motion footage",
+        "entry": "Scale 0.84 to 1.0 and y 46 to 0 over 0.7s; reveal route arcs separately as native SVG strokes",
+        "internal_beats": "Add blank native task tokens at 2.2s and an HTML marker around the decision core at 4.8s",
+        "idle": "Maximum 8px vertical drift over 3.2s; ambient motion does not count as a narrative beat",
+        "exit": "Blur-crossfade into S2 at 6.4s",
+        "parallax_layers": [
+          "rear route arcs",
+          "main ring cutout",
+          "front task tokens"
+        ]
+      }
+    },
+    {
+      "id": "A02",
+      "name": "runtime-routing-flow",
+      "production_mode": "native_svg_html",
+      "role": "Factual process diagram",
+      "scene": {
+        "primary": "S2",
+        "time_range": "00:07.0-00:14.0",
+        "reuse": "None"
+      },
+      "purpose": "Make the software-to-hardware handoff explicit using deterministic geometry and separate HTML labels that can be corrected without regenerating pixels.",
+      "prompt": "Author a native SVG path system with four unlabeled nodes: incoming task token, circular agent-loop node, model-runtime gateway, and accelerator tray. Use one continuous teal route line, directional arrowheads, and a moving dot. Keep every word and icon label in sibling HTML, not inside the SVG artwork.",
+      "output": {
+        "planned_path": "assets/original/runtime-routing-flow.svg",
+        "format": "Inlineable SVG",
+        "color_space": "sRGB",
+        "status": "plan_only_not_authored"
+      },
+      "size": {
+        "width_px": 936,
+        "height_px": 900,
+        "aspect_ratio": "26:25",
+        "intended_canvas_box_px": "936x900"
+      },
+      "background": {
+        "mode": "transparent",
+        "fallback_matte": "none",
+        "shadow_policy": "HTML cards provide surfaces and shadows"
+      },
+      "quality": {
+        "tier": "vector_exact",
+        "must_pass": [
+          "No embedded raster data",
+          "No baked words, labels, citation text, or logos",
+          "Stroke widths remain at least 4px on the 1080px canvas",
+          "Arrow direction reads unambiguously in all snapshots",
+          "Every factual node label is editable HTML"
+        ]
+      },
+      "animation": {
+        "method": "GSAP stroke-dashoffset plus explicit node reveal states",
+        "entry": "Reveal the incoming task card at 7.0s",
+        "internal_beats": "Reveal agent loop at 9.1s, model runtime at 11.3s, and accelerator tray at 13.2s",
+        "idle": "No idle loop; moving dot runs only during each narrated handoff",
+        "exit": "Route line compresses vertically as the GPU tray expands into S3",
+        "seek_safety": "Set all unrevealed nodes hidden at t=0 and tween toward visible states"
+      }
+    },
+    {
+      "id": "A03",
+      "name": "gpu-parallel-engine-cutout",
+      "production_mode": "generated_image_optional",
+      "role": "GPU concept hero",
+      "scene": {
+        "primary": "S3",
+        "time_range": "00:14.0-00:25.0",
+        "reuse": "Left half of S5 comparison"
+      },
+      "purpose": "Give the GPU section a memorable many-lanes visual metaphor while leaving all architectural claims and labels to HTML/SVG overlays.",
+      "prompt": "Create an isolated conceptual compute module with a dark ceramic rectangular base and dozens of small bright-blue parallel channels arranged in repeated rows. Several blank square data tiles enter together on the left and emerge together on the right. Emphasize many similar lanes operating at once. This is an abstract teaching metaphor, not a literal die diagram or replica of any commercial product. Slight isometric front view, crisp silhouette, open center area for native overlay highlights.",
+      "output": {
+        "planned_path": "assets/original/gpu-parallel-engine-cutout.webp",
+        "format": "WebP with alpha",
+        "color_space": "sRGB",
+        "status": "plan_only_not_generated"
+      },
+      "size": {
+        "width_px": 1280,
+        "height_px": 1024,
+        "aspect_ratio": "5:4",
+        "intended_canvas_box_px": "920x736"
+      },
+      "background": {
+        "mode": "transparent",
+        "fallback_matte": "#0E1420",
+        "shadow_policy": "Soft low blue contact glow contained within alpha bounds"
+      },
+      "quality": {
+        "tier": "high",
+        "must_pass": [
+          "At least twelve clearly separated parallel lanes",
+          "No labels, numbers, logos, fan branding, ports, watermark, or pseudo-text",
+          "No claim of literal GPU floorplan accuracy",
+          "Parallel-lane silhouette remains clear at 420px displayed width",
+          "No merged or malformed data tiles"
+        ]
+      },
+      "animation": {
+        "method": "Use static cutout plus native SVG lane masks and HTML data tiles",
+        "entry": "Rise 54px with 0.68s opacity/scale settle at 14.0s",
+        "internal_beats": "Light lane group one at 16.8s, group two at 19.5s, and reveal output tiles at 22.4s",
+        "idle": "Localized native glow drift only; no global image wobble",
+        "exit": "Blue route lines collapse to a single horizontal sweep at 24.6s",
+        "parallax_layers": [
+          "rear lane glow",
+          "compute module cutout",
+          "front native data tiles"
+        ]
+      }
+    },
+    {
+      "id": "A04",
+      "name": "tpu-matrix-engine-cutout",
+      "production_mode": "generated_image_optional",
+      "role": "TPU concept hero",
+      "scene": {
+        "primary": "S4",
+        "time_range": "00:25.0-00:36.0",
+        "reuse": "Right half of S5 comparison"
+      },
+      "purpose": "Contrast the GPU's lane metaphor with an orderly matrix/dataflow metaphor, without presenting generated imagery as a factual TPU architecture diagram.",
+      "prompt": "Create an isolated conceptual compute module with a dark ceramic base and one dense soft-indigo orthogonal grid of identical cells. A clean diagonal wavefront of blank light passes cell-to-cell across the matrix, with teal input tiles at the top and warm-white result tiles at the bottom. Emphasize structured matrix flow and regularity. This is an abstract teaching metaphor, not a literal systolic-array diagram or replica of a commercial chip. Slight isometric front view, crisp silhouette, generous transparent margin.",
+      "output": {
+        "planned_path": "assets/original/tpu-matrix-engine-cutout.webp",
+        "format": "WebP with alpha",
+        "color_space": "sRGB",
+        "status": "plan_only_not_generated"
+      },
+      "size": {
+        "width_px": 1280,
+        "height_px": 1024,
+        "aspect_ratio": "5:4",
+        "intended_canvas_box_px": "920x736"
+      },
+      "background": {
+        "mode": "transparent",
+        "fallback_matte": "#0E1420",
+        "shadow_policy": "Soft low indigo contact glow contained within alpha bounds"
+      },
+      "quality": {
+        "tier": "high",
+        "must_pass": [
+          "Grid is regular and visibly distinct from A03 parallel lanes",
+          "No labels, numbers, logos, product markings, watermark, or pseudo-text",
+          "No claim of literal TPU floorplan accuracy",
+          "Matrix silhouette remains clear at 420px displayed width",
+          "No broken grid cells or impossible overlapping tiles"
+        ]
+      },
+      "animation": {
+        "method": "Use static cutout plus native SVG wavefront masks and HTML input/output tiles",
+        "entry": "Rise 54px with 0.68s opacity/scale settle at 25.0s",
+        "internal_beats": "Reveal grid highlight at 27.6s, sweep wavefront at 30.2s, and reveal result tiles at 33.0s",
+        "idle": "Localized native cell shimmer only after the narrated wavefront",
+        "exit": "Indigo grid contracts to the right comparison card at 35.4s",
+        "parallax_layers": [
+          "rear matrix glow",
+          "compute module cutout",
+          "front native wavefront and tiles"
+        ]
+      }
+    },
+    {
+      "id": "A05",
+      "name": "accelerator-compare-rails",
+      "production_mode": "native_svg_html",
+      "role": "Comparison framework",
+      "scene": {
+        "primary": "S5",
+        "time_range": "00:36.0-00:42.2",
+        "reuse": "None"
+      },
+      "purpose": "Place the GPU and TPU metaphors side by side while keeping category names, caveats, and any factual comparison editable and sourceable.",
+      "prompt": "Author two native rounded comparison rails on a deep navy stage. The left rail has repeated blue lane marks; the right rail has an indigo matrix pattern. A teal runtime gateway sits above both and connects to each with neutral arrows. Use HTML for GPU, TPU, runtime, workload, and all explanatory copy. Do not embed any text in the SVG.",
+      "output": {
+        "planned_path": "assets/original/accelerator-compare-rails.svg",
+        "format": "Inlineable SVG plus HTML cards",
+        "color_space": "sRGB",
+        "status": "plan_only_not_authored"
+      },
+      "size": {
+        "width_px": 936,
+        "height_px": 1080,
+        "aspect_ratio": "13:15",
+        "intended_canvas_box_px": "936x1080"
+      },
+      "background": {
+        "mode": "transparent",
+        "fallback_matte": "none",
+        "shadow_policy": "Card surfaces and glows remain CSS"
+      },
+      "quality": {
+        "tier": "vector_exact",
+        "must_pass": [
+          "No embedded factual chart or numerical benchmark",
+          "No baked text, labels, logos, or citations",
+          "Both rails receive equal visual weight",
+          "Runtime gateway is visibly upstream of both accelerators",
+          "Comparison does not imply universal superiority"
+        ]
+      },
+      "animation": {
+        "method": "GSAP transforms on HTML cards and SVG connectors",
+        "entry": "Bring GPU rail from left and TPU rail from right at 36.0s",
+        "internal_beats": "Reveal editable category labels at 38.2s and runtime scheduling caveat at 40.4s",
+        "idle": "None; hold both rails for direct comparison",
+        "exit": "Compress both rails under the recap stack at 42.2s",
+        "seek_safety": "Initialize both comparison cards and connector paths with explicit hidden states"
+      }
+    },
+    {
+      "id": "A06",
+      "name": "agent-accelerator-recap-stack",
+      "production_mode": "reuse_composite_html",
+      "role": "Final recap lockup",
+      "scene": {
+        "primary": "S5",
+        "time_range": "00:42.2-00:45.0",
+        "reuse": "Uses A01, A03, and A04 as reduced cutouts"
+      },
+      "purpose": "End on a single memorable hierarchy: agent above, runtime in the middle, accelerators below.",
+      "prompt": "Assemble existing A01, A03, and A04 into a native HTML stack. Put the agent-orchestrator cutout above a small runtime card, then place reduced GPU and TPU cutouts on equal lower branches. Render the recap sentence as large HTML text beneath the stack. Create no new raster artwork.",
+      "output": {
+        "planned_path": "composition_only/no-new-file",
+        "format": "HTML composite using planned assets",
+        "color_space": "sRGB",
+        "status": "plan_only_not_composed"
+      },
+      "size": {
+        "width_px": 936,
+        "height_px": 1180,
+        "aspect_ratio": "234:295",
+        "intended_canvas_box_px": "936x1180"
+      },
+      "background": {
+        "mode": "transparent_over_canvas",
+        "fallback_matte": "#0E1420",
+        "shadow_policy": "Reuse existing cutout shadows; do not stack duplicate glows"
+      },
+      "quality": {
+        "tier": "composite_exact",
+        "must_pass": [
+          "Hierarchy reads agent to runtime to accelerators in under one second",
+          "GPU and TPU branches are equal size",
+          "Final text is live HTML at least 56px",
+          "No placeholder brand or URL remains",
+          "No new image-generation dependency"
+        ]
+      },
+      "animation": {
+        "method": "Reuse existing static cutouts with native HTML/SVG connectors",
+        "entry": "Stack settles from y 36px at 42.2s while the recap line enters at 42.7s",
+        "internal_beats": "Draw both accelerator branches together at 44.2s",
+        "idle": "Final hold from 44.6s to 45.0s",
+        "exit": "End on clean hold; no auto-render transition",
+        "seek_safety": "Final state must be deterministic at exact 45.0s"
+      }
+    }
+  ],
+  "text_and_fact_policy": {
+    "must_be_native_html": [
+      "All headlines and captions",
+      "GPU and TPU names",
+      "Agent, model runtime, workload, and accelerator labels",
+      "Any numbers, benchmarks, factual comparisons, caveats, citations, and source credits",
+      "Any brand wordmark, UI label, or CTA"
+    ],
+    "must_not_appear_in_generated_pixels": [
+      "Words or pseudo-words",
+      "Letters or numbers",
+      "Company or product logos",
+      "UI screenshots or controls",
+      "Factual charts or architectural labels",
+      "Citations, source names, watermarks, or signatures"
+    ],
+    "accuracy_guardrail": "Describe GPU and TPU imagery as conceptual metaphors. The narration and HTML overlays must say that the agent issues work through a model/runtime layer; infrastructure schedules execution on accelerators. Do not imply that every agent directly selects a chip or that one accelerator is universally better."
+  },
+  "generation_policy": {
+    "images_generated_in_this_task": false,
+    "paid_api_calls_allowed": false,
+    "silent_provider_switch_allowed": false,
+    "fallback_required": true,
+    "preferred_fallback": "Replace each optional generated cutout with native SVG/CSS geometry while preserving the same scene role, timing, and HTML overlays."
+  }
+}

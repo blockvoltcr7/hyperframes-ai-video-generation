@@ -464,7 +464,7 @@
        PHASE 1 — HERO SLAM (0-6s)
        Blue-led. Hero word uses bright-blue->sky-blue gradient fill.
        ======================================================= -->
-  <div id="phase1" class="phase">
+  <div id="phase1" class="phase" data-layout-allow-overlap>
     <div class="phase-content">
       <div class="overline" id="p1-overline">WORKFLOW</div>
       <div id="p1-pre">Three commands.</div>
@@ -477,7 +477,7 @@
        PHASE 2 — STAT PILL ROW (6-12s)
        Bright blue + sky blue — bookend accents.
        ======================================================= -->
-  <div id="phase2" class="phase">
+  <div id="phase2" class="phase" data-layout-allow-overlap>
     <div class="phase-content">
       <div class="overline" id="p2-overline">NUMBERS</div>
       <div id="p2-headline">Repeatable, fast, dev-friendly.</div>
@@ -498,7 +498,7 @@
        PHASE 3 — FEATURE CARDS (12-18s)
        Bright blue / soft indigo / teal-green rotation.
        ======================================================= -->
-  <div id="phase3" class="phase">
+  <div id="phase3" class="phase" data-layout-allow-overlap>
     <div class="phase-content">
       <div class="overline" id="p3-overline">WHAT IT DOES</div>
       <div class="timeline-list">
@@ -535,7 +535,7 @@
        Sky blue closes (bright blue opened the video).
        TODO: Replace "your-domain.com" with your real URL.
        ======================================================= -->
-  <div id="phase4" class="phase">
+  <div id="phase4" class="phase" data-layout-allow-overlap>
     <div class="phase-content">
       <div class="overline" id="p4-overline">GET STARTED</div>
       <div id="p4-url">your-domain.com</div>
@@ -545,7 +545,7 @@
 
   <!-- =======================================================
        NARRATION + SFX
-       Rules:        .claude/rules/audio-design.md
+       Rules:        .agents/rules/audio-design.md
        Cue catalog:  shared/audio/MANIFEST.md
        Sync into this project (after you copy this template):
          bash scripts/sync-video-sfx.sh videos/<slug> impact-slam spring-pop
@@ -574,7 +574,7 @@
            data-volume="0.45"
 
   Per-cue SFX — one element per beat. data-track-index 3+ for SFX; bump per
-  concurrent cue. data-volume per .claude/rules/audio-design.md (<= 0.25).
+  concurrent cue. data-volume per .agents/rules/audio-design.md (<= 0.25).
 
     audio id="sfx-impact"
            class="clip"

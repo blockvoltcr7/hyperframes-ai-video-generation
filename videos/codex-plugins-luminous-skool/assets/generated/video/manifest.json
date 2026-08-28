@@ -136,7 +136,8 @@
       "asset": "assets/generated/video/install-invoke-motion-v1.mp4",
       "kind": "generated-video",
       "copies": [
-        "compositions/frames/assets/generated/video/install-invoke-motion-v1.mp4"
+        "compositions/frames/assets/generated/video/install-invoke-motion-v1.mp4",
+        "compositions/frames/assets/generated/video/install-invoke-motion-v1-17s.mp4"
       ],
       "source": "assets/generated/install-invoke-path.png",
       "sourceSha256": "438db39801b787e029b8462da322ad5d8935b8be56935b427f4db1f1e1306960",
@@ -225,6 +226,28 @@
         "frameCount": 450,
         "durationSeconds": 15,
         "hasAudio": false
+      },
+      "compositionDerivative": {
+        "asset": "assets/generated/video/install-invoke-motion-v1-17s.mp4",
+        "sha256": "c36b340d22ca52a07426bb62fccb5474a67ead7d01b835c353739f03381cfe38",
+        "sizeBytes": 4356437,
+        "codec": "h264",
+        "width": 1280,
+        "height": 720,
+        "fps": 30,
+        "frameCount": 510,
+        "durationSeconds": 17,
+        "hasAudio": false,
+        "normalization": {
+          "source": "assets/generated/video/install-invoke-motion-v1.mp4",
+          "sourceSha256": "4538db72b261be81474518d084eb0a49872070aa6bbedcbf4038a3b5a6f4554b",
+          "filter": "setpts=(17/15)*PTS,fps=30",
+          "codec": "libx264",
+          "crf": 18,
+          "preset": "medium",
+          "keyframeIntervalFrames": 30,
+          "reason": "full-scene continuous video playback and deterministic late-frame seeking"
+        }
       },
       "rawDownload": {
         "sha256": "afeee50abc661320df19f9dcf8d8c24a8237da8cc95f2eb82109572bb8df0dca",

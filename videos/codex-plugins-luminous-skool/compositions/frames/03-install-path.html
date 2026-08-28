@@ -5,13 +5,12 @@
       <div data-hf-id="hf-6byj" data-f03="edge-wash"></div>
     </div>
 
-    <img data-hf-id="hf-33bn" id="f03-install-path-generated-poster" class="clip" data-start="0" data-duration="17" data-track-index="1" src="assets/generated/install-invoke-path.png" alt="" aria-hidden="true">
+    <video data-hf-id="hf-b3jg" id="f03-install-path-generated-motion" aria-hidden="true" class="clip generated-video-slot" muted playsinline preload="auto" src="assets/generated/video/install-invoke-motion-v1-17s.mp4" data-start="0" data-duration="17" data-track-index="1" data-generation-shot-id="install-invoke-motion"></video>
 
-    <video data-hf-id="hf-b3jg" id="f03-install-path-generated-motion" aria-hidden="true" class="clip generated-video-slot" muted playsinline preload="auto" src="assets/generated/video/install-invoke-motion-v1.mp4" poster="assets/generated/install-invoke-path.png" data-start="0" data-duration="15" data-track-index="1" data-generation-shot-id="install-invoke-motion"></video>
-
-    <video data-hf-id="hf-85pl" id="f03-install-path-bundle-cross-slot" aria-hidden="true" class="generated-video-slot inactive-cross-slot" muted playsinline preload="auto" src="assets/generated/video/plugin-bundle-motion-v1.mp4" poster="assets/generated/plugin-bundle-hero.png" data-start="0" data-duration="15" data-track-index="0" data-generation-shot-id="plugin-bundle-motion"></video>
+    <video data-hf-id="hf-85pl" id="f03-install-path-bundle-cross-slot" aria-hidden="true" class="generated-video-slot inactive-cross-slot" muted playsinline preload="auto" src="assets/generated/video/plugin-bundle-motion-v1.mp4" data-start="0" data-duration="15" data-track-index="0" data-generation-shot-id="plugin-bundle-motion"></video>
 
     <div data-hf-id="hf-kk47" id="f03-install-path-content-layer" class="clip" data-start="0" data-duration="17" data-track-index="2">
+      <div data-hf-id="hf-f03s" data-f03="media-scrim" aria-hidden="true"></div>
       <div data-hf-id="hf-xwin" id="f03-install-path-world" data-f03="world" data-layout-allow-overflow="">
         <svg data-hf-id="hf-foz5" data-f03="route-svg" viewBox="0 0 5640 900" aria-hidden="true">
           <defs data-hf-id="hf-mh0t">
@@ -146,13 +145,21 @@
       width: 1920px;
       height: 1080px;
       object-fit: cover;
-      opacity: 0.38;
-      filter: saturate(0.78) contrast(1.08);
+      opacity: 0.28;
+      filter: saturate(0.72) contrast(1.12);
     }
 
     #root .clip[data-track-index="2"] {
       z-index: 2;
       overflow: hidden;
+    }
+
+    #root [data-f03="media-scrim"] {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: rgba(3, 7, 18, 0.34);
+      pointer-events: none;
     }
 
     #root [data-f03="ground-grid"] {
@@ -178,6 +185,7 @@
       position: absolute;
       left: 0;
       top: 0;
+      z-index: 1;
       width: 5640px;
       height: 900px;
       transform-origin: 0 0;
@@ -237,7 +245,7 @@
       padding: 34px 40px;
       border: 1.5px solid rgba(220, 231, 255, 0.18);
       border-radius: 14px;
-      background: rgba(7, 17, 31, 0.78);
+      background: #07111F;
       box-sizing: border-box;
       transform-origin: 50% 100%;
       will-change: transform, opacity;
@@ -438,7 +446,7 @@
       box-sizing: border-box;
       border: 1.5px solid rgba(220, 231, 255, 0.18);
       border-radius: 14px;
-      background: rgba(7, 17, 31, 0.9);
+      background: #07111F;
       font-family: "Space Grotesk";
       font-size: 42px;
       font-weight: 700;
@@ -493,7 +501,7 @@
       gap: 10px;
       border: 1.5px solid rgba(220, 231, 255, 0.18);
       border-radius: 12px;
-      background: rgba(7, 17, 31, 0.86);
+      background: #07111F;
       font-family: "Space Grotesk";
       font-size: 16px;
       font-weight: 700;
@@ -521,6 +529,9 @@
       const byId = (id) => document.getElementById(id);
       const world = byId("f03-install-path-world");
       const station1 = byId("f03-install-path-station-1");
+      const station2 = byId("f03-install-path-station-2");
+      const station3 = byId("f03-install-path-station-3");
+      const station4 = byId("f03-install-path-station-4");
       const conditional = byId("f03-install-path-conditional");
       const cli = byId("f03-install-path-cli");
       const cliText = byId("f03-install-path-cli-text");
@@ -545,6 +556,8 @@
       window.__timelines = window.__timelines || {};
       window.__timelines["03-install-path"] = tl;
 
+      tl.set([station2, station3, station4], { autoAlpha: 0 }, 0);
+
       tl.fromTo(
         station1,
         { scale: 0.88, opacity: 0 },
@@ -558,6 +571,8 @@
         ease: "power2.inOut",
         onUpdate: applyPan,
       }, 3.3);
+      tl.set(station1, { autoAlpha: 0 }, 3.3);
+      tl.set(station2, { autoAlpha: 1 }, 3.3);
       tl.to(segments[0], { strokeDashoffset: 0, duration: 1.05, ease: "power2.out" }, 3.38);
 
       tl.to(pan, {
@@ -566,6 +581,8 @@
         ease: "power2.inOut",
         onUpdate: applyPan,
       }, 7.0);
+      tl.set(station2, { autoAlpha: 0 }, 7.0);
+      tl.set(station3, { autoAlpha: 1 }, 7.0);
       tl.to(segments[1], { strokeDashoffset: 0, duration: 1.08, ease: "power2.out" }, 7.08);
       tl.fromTo(
         conditional,
@@ -606,6 +623,8 @@
         ease: "power2.inOut",
         onUpdate: applyPan,
       }, 11.5);
+      tl.set([station3, cli], { autoAlpha: 0 }, 11.5);
+      tl.set(station4, { autoAlpha: 1 }, 11.5);
       tl.to(segments[2], { strokeDashoffset: 0, duration: 1.12, ease: "power2.out" }, 11.58);
       tl.fromTo(
         endpointGlow,

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "style_prompt": "Editorial technical illustration on a deep navy stage, precise geometric forms, professional blue and teal accents, restrained volumetric light, crisp silhouette, no text, no logos, no watermark",
+  "assets": [
+    {
+      "id": "agent-chip-cutout",
+      "role": "illustration",
+      "scene": "phase-1",
+      "purpose": "A hero metaphor for software agents running on specialized compute",
+      "prompt": "An elegant abstract accelerator chip with three luminous autonomous paths converging through it, centered isolated object, three-quarter view, generous transparent margin",
+      "output": "assets/generated/agent-chip-cutout.png",
+      "size": "1024x1024",
+      "background": "opaque",
+      "quality": "medium",
+      "animation": "Reveal inside a framed card with a 3% push-in; run background removal first if an isolated cutout is selected"
+    }
+  ]
+}

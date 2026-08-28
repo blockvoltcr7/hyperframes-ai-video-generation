@@ -1,0 +1,69 @@
+{
+  "expectations": [
+    {
+      "text": "The workflow states that GPT Image 2 output is opaque and routes a real cutout through HyperFrames background removal.",
+      "passed": true,
+      "evidence": "In production-workflow.md section 1, the workflow states, 'GPT Image 2 output is opaque' and warns that checkerboard pixels are not transparency. Section 3 then supplies the planned `npx --no-install hyperframes remove-background assets/source/robot-opaque.png -o assets/generated/robot-cutout.png` command. The manifest independently records `generation.output_background` as `opaque` and `derivative.provider` as `hyperframes.remove-background`."
+    },
+    {
+      "text": "The manifest example records provider, prompt hash, content hash, source/delivery paths, and acceptance status without inventing a seed.",
+      "passed": true,
+      "evidence": "robot-cutout.manifest.example.json records `generation.provider: codex.image_gen`, `derivative.provider: hyperframes.remove-background`, source and delivery paths, SHA-256 content-hash objects, and `acceptance.status: pending`. A mechanical SHA-256 calculation over `generation.canonical_prompt` exactly matched the declared prompt hash `d7103bd799061230d52c3f604523e87aae9960c45f7638bcf2f6f742c55b4bd6`. No `seed` key exists anywhere in the manifest. Content-hash values are correctly null with pending statuses because the prompt prohibited producing source or delivery bytes."
+    },
+    {
+      "text": "The workflow verifies real alpha and inspects the composited hero frame before acceptance.",
+      "passed": true,
+      "evidence": "production-workflow.md section 4 requires a decoded PNG alpha channel, both alpha-0 and alpha-255 pixels, transparent corners, opaque torso pixels, edge inspection, and black/white-ground composites. Section 6 requires a 1080x1920 snapshot at 3.2 seconds plus lint and strict checks, followed by visual inspection of silhouette, typography, final-stage alpha edges, and motion before acceptance. The manifest keeps `real_alpha`, `edge_quality`, `composited_hero_frame`, and `strict_hyperframes_check` pending and preserves `snapshots/robot-hero-at-3.2s.png`."
+    },
+    {
+      "text": "The integration uses deterministic wrapper/image transforms and preserves HTML typography separately from the raster asset.",
+      "passed": true,
+      "evidence": "production-workflow.md section 5 places timing attributes on `#robot-cutout`, applies authored GSAP transforms to the untimed `#robot-cutout-wrap`, uses `object-fit: contain`, and keeps `#robot-headline` as a separate `<h1>` layer. It explicitly forbids random offsets, viewport-dependent transforms, intrinsic image resizing, and rasterized text. The manifest corroborates this with `timing_owner: image`, `transform_owner: untimed-wrapper`, `typography: native-html`, and fixed transform keyframes at 0.25, 0.9, and 6 seconds."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The declared canonical prompt hash is the SHA-256 of the exact canonical prompt text.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "A mechanical SHA-256 calculation produced `d7103bd799061230d52c3f604523e87aae9960c45f7638bcf2f6f742c55b4bd6`, exactly matching `generation.prompt_hash.value`."
+    },
+    {
+      "claim": "The example does not invent a reusable generation seed.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "A recursive key check found no `seed` field anywhere in robot-cutout.manifest.example.json; production-workflow.md also explicitly says the example intentionally has no seed field."
+    },
+    {
+      "claim": "No source image, transparent derivative, alpha proof, or composite QA result was produced by this planning-only output.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The outputs directory contains only production-workflow.md and robot-cutout.manifest.example.json. The manifest marks generation and derivative execution false, leaves both content hashes null, keeps every acceptance check pending, and explains that no source or delivery bytes were produced."
+    },
+    {
+      "claim": "The authored integration is deterministic and keeps typography native.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The workflow uses fixed GSAP constants and a separate HTML `<h1>` while explicitly rejecting random and viewport-dependent transforms; the manifest records fixed transform keyframes and `typography: native-html`."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Add an explicit assertion that the planning-only task was not executed: `generation.executed` and `derivative.executed` should be false, content-hash values should remain null, and acceptance should remain pending. This is a central user constraint that the current assertions only cover indirectly."
+      }
+    ],
+    "overall": "The assertions are substantive and all are verifiable from the output files. The main gap is an explicit check that image generation and background removal were not run."
+  }
+}

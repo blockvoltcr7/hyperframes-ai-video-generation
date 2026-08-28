@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "skill_name": "hyperframes-visual-assets",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-07-12T22:22:24Z",
+    "evals_run": [
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The plan uses generated imagery selectively and keeps words, logos, UI labels, citations, and factual charts out of generated pixels.",
+          "passed": true,
+          "evidence": "asset-plan.json limits the plan to two related assets, and its shared style_prompt excludes \"words, text, letters, numerals, logos, brand marks, watermarks, UI labels, citations, factual charts, or technical schematics.\" integration-notes.md reinforces that generation is limited to one hero cutout and one portrait plate, while every word, label, numerical claim, citation, GPU lane diagram, and TPU matrix diagram remains native HTML/SVG."
+        },
+        {
+          "text": "The plan defines one shared style prompt and complete per-asset role, scene, purpose, prompt, output, size, background, quality, and animation fields.",
+          "passed": true,
+          "evidence": "asset-plan.json contains one non-empty top-level style_prompt and two asset records. Both agent-orchestrator-cutout and accelerator-fabric-portrait-plate have non-empty role, scene, purpose, prompt, output, size, background, quality, and animation string fields; a structural jq check over all assets returned true."
+        },
+        {
+          "text": "The notes define native HTML/SVG, registry, or verified-source fallbacks and do not silently switch to OpenAI API billing.",
+          "passed": true,
+          "evidence": "integration-notes.md defines native SVG and native gradient fallbacks, directs a $hyperframes-registry review for suitable blocks, and requires verified source media with HTML attribution for real GPUs, TPUs, benchmarks, or product UI. The generation handoff states: \"Do not silently switch to OPENAI_API_KEY or paid API generation. The API route is allowed only after explicit user authorization.\""
+        },
+        {
+          "text": "The notes require HTML text overlays plus snapshot and strict HyperFrames composite QA.",
+          "passed": true,
+          "evidence": "integration-notes.md requires diagrams, arrows, labels, citations, and narration copy in native HTML/SVG layers above the raster plate. Its Composite QA section requires a HyperFrames snapshot at each asset hero frame, inspection of the full composite, and the strict command `npx --no-install hyperframes check videos/<slug> --json --strict --at-transitions` after lint."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The workflow states that GPT Image 2 output is opaque and routes a real cutout through HyperFrames background removal.",
+          "passed": true,
+          "evidence": "In production-workflow.md section 1, the workflow states, 'GPT Image 2 output is opaque' and warns that checkerboard pixels are not transparency. Section 3 then supplies the planned `npx --no-install hyperframes remove-background assets/source/robot-opaque.png -o assets/generated/robot-cutout.png` command. The manifest independently records `generation.output_background` as `opaque` and `derivative.provider` as `hyperframes.remove-background`."
+        },
+        {
+          "text": "The manifest example records provider, prompt hash, content hash, source/delivery paths, and acceptance status without inventing a seed.",
+          "passed": true,
+          "evidence": "robot-cutout.manifest.example.json records `generation.provider: codex.image_gen`, `derivative.provider: hyperframes.remove-background`, source and delivery paths, SHA-256 content-hash objects, and `acceptance.status: pending`. A mechanical SHA-256 calculation over `generation.canonical_prompt` exactly matched the declared prompt hash `d7103bd799061230d52c3f604523e87aae9960c45f7638bcf2f6f742c55b4bd6`. No `seed` key exists anywhere in the manifest. Content-hash values are correctly null with pending statuses because the prompt prohibited producing source or delivery bytes."
+        },
+        {
+          "text": "The workflow verifies real alpha and inspects the composited hero frame before acceptance.",
+          "passed": true,
+          "evidence": "production-workflow.md section 4 requires a decoded PNG alpha channel, both alpha-0 and alpha-255 pixels, transparent corners, opaque torso pixels, edge inspection, and black/white-ground composites. Section 6 requires a 1080x1920 snapshot at 3.2 seconds plus lint and strict checks, followed by visual inspection of silhouette, typography, final-stage alpha edges, and motion before acceptance. The manifest keeps `real_alpha`, `edge_quality`, `composited_hero_frame`, and `strict_hyperframes_check` pending and preserves `snapshots/robot-hero-at-3.2s.png`."
+        },
+        {
+          "text": "The integration uses deterministic wrapper/image transforms and preserves HTML typography separately from the raster asset.",
+          "passed": true,
+          "evidence": "production-workflow.md section 5 places timing attributes on `#robot-cutout`, applies authored GSAP transforms to the untimed `#robot-cutout-wrap`, uses `object-fit: contain`, and keeps `#robot-headline` as a separate `<h1>` layer. It explicitly forbids random offsets, viewport-dependent transforms, intrinsic image resizing, and rasterized text. The manifest corroborates this with `timing_owner: image`, `transform_owner: untimed-wrapper`, `typography: native-html`, and fixed transform keyframes at 0.25, 0.9, and 6 seconds."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The plan uses generated imagery selectively and keeps words, logos, UI labels, citations, and factual charts out of generated pixels.",
+          "passed": true,
+          "evidence": "asset-plan.json limits the plan to 3 optional generated-image assets alongside 2 native HTML/SVG assets and 1 reuse-only HTML composite. Its text_and_fact_policy requires all headlines, labels, numbers, comparisons, citations, brand text, UI labels, and CTAs to remain native HTML, and explicitly prohibits words, logos, UI, factual charts, and citations in generated pixels."
+        },
+        {
+          "text": "The plan defines one shared style prompt and complete per-asset role, scene, purpose, prompt, output, size, background, quality, and animation fields.",
+          "passed": true,
+          "evidence": "asset-plan.json defines one shared_style_prompt plus prompt_assembly instructions to prepend it to optional generated-image prompts. A programmatic check of all 6 assets (A01-A06) found each has every required field: role, scene, purpose, prompt, output, size, background, quality, and animation, with no missing fields."
+        },
+        {
+          "text": "The notes define native HTML/SVG, registry, or verified-source fallbacks and do not silently switch to OpenAI API billing.",
+          "passed": true,
+          "evidence": "integration-notes.md provides an explicit fallback ladder with Native HTML/SVG, Verified HyperFrames registry, and Verified-source options. It states, 'No fallback may silently invoke OpenAI image generation, another paid API, or a billable hosted workflow.' asset-plan.json independently sets paid_api_calls_allowed and silent_provider_switch_allowed to false."
+        },
+        {
+          "text": "The notes require HTML text overlays plus snapshot and strict HyperFrames composite QA.",
+          "passed": true,
+          "evidence": "integration-notes.md says every word must remain live HTML and requires composite snapshots containing imagery plus live HTML overlays. Its QA gate specifies `hyperframes snapshot` at named timestamps followed by `hyperframes check videos/<slug> --json --strict --at-transitions`, and directs reviewers to inspect full composites rather than isolated assets."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The workflow states that GPT Image 2 output is opaque and routes a real cutout through HyperFrames background removal.",
+          "passed": true,
+          "evidence": "production-workflow.md explicitly says, 'Treat GPT Image 2 output as opaque,' preserves the received image as an immutable source, and provides a concrete `npx --no-install hyperframes remove-background ...` command. It also states that CSS blend modes, rectangular clipping, and matching-background placement are not substitutes for the cutout operation."
+        },
+        {
+          "text": "The manifest example records provider, prompt hash, content hash, source/delivery paths, and acceptance status without inventing a seed.",
+          "passed": true,
+          "evidence": "asset-manifest.example.json records provider `openai`, model `gpt-image-2`, a SHA-256 prompt hash, distinct source and delivery paths, source and delivery content-hash objects, and acceptance status `pending`; no seed field appears. The prompt hash was independently recomputed from the stated UTF-8 prompt with no trailing newline and matches `a1e9d48677c8042ccc183f6f06a81055ac2f7824cd61e755a4aa2483f5b1a71c`. Because generation and removal were prohibited, the two file-content hash values are honestly null with pending statuses, and production-workflow.md instructs replacing them with hashes of the actual future files before acceptance."
+        },
+        {
+          "text": "The workflow verifies real alpha and inspects the composited hero frame before acceptance.",
+          "passed": true,
+          "evidence": "production-workflow.md provides ImageMagick channel and alpha-extraction checks, requires a non-constant alpha plane with transparent corners and plausible edge alpha, and specifies visual inspection on checkerboard, white, and dark backgrounds. It separately requires a HyperFrames snapshot of the actual 1080x1920 composited hero and human approval before changing acceptance to `accepted`; the manifest mirrors these gates as false while status remains `pending`."
+        },
+        {
+          "text": "The integration uses deterministic wrapper/image transforms and preserves HTML typography separately from the raster asset.",
+          "passed": true,
+          "evidence": "production-workflow.md separates fixed `#robot-anchor` centering from animated `#robot-motion`, leaves `#robot-cutout` without a transform, and supplies fixed dimensions, object fitting, transform origin, and explicit GSAP values. Typography is in a separate `#hero-copy` HTML layer. asset-manifest.example.json records the same anchor, motion-wrapper, and image transform values and sets typography to `live_html` with `baked_into_raster: false`."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": [
+    "All eight assertions passed in both configurations, so this first benchmark validates the production-contract checks but does not discriminate skill value.",
+    "The with-skill chip plan chose two related generated assets, while the baseline proposed three generated assets inside a six-asset plan; selectivity appears better with the skill but is not captured by the current binary assertions.",
+    "Both cutout plans handled opacity, alpha QA, provenance, and deterministic integration, suggesting the repository's broader HyperFrames context already teaches much of this behavior.",
+    "Timing and token metrics were unavailable from the subagent notifications and are intentionally reported as zero rather than inferred."
+  ]
+}

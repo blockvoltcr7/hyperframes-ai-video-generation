@@ -1,0 +1,44 @@
+{
+  "name": "hyperframes-local-studio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "create:short": "node scripts/codex-create-short.mjs",
+    "assets:generate": "node scripts/generate-image-assets.mjs",
+    "assets:codex": "node scripts/codex-image-generate.mjs",
+    "video:fal": "node scripts/generate-fal-video.mjs",
+    "docs:validate:okf": "python scripts/validate_okf.py docs/okf/hyperframes-ai-video-generation --strict-recommended",
+    "project:validate": "tsx scripts/validate-video-project.ts",
+    "audio:normalize": "hyperframes normalize-audio",
+    "skills:verify": "node scripts/verify-skill-lock.mjs",
+    "dev": "concurrently -k \"vite --config studio/vite.config.ts\" \"tsx runner/server.ts\"",
+    "dev:studio": "vite --config studio/vite.config.ts",
+    "dev:runner": "tsx runner/server.ts",
+    "build": "vite build --config studio/vite.config.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "convex": "convex dev --cmd \"npm run dev:studio\""
+  },
+  "dependencies": {
+    "@conform-to/react": "^1.7.4",
+    "@conform-to/zod": "^1.7.4",
+    "@fal-ai/client": "^1.10.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "convex": "^1.25.4",
+    "hyperframes": "0.8.14",
+    "openai": "^4.77.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "7.3.6",
+    "vitest": "4.1.11"
+  }
+}

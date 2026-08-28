@@ -8,7 +8,7 @@ here resolves to a file in `shared/audio/sfx/<cue>.mp3` and is consumable via
 
 - Cue names are kebab-case, single-token (no spaces, no underscores).
 - The `Default Volume` column is the recommended `data-volume` per
-  [`.claude/rules/audio-design.md`](../../.claude/rules/audio-design.md). Override
+  [`.agents/rules/audio-design.md`](../../.agents/rules/audio-design.md). Override
   per video only with explicit reason.
 - The `Duration` column is the actual length read via `ffprobe` after generation.
   ElevenLabs sound-effects API enforces a 0.5s minimum; cues prompted shorter
@@ -32,7 +32,7 @@ here resolves to a file in `shared/audio/sfx/<cue>.mp3` and is consumable via
 ## Hard cap
 
 Any cue not listed above defaults to `data-volume="0.15"`. Per
-[`.claude/rules/audio-design.md`](../../.claude/rules/audio-design.md), no per-cue
+[`.agents/rules/audio-design.md`](../../.agents/rules/audio-design.md), no per-cue
 SFX may exceed `0.25`. The `sonic-logo` value of `0.60` is the single documented
 exception and only because it plays during cold-open silence with no concurrent
 narration.

@@ -1,5 +1,5 @@
 {
-  "provider": "auto",
+  "provider": "fish-audio",
   "speed": 0.92,
   "lines": [
     {
@@ -33,5 +33,9 @@
     "blob": "Codex plugins turn reusable instructions and connected capabilities into outcome-driven workflows.",
     "arc": "misconception -> anatomy -> installation -> invocation -> trust -> practice"
   },
-  "voice": "bf_emma"
+  "voice": "American Tech Review Voice",
+  "fish": {
+    "voice_id": "a80cf1a25ee848c78d61ebcbe68be474",
+    "model": "s2.1-pro"
+  }
 }

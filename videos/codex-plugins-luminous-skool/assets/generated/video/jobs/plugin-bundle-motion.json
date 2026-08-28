@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "provider": "fal.ai",
+  "endpointId": "fal-ai/pixverse/c1/image-to-video",
+  "shotId": "plugin-bundle-motion",
+  "status": "completed",
+  "fingerprint": "fcd46c2ed03258e2603679131d6277c5d5de226f86b8c2597888ec1eae4b8f23",
+  "startFrame": "assets/generated/plugin-bundle-hero.png",
+  "sourceSha256": "2f2f00e20154afc616c484d7ef1912f7b0df46d95887820f73729ad4efbf30f5",
+  "output": "assets/generated/video/plugin-bundle-motion-v1.mp4",
+  "copies": [
+    "compositions/frames/assets/generated/video/plugin-bundle-motion-v1.mp4"
+  ],
+  "promptSha256": "5b826ec11286105fd7c9b10f989b0fac2d1d3b1ae457c9f93d044a1b8b717ecc",
+  "imageUrl": "https://v3b.fal.media/files/b/0aa80ed8/i67RcEbFED6TxU--8Rfuv_1787859869606.png",
+  "pricing": {
+    "endpointId": "fal-ai/pixverse/c1/image-to-video",
+    "unitPrice": 0.005,
+    "unit": "seconds",
+    "currency": "USD",
+    "checkedAt": "2026-08-27T19:44:30.485Z"
+  },
+  "billableSeconds": 15,
+  "estimatedCostUsd": 0.075,
+  "requestedSeconds": 15,
+  "observedOutputSecondsFloor": 15,
+  "actualBillingUsd": null,
+  "costEstimateBasis": "requested-duration",
+  "createdAt": "2026-08-27T19:44:30.485Z",
+  "updatedAt": "2026-08-27T19:47:25.088Z",
+  "requestId": "01a044c0-a560-79d2-a991-bc8e898405e0",
+  "statusUrl": "https://queue.fal.run/fal-ai/pixverse/requests/01a044c0-a560-79d2-a991-bc8e898405e0/status",
+  "responseUrl": "https://queue.fal.run/fal-ai/pixverse/requests/01a044c0-a560-79d2-a991-bc8e898405e0",
+  "cancelUrl": "https://queue.fal.run/fal-ai/pixverse/requests/01a044c0-a560-79d2-a991-bc8e898405e0/cancel",
+  "submittedAt": "2026-08-27T19:44:31.125Z",
+  "pollAttempts": 34,
+  "resultSeed": null,
+  "rawSha256": "3bc2bc0bb0dedab594a6ed6557f156bb6d633578dc2a806389ea80412ad2029e",
+  "rawSizeBytes": 2080790,
+  "raw": {
+    "sha256": "3bc2bc0bb0dedab594a6ed6557f156bb6d633578dc2a806389ea80412ad2029e",
+    "sizeBytes": 2080790,
+    "codec": "h264",
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "durationSeconds": 15.041667,
+    "frameCount": 361,
+    "hasAudio": false
+  },
+  "contentSha256": "dff04d741a5affa278f489ab277ee55a8d21f058e85de87f23013979b105d962",
+  "canonicalSizeBytes": 2474089,
+  "canonical": {
+    "sha256": "dff04d741a5affa278f489ab277ee55a8d21f058e85de87f23013979b105d962",
+    "sizeBytes": 2474089,
+    "codec": "h264",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "frameCount": 450,
+    "durationSeconds": 15,
+    "hasAudio": false
+  },
+  "billingEstimate": {
+    "persistedPreflightEstimateUsd": 0.075,
+    "persistedEstimatedBillableSeconds": 15,
+    "currentConservativeCeilingUsd": 0.075,
+    "currentConservativeSeconds": 15,
+    "actualBillingUsd": null,
+    "status": "not-reconciled",
+    "basis": "provider-price-times-conservative-generated-seconds"
+  },
+  "media": {
+    "codec": "h264",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "durationSeconds": 15,
+    "frameCount": 450,
+    "hasAudio": false,
+    "raw": {
+      "codec": "h264",
+      "width": 1280,
+      "height": 720,
+      "fps": 24,
+      "durationSeconds": 15.041667,
+      "frameCount": 361,
+      "hasAudio": false
+    },
+    "normalization": {
+      "applied": true,
+      "reason": "provider-output-normalized-to-plan",
+      "filter": "setpts=((450-1)/(361-1))*PTS,fps=30:round=near:eof_action=pass,trim=end_frame=450,setpts=N/(30*TB),format=yuv420p",
+      "spatial": {
+        "applied": false,
+        "method": "none",
+        "source": {
+          "width": 1280,
+          "height": 720
+        },
+        "target": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "temporal": {
+        "applied": true,
+        "method": "full-clip-uniform-retime",
+        "sourceFrameCount": 361,
+        "sourceDurationSeconds": 15.041667,
+        "targetFrameCount": 450,
+        "targetDurationSeconds": 15,
+        "durationRatio": 0.9972298947982294,
+        "ptsRatio": 1.2472222222222222,
+        "speedMultiplier": 0.8017817371937639,
+        "endpointPolicy": "first-and-last-frame-time-aligned"
+      },
+      "codec": "libx264",
+      "crf": 18,
+      "preset": "medium",
+      "audio": "absent"
+    }
+  },
+  "completedAt": "2026-08-27T19:47:25.088Z"
+}

@@ -1,6 +1,6 @@
 """List ElevenLabs preset male voices to help pick an expressive non-Brian one.
 
-Loads creds from `.archon/.env` (same convention as elevenlabs-tts.py).
+Loads credentials from the repository `.env` file.
 Prints id + name + labels for premade/professional male English voices.
 Does NOT print the API key.
 """
@@ -15,7 +15,6 @@ from elevenlabs import ElevenLabs
 
 def main() -> int:
     repo_root = Path(__file__).resolve().parent.parent
-    load_dotenv(repo_root / ".archon" / ".env", override=False)
     load_dotenv(repo_root / ".env", override=True)
 
     api_key = os.environ.get("ELEVENLABS_API_KEY")

@@ -1,0 +1,12 @@
+{
+  "provider": "fish-audio",
+  "voice_id": "a80cf1a25ee848c78d61ebcbe68be474",
+  "voice_title": "American Tech Review Voice",
+  "model": "s2.1-pro",
+  "speed": 1,
+  "temperature": 0.7,
+  "top_p": 0.7,
+  "format": "opus",
+  "sample_rate": 48000,
+  "latency": "normal"
+}

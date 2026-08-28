@@ -3,26 +3,19 @@
 .env.local
 .env.*.local
 
-# Archon runtime artifacts — NEVER commit
-.archon/mcp/
-.archon/state/
-.archon/.env
-.archon/.env.*
-.archon/.run-logs/
-
 # Iteration backups — useful locally during tuning, never commit
 **/*.bak
 **/*.bak-*
 **/.bak-*
 
-# Local Claude Code state (keep project skills, ignore per-user settings)
-.claude/settings.local.json
-.claude/settings.local.md
-.claude/scheduled_tasks.lock
-
 # Dependencies
 node_modules/
 .pnpm-store/
+.venv/
+
+# Local Framehouse studio state
+.studio/
+convex/_generated/
 
 # Build / output
 dist/
@@ -51,3 +44,5 @@ desktop.ini
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json.example
+# Durable local Studio runtime state (logs and job ledger)
+studio/state/

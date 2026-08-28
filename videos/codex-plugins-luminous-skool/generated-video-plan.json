@@ -38,8 +38,10 @@
       ],
       "startFrame": "assets/generated/install-invoke-path.png",
       "output": "assets/generated/video/install-invoke-motion-v1.mp4",
+      "compositionOutput": "assets/generated/video/install-invoke-motion-v1-17s.mp4",
       "copies": [
-        "compositions/frames/assets/generated/video/install-invoke-motion-v1.mp4"
+        "compositions/frames/assets/generated/video/install-invoke-motion-v1.mp4",
+        "compositions/frames/assets/generated/video/install-invoke-motion-v1-17s.mp4"
       ],
       "prompt": "Use a locked wide editorial camera with only a barely perceptible forward drift. Move the existing modular packages smoothly from left to right through the four existing architectural gates exactly once, illuminate each gate sequentially from electric blue through violet, and finish with the existing restrained pink endpoint glow at the workspace. Preserve every gate, package, rail, desk, object position, geometry, crop, dark negative space, and palette. Begin exactly from the supplied still and settle at the final workspace. Do not add text, logos, symbols, people, gates, packages, particles, camera roll, flicker, warping, morphing, or abrupt motion.",
       "numFrames": 450,
@@ -47,6 +49,14 @@
       "seed": 68417,
       "camera": "locked wide view with a restrained forward drift",
       "durationSeconds": 15,
+      "compositionDurationSeconds": 17,
+      "compositionNormalization": {
+        "source": "assets/generated/video/install-invoke-motion-v1.mp4",
+        "sourceSha256": "4538db72b261be81474518d084eb0a49872070aa6bbedcbf4038a3b5a6f4554b",
+        "outputSha256": "c36b340d22ca52a07426bb62fccb5474a67ead7d01b835c353739f03381cfe38",
+        "method": "ffmpeg setpts=(17/15)*PTS,fps=30 with one-second H.264 keyframes",
+        "purpose": "Fill the complete 17-second composition scene with continuously decoded video rather than a still fallback."
+      },
       "aspectRatio": "16:9",
       "continuityNotes": "Preserve four-gate left-to-right order, the modular packages, upper-left negative space, and the pink final workspace.",
       "audioPolicy": "none",

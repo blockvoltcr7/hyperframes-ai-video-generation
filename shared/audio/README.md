@@ -47,7 +47,7 @@ shared/audio/
    default volume, and recommended use case.
 
 2. **Declare it in the video's plan/retention-strategy** as a `sfx_cues:` entry
-   (see `.claude/commands/diy-yt-creator/phase3-5-retention.md` for the schema).
+   (see `.agents/skills/diy-yt-creator/SKILL.md` for the schema).
 
 3. **Run the sync hook** to copy the file into your video's `assets/sfx/`:
 
@@ -59,7 +59,7 @@ shared/audio/
    trailing arguments.
 
 4. **Wire the `<audio>` element** in `videos/<slug>/index.html` per
-   [`.claude/rules/audio-design.md`](../../.claude/rules/audio-design.md):
+   [`.agents/rules/audio-design.md`](../../.agents/rules/audio-design.md):
 
    ```html
    <audio id="sfx-impact"
@@ -85,7 +85,7 @@ shared/audio/
   to the library + `MANIFEST.md` so other videos can reuse it.
 - **Don't** exceed the volume cap — `data-volume` must stay ≤ `0.25` for any
   per-cue SFX (sonic-logo at `0.6` is the only documented exception). See
-  [`.claude/rules/audio-design.md`](../../.claude/rules/audio-design.md).
+  [`.agents/rules/audio-design.md`](../../.agents/rules/audio-design.md).
 
 ## Adding a new cue
 

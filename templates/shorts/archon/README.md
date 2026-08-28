@@ -111,7 +111,7 @@ If a real Archon SVG wordmark lands upstream later, swap the `#top-banner-conten
 
 ## Adding SFX
 
-Each SFX is a separate `<audio>` element on its own track index, gated by `data-start` / `data-duration`. Volume is capped per [`.claude/rules/audio-design.md`](../../../.claude/rules/audio-design.md) — never exceed `0.25` on a single per-cue SFX (sonic-logo at `0.60` is the only exception).
+Each SFX is a separate `<audio>` element on its own track index, gated by `data-start` / `data-duration`. Volume is capped per [`.agents/rules/audio-design.md`](../../../.agents/rules/audio-design.md) — never exceed `0.25` on a single per-cue SFX (sonic-logo at `0.60` is the only exception).
 
 ```html
 <audio id="sfx-slam"
@@ -133,7 +133,7 @@ The cues above are names — the audio files live in [`shared/audio/sfx/`](../..
 bash scripts/sync-video-sfx.sh videos/<slug> impact-slam scale-slam spring-pop
 ```
 
-Or list the cues you want in `videos/<slug>/sfx-cues.txt` (one per line) and run without arguments. Volume caps and the full per-cue table are in [`.claude/rules/audio-design.md`](../../../.claude/rules/audio-design.md); the cue catalog with default volumes lives in [`shared/audio/MANIFEST.md`](../../../shared/audio/MANIFEST.md).
+Or list the cues you want in `videos/<slug>/sfx-cues.txt` (one per line) and run without arguments. Volume caps and the full per-cue table are in [`.agents/rules/audio-design.md`](../../../.agents/rules/audio-design.md); the cue catalog with default volumes lives in [`shared/audio/MANIFEST.md`](../../../shared/audio/MANIFEST.md).
 
 ## Don'ts
 

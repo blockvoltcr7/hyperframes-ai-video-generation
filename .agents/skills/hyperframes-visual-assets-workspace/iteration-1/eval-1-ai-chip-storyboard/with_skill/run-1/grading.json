@@ -1,0 +1,69 @@
+{
+  "expectations": [
+    {
+      "text": "The plan uses generated imagery selectively and keeps words, logos, UI labels, citations, and factual charts out of generated pixels.",
+      "passed": true,
+      "evidence": "asset-plan.json limits the plan to two related assets, and its shared style_prompt excludes \"words, text, letters, numerals, logos, brand marks, watermarks, UI labels, citations, factual charts, or technical schematics.\" integration-notes.md reinforces that generation is limited to one hero cutout and one portrait plate, while every word, label, numerical claim, citation, GPU lane diagram, and TPU matrix diagram remains native HTML/SVG."
+    },
+    {
+      "text": "The plan defines one shared style prompt and complete per-asset role, scene, purpose, prompt, output, size, background, quality, and animation fields.",
+      "passed": true,
+      "evidence": "asset-plan.json contains one non-empty top-level style_prompt and two asset records. Both agent-orchestrator-cutout and accelerator-fabric-portrait-plate have non-empty role, scene, purpose, prompt, output, size, background, quality, and animation string fields; a structural jq check over all assets returned true."
+    },
+    {
+      "text": "The notes define native HTML/SVG, registry, or verified-source fallbacks and do not silently switch to OpenAI API billing.",
+      "passed": true,
+      "evidence": "integration-notes.md defines native SVG and native gradient fallbacks, directs a $hyperframes-registry review for suitable blocks, and requires verified source media with HTML attribution for real GPUs, TPUs, benchmarks, or product UI. The generation handoff states: \"Do not silently switch to OPENAI_API_KEY or paid API generation. The API route is allowed only after explicit user authorization.\""
+    },
+    {
+      "text": "The notes require HTML text overlays plus snapshot and strict HyperFrames composite QA.",
+      "passed": true,
+      "evidence": "integration-notes.md requires diagrams, arrows, labels, citations, and narration copy in native HTML/SVG layers above the raster plate. Its Composite QA section requires a HyperFrames snapshot at each asset hero frame, inspection of the full composite, and the strict command `npx --no-install hyperframes check videos/<slug> --json --strict --at-transitions` after lint."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The asset plan contains exactly two generated-image concepts: one hero cutout and one portrait atmospheric plate.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "asset-plan.json has exactly two entries under assets, with IDs agent-orchestrator-cutout and accelerator-fabric-portrait-plate; integration-notes.md describes the same one-cutout/one-plate scope."
+    },
+    {
+      "claim": "The treatment map covers a continuous 45-second story.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "integration-notes.md lists contiguous ranges 0:00-0:06.5, 0:06.5-0:18, 0:18-0:30, 0:30-0:40, and 0:40-0:45, ending at 45 seconds without a gap."
+    },
+    {
+      "claim": "No images were generated for this output package.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The outputs directory contains only asset-plan.json and integration-notes.md; no image or other media file is present."
+    },
+    {
+      "claim": "No composition was edited and no API billing was authorized during execution.",
+      "type": "process",
+      "verified": false,
+      "evidence": "integration-notes.md states both points, but no transcript was captured. The two output files cannot independently prove execution behavior or changes outside the outputs directory."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Add an output-scope assertion that the outputs directory contains exactly asset-plan.json and integration-notes.md and contains no generated media. This directly tests a core prompt constraint using evidence available even when no transcript is captured."
+      }
+    ],
+    "overall": "The four assertions are substantive and discriminating for asset-planning quality. The main gap is that none explicitly checks the requested two-file-only, no-generated-media output scope; execution claims about edits or billing remain unverifiable without a transcript."
+  }
+}

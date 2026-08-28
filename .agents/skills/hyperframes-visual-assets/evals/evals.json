@@ -1,0 +1,29 @@
+{
+  "skill_name": "hyperframes-visual-assets",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Plan original visual assets for a 45-second 9:16 HyperFrames explainer about how AI agents use GPUs and TPUs. Produce asset-plan.json and integration-notes.md only; do not generate images or edit a composition.",
+      "expected_output": "A selective, style-consistent asset plan that keeps text/data native, specifies fallbacks, and documents Codex image-generation acceptance and QA.",
+      "files": [],
+      "expectations": [
+        "The plan uses generated imagery selectively and keeps words, logos, UI labels, citations, and factual charts out of generated pixels.",
+        "The plan defines one shared style prompt and complete per-asset role, scene, purpose, prompt, output, size, background, quality, and animation fields.",
+        "The notes define native HTML/SVG, registry, or verified-source fallbacks and do not silently switch to OpenAI API billing.",
+        "The notes require HTML text overlays plus snapshot and strict HyperFrames composite QA."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "An opaque AI-generated robot illustration needs to become a layered subject cutout in a 1080x1920 HyperFrames scene. Produce a production workflow and manifest example; do not run image generation or background removal.",
+      "expected_output": "A provenance-safe cutout workflow that recognizes GPT Image 2 opacity, uses background removal, verifies alpha, and defines deterministic animation integration.",
+      "files": [],
+      "expectations": [
+        "The workflow states that GPT Image 2 output is opaque and routes a real cutout through HyperFrames background removal.",
+        "The manifest example records provider, prompt hash, content hash, source/delivery paths, and acceptance status without inventing a seed.",
+        "The workflow verifies real alpha and inspects the composited hero frame before acceptance.",
+        "The integration uses deterministic wrapper/image transforms and preserves HTML typography separately from the raster asset."
+      ]
+    }
+  ]
+}

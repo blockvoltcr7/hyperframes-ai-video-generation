@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.0",
+  "manifest_type": "hyperframes_visual_asset",
+  "asset_id": "robot-hero-cutout-v001",
+  "role": "layered_hero_subject",
+  "canvas": {
+    "width": 1080,
+    "height": 1920,
+    "unit": "px"
+  },
+  "provenance": {
+    "provider": "openai",
+    "model": "gpt-image-2",
+    "prompt": "A friendly futuristic AI robot, three-quarter view, full body, polished white and graphite shell with blue light accents, centered, arms relaxed, clean silhouette, editorial 3D illustration, no text, no logos.",
+    "prompt_hash": {
+      "algorithm": "sha256",
+      "value": "a1e9d48677c8042ccc183f6f06a81055ac2f7824cd61e755a4aa2483f5b1a71c",
+      "canonicalization": "UTF-8 prompt bytes with no trailing newline"
+    },
+    "source_alpha_contract": "opaque",
+    "source_path": "assets/source/robot-hero-gpt-image-2-opaque.png",
+    "source_content_hash": {
+      "algorithm": "sha256",
+      "value": null,
+      "status": "pending_source_file"
+    }
+  },
+  "delivery": {
+    "path": "assets/cutouts/robot-hero-cutout-v001.png",
+    "media_type": "image/png",
+    "content_hash": {
+      "algorithm": "sha256",
+      "value": null,
+      "status": "pending_background_removal"
+    },
+    "derivation": {
+      "tool": "hyperframes",
+      "operation": "remove-background",
+      "command": "npx --no-install hyperframes remove-background assets/source/robot-hero-gpt-image-2-opaque.png --output assets/cutouts/robot-hero-cutout-v001.png --device auto --json",
+      "expected_alpha": "non_constant_transparency"
+    }
+  },
+  "scene_integration": {
+    "composition_size": "1080x1920",
+    "layer_order": [
+      {
+        "layer": "background_and_ambient",
+        "z_index_range": "0-10"
+      },
+      {
+        "layer": "synthetic_subject_shadow",
+        "selector": "#robot-shadow",
+        "z_index": 20
+      },
+      {
+        "layer": "transparent_robot_subject",
+        "selector": "#robot-cutout",
+        "z_index": 30
+      },
+      {
+        "layer": "html_typography_and_chrome",
+        "selector": "#hero-copy",
+        "z_index_min": 40
+      }
+    ],
+    "deterministic_transforms": {
+      "anchor": {
+        "selector": "#robot-anchor",
+        "left_px": 540,
+        "top_px": 1040,
+        "width_px": 820,
+        "height_px": 1120,
+        "css_transform": "translate(-50%, -50%)"
+      },
+      "motion_wrapper": {
+        "selector": "#robot-motion",
+        "transform_origin": "50% 72%",
+        "initial": {
+          "x_px": 0,
+          "y_px": 48,
+          "scale": 0.94,
+          "rotation_deg": 0,
+          "opacity": 0
+        },
+        "settled": {
+          "x_px": 0,
+          "y_px": 0,
+          "scale": 1,
+          "rotation_deg": 0,
+          "opacity": 1
+        }
+      },
+      "image": {
+        "selector": "#robot-cutout",
+        "width_percent": 100,
+        "height_percent": 100,
+        "object_fit": "contain",
+        "object_position": "50% 50%",
+        "css_transform": "none"
+      }
+    },
+    "typography": {
+      "rendering": "live_html",
+      "baked_into_raster": false,
+      "selector": "#hero-copy",
+      "font_stack": "Inter, system-ui, sans-serif"
+    }
+  },
+  "acceptance": {
+    "status": "pending",
+    "reason": "Planning example only; source generation and background removal were not run.",
+    "required_gates": {
+      "source_hash_recorded": false,
+      "delivery_hash_recorded": false,
+      "real_alpha_verified": false,
+      "edge_quality_reviewed_on_checkerboard_light_and_dark": false,
+      "hyperframes_lint_passed": false,
+      "hyperframes_strict_transition_check_passed": false,
+      "composited_hero_frame_inspected": false,
+      "html_typography_kept_separate": true
+    },
+    "evidence": {
+      "alpha_report_path": "qa/robot-hero-cutout-v001-alpha.txt",
+      "hero_frame_path": "qa/robot-hero-cutout-v001-hero.png",
+      "reviewer": null,
+      "reviewed_at": null,
+      "notes": null
+    }
+  }
+}

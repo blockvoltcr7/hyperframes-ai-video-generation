@@ -1,0 +1,76 @@
+{
+  "expectations": [
+    {
+      "text": "The workflow states that GPT Image 2 output is opaque and routes a real cutout through HyperFrames background removal.",
+      "passed": true,
+      "evidence": "production-workflow.md explicitly says, 'Treat GPT Image 2 output as opaque,' preserves the received image as an immutable source, and provides a concrete `npx --no-install hyperframes remove-background ...` command. It also states that CSS blend modes, rectangular clipping, and matching-background placement are not substitutes for the cutout operation."
+    },
+    {
+      "text": "The manifest example records provider, prompt hash, content hash, source/delivery paths, and acceptance status without inventing a seed.",
+      "passed": true,
+      "evidence": "asset-manifest.example.json records provider `openai`, model `gpt-image-2`, a SHA-256 prompt hash, distinct source and delivery paths, source and delivery content-hash objects, and acceptance status `pending`; no seed field appears. The prompt hash was independently recomputed from the stated UTF-8 prompt with no trailing newline and matches `a1e9d48677c8042ccc183f6f06a81055ac2f7824cd61e755a4aa2483f5b1a71c`. Because generation and removal were prohibited, the two file-content hash values are honestly null with pending statuses, and production-workflow.md instructs replacing them with hashes of the actual future files before acceptance."
+    },
+    {
+      "text": "The workflow verifies real alpha and inspects the composited hero frame before acceptance.",
+      "passed": true,
+      "evidence": "production-workflow.md provides ImageMagick channel and alpha-extraction checks, requires a non-constant alpha plane with transparent corners and plausible edge alpha, and specifies visual inspection on checkerboard, white, and dark backgrounds. It separately requires a HyperFrames snapshot of the actual 1080x1920 composited hero and human approval before changing acceptance to `accepted`; the manifest mirrors these gates as false while status remains `pending`."
+    },
+    {
+      "text": "The integration uses deterministic wrapper/image transforms and preserves HTML typography separately from the raster asset.",
+      "passed": true,
+      "evidence": "production-workflow.md separates fixed `#robot-anchor` centering from animated `#robot-motion`, leaves `#robot-cutout` without a transform, and supplies fixed dimensions, object fitting, transform origin, and explicit GSAP values. Typography is in a separate `#hero-copy` HTML layer. asset-manifest.example.json records the same anchor, motion-wrapper, and image transform values and sets typography to `live_html` with `baked_into_raster: false`."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The recorded prompt SHA-256 matches the canonical prompt bytes with no trailing newline.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Independent SHA-256 computation produced `a1e9d48677c8042ccc183f6f06a81055ac2f7824cd61e755a4aa2483f5b1a71c`, exactly matching the manifest."
+    },
+    {
+      "claim": "The manifest does not invent a generation seed.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "No `seed` field exists in asset-manifest.example.json, and production-workflow.md explicitly says not to add one because none is available or required."
+    },
+    {
+      "claim": "The planned source and transparent delivery are separate artifacts.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The manifest uses `assets/source/robot-hero-gpt-image-2-opaque.png` for the source and `assets/cutouts/robot-hero-cutout-v001.png` for delivery, with separate hash records and derivation metadata."
+    },
+    {
+      "claim": "Acceptance has not been claimed before alpha, scene, and human-review gates are completed.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The manifest status is `pending`; real-alpha verification, edge review, lint, strict transition checks, composited-frame inspection, and reviewer metadata are all uncompleted."
+    },
+    {
+      "claim": "No image generation, background removal, scene edit, or render was run.",
+      "type": "process",
+      "verified": false,
+      "evidence": "production-workflow.md states this, and pending hashes and gates are consistent with it, but no transcript was captured, so the process claim cannot be independently verified from output files alone."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The manifest example records provider, prompt hash, content hash, source/delivery paths, and acceptance status without inventing a seed.",
+        "reason": "Clarify that file-content hash fields may be present with explicit pending values when the prompt prohibits generation and background removal; otherwise `records content hash` could be misread as requiring fabricated or unavailable final hashes."
+      }
+    ],
+    "overall": "The assertions are substantive and collectively cover provenance, real cutout routing, alpha and composite QA, deterministic integration, and typography separation. The only notable ambiguity is whether pending content-hash records satisfy the second assertion in a planning-only task."
+  }
+}

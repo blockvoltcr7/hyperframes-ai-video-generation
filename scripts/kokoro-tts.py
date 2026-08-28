@@ -130,9 +130,8 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    # Load .env — same precedence as elevenlabs-tts.py
+    # Load the repository-local environment.
     repo_root = Path(__file__).resolve().parent.parent
-    load_dotenv(repo_root / ".archon" / ".env", override=False)
     load_dotenv(repo_root / ".env", override=True)
 
     # Resolve project paths

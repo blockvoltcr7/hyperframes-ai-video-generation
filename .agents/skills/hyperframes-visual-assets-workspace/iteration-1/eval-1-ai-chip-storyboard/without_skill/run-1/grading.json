@@ -1,0 +1,72 @@
+{
+  "expectations": [
+    {
+      "text": "The plan uses generated imagery selectively and keeps words, logos, UI labels, citations, and factual charts out of generated pixels.",
+      "passed": true,
+      "evidence": "asset-plan.json limits the plan to 3 optional generated-image assets alongside 2 native HTML/SVG assets and 1 reuse-only HTML composite. Its text_and_fact_policy requires all headlines, labels, numbers, comparisons, citations, brand text, UI labels, and CTAs to remain native HTML, and explicitly prohibits words, logos, UI, factual charts, and citations in generated pixels."
+    },
+    {
+      "text": "The plan defines one shared style prompt and complete per-asset role, scene, purpose, prompt, output, size, background, quality, and animation fields.",
+      "passed": true,
+      "evidence": "asset-plan.json defines one shared_style_prompt plus prompt_assembly instructions to prepend it to optional generated-image prompts. A programmatic check of all 6 assets (A01-A06) found each has every required field: role, scene, purpose, prompt, output, size, background, quality, and animation, with no missing fields."
+    },
+    {
+      "text": "The notes define native HTML/SVG, registry, or verified-source fallbacks and do not silently switch to OpenAI API billing.",
+      "passed": true,
+      "evidence": "integration-notes.md provides an explicit fallback ladder with Native HTML/SVG, Verified HyperFrames registry, and Verified-source options. It states, 'No fallback may silently invoke OpenAI image generation, another paid API, or a billable hosted workflow.' asset-plan.json independently sets paid_api_calls_allowed and silent_provider_switch_allowed to false."
+    },
+    {
+      "text": "The notes require HTML text overlays plus snapshot and strict HyperFrames composite QA.",
+      "passed": true,
+      "evidence": "integration-notes.md says every word must remain live HTML and requires composite snapshots containing imagery plus live HTML overlays. Its QA gate specifies `hyperframes snapshot` at named timestamps followed by `hyperframes check videos/<slug> --json --strict --at-transitions`, and directs reviewers to inspect full composites rather than isolated assets."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The asset plan contains six planned assets: three optional generated-image cutouts, two native HTML/SVG assets, and one reuse-only HTML composite.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Counted A01-A06 in asset-plan.json; their production_mode values total 3 generated_image_optional, 2 native_svg_html, and 1 reuse_composite_html."
+    },
+    {
+      "claim": "The delivered output set is planning-only and contains no generated image artifact.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The outputs directory contains only asset-plan.json and integration-notes.md. asset-plan.json also sets images_generated_in_this_task to false and marks planned outputs as not generated, not authored, or not composed."
+    },
+    {
+      "claim": "Generated GPU and TPU visuals are treated as conceptual metaphors rather than factual chip diagrams.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The A03 and A04 purposes, prompts, and quality gates reject literal floorplan claims, while integration-notes.md reserves technical statements, comparisons, and citations for verified live HTML overlays."
+    },
+    {
+      "claim": "The future QA workflow evaluates the imagery and HTML together at scene and transition timestamps.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "integration-notes.md supplies a multi-timestamp snapshot command, a strict transition-aware check command, and a checklist that explicitly requires review of full composites."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Add an assertion that the output directory contains exactly asset-plan.json and integration-notes.md and no generated media or composition files. This directly tests the prompt's planning-only scope instead of relying on policy statements inside the plan."
+      },
+      {
+        "reason": "Add an assertion for the requested format and timeline contract: 45 seconds, 1080x1920/9:16, with scene ranges covering the full duration without gaps or overlaps. The current assertions do not verify those core deliverable constraints."
+      }
+    ],
+    "overall": "The assertions are meaningful and all pass from output-file evidence, but they omit direct checks for the planning-only file boundary and the 45-second vertical timeline contract. No transcript was available, so no execution-process claims were used for grading."
+  }
+}

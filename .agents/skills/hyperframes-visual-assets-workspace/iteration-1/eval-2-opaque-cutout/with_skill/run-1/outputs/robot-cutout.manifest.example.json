@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "record_type": "generated-subject-cutout",
+  "asset_id": "robot-hero-cutout",
+  "role": "foreground-subject-cutout",
+  "scene": {
+    "canvas": {
+      "width": 1080,
+      "height": 1920,
+      "unit": "px"
+    },
+    "hero_time_seconds": 3.2,
+    "layer_order": [
+      "native-stage",
+      "html-headline",
+      "robot-cutout"
+    ]
+  },
+  "generation": {
+    "provider": "codex.image_gen",
+    "model": "gpt-image-2",
+    "size": "1024x1024",
+    "output_background": "opaque",
+    "canonical_prompt": "Hero subject cutout for a 1080x1920 vertical scene. One friendly futuristic service robot, full body, centered in a single frozen three-quarter pose, arms clear of torso, feet fully visible, crisp silhouette, no cropped limbs, 20% clear margin on every side, simple solid chroma-magenta high-contrast background distinct from the subject, studio rim light from upper left, cool graphite, cobalt, and teal palette, refined editorial 3D illustration, subtle matte texture. No words, letters, logos, watermarks, UI labels, factual charts, checkerboard transparency, extra limbs, duplicate parts, props, or cast shadow crossing the silhouette.",
+    "prompt_hash": {
+      "algorithm": "sha256",
+      "value": "d7103bd799061230d52c3f604523e87aae9960c45f7638bcf2f6f742c55b4bd6"
+    },
+    "executed": false
+  },
+  "files": {
+    "source": {
+      "path": "assets/source/robot-opaque.png",
+      "media_type": "image/png",
+      "background": "opaque",
+      "content_hash": {
+        "algorithm": "sha256",
+        "value": null,
+        "status": "pending-source-file"
+      }
+    },
+    "delivery": {
+      "path": "assets/generated/robot-cutout.png",
+      "media_type": "image/png",
+      "background": "transparent-alpha",
+      "content_hash": {
+        "algorithm": "sha256",
+        "value": null,
+        "status": "pending-background-removal"
+      }
+    }
+  },
+  "derivative": {
+    "provider": "hyperframes.remove-background",
+    "input_path": "assets/source/robot-opaque.png",
+    "output_path": "assets/generated/robot-cutout.png",
+    "command": "npx --no-install hyperframes remove-background assets/source/robot-opaque.png -o assets/generated/robot-cutout.png",
+    "executed": false
+  },
+  "integration": {
+    "image_fit": "contain",
+    "crossorigin": "anonymous",
+    "timing_owner": "image",
+    "transform_owner": "untimed-wrapper",
+    "typography": "native-html",
+    "transform_keyframes": [
+      {
+        "time_seconds": 0.25,
+        "x_px": 0,
+        "y_px": 28,
+        "scale": 0.96,
+        "opacity": 0
+      },
+      {
+        "time_seconds": 0.9,
+        "x_px": 0,
+        "y_px": 0,
+        "scale": 1.03,
+        "opacity": 1
+      },
+      {
+        "time_seconds": 6,
+        "x_px": 0,
+        "y_px": -24,
+        "scale": 1.06,
+        "opacity": 1
+      }
+    ]
+  },
+  "acceptance": {
+    "status": "pending",
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "composite_snapshot_path": "snapshots/robot-hero-at-3.2s.png",
+    "checks": {
+      "source_visual_review": "pending",
+      "real_alpha": "pending",
+      "edge_quality": "pending",
+      "black_and_white_ground_composites": "pending",
+      "composited_hero_frame": "pending",
+      "safe_zone_and_typography": "pending",
+      "strict_hyperframes_check": "pending"
+    },
+    "blocking_reason": "No source or delivery bytes were produced in this planning-only task; content hashes, alpha proof, and composite QA are therefore not yet available."
+  }
+}

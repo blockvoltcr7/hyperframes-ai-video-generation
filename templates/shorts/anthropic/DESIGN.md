@@ -128,7 +128,7 @@ PHASE_PAD_BOTTOM = 240px   (clears the progress bar + reading room)
 
 ## Audio / SFX Cues
 
-Canonical rules: [`.claude/rules/audio-design.md`](../../../.claude/rules/audio-design.md). Cue files live in [`shared/audio/sfx/`](../../../shared/audio/) (sync into a video via [`scripts/sync-video-sfx.sh`](../../../scripts/sync-video-sfx.sh)).
+Canonical rules: [`.agents/rules/audio-design.md`](../../../.agents/rules/audio-design.md). Cue files live in [`shared/audio/sfx/`](../../../shared/audio/) (sync into a video via [`scripts/sync-video-sfx.sh`](../../../scripts/sync-video-sfx.sh)).
 
 Narration is one stem per scene. SFX are layered at low volume, keyed to spoken-word seconds. **No background music on Shorts** — narration + SFX + optional sonic-logo only.
 
