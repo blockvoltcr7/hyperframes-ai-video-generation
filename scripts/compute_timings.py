@@ -79,7 +79,7 @@ def filter_real_words(transcript: list[dict]) -> list[dict]:
     return [w for w in transcript if _LETTER_OR_DIGIT_RE.search(w['word'])]
 
 
-def compute(project: Path, slam_word: str = 'AGENTIC') -> dict:
+def compute(project: Path, slam_word: str = 'AGENTIC', *, allow_drift: bool = False) -> dict:
     script_path = project / 'script.txt'
     transcript_path = project / 'transcript.json'
 
@@ -96,10 +96,15 @@ def compute(project: Path, slam_word: str = 'AGENTIC') -> dict:
     real = filter_real_words(transcript)
 
     if sum(counts) != len(real):
-        # Soft warning — boundaries may be 1 off but still usable.
+        mismatch = (
+            f'script tokens ({sum(counts)}) != transcript words ({len(real)})'
+        )
+        if not allow_drift:
+            raise ValueError(
+                f'{mismatch}; pass --allow-drift to continue with drifted phase boundaries'
+            )
         print(
-            f'[compute_timings] WARN script tokens ({sum(counts)}) != '
-            f'transcript words ({len(real)}); phase boundaries may drift',
+            f'[compute_timings] WARN {mismatch}; phase boundaries may drift',
             file=sys.stderr,
         )
 
@@ -120,8 +125,9 @@ def compute(project: Path, slam_word: str = 'AGENTIC') -> dict:
     P4 = round(T3 + 0.4, 2)
 
     slam = slam_word.upper()
+    phase1_words = real[: counts[0]]
     slam_idx = next(
-        (i for i, w in enumerate(real) if w['word'].upper().strip('.,!?') == slam),
+        (i for i, w in enumerate(phase1_words) if w['word'].upper().strip('.,!?') == slam),
         None,
     )
     if slam_idx is None:
@@ -157,6 +163,8 @@ def main() -> int:
                         help='Phase-1 ALL-CAPS slam word (default: AGENTIC)')
     parser.add_argument('--json', action='store_true',
                         help='Emit a single JSON object instead of key=value lines')
+    parser.add_argument('--allow-drift', action='store_true',
+                        help='Continue when script token counts do not match the transcript')
     args = parser.parse_args()
 
     project = args.project.resolve()
@@ -164,7 +172,7 @@ def main() -> int:
         print(f'ERROR: {project} does not exist', file=sys.stderr)
         return 2
 
-    result = compute(project, slam_word=args.slam_word)
+    result = compute(project, slam_word=args.slam_word, allow_drift=args.allow_drift)
 
     if args.json:
         print(json.dumps(result, indent=2))

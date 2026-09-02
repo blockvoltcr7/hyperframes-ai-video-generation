@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseTopic, readArgs } from "./codex-create-short.mjs";
+import policy from "../runner/generation-policy.json" with { type: "json" };
 
 describe("Codex short launcher", () => {
   it("extracts duration without leaking it into the project slug", () => {
@@ -14,6 +15,12 @@ describe("Codex short launcher", () => {
     expect(parseTopic("Vector search explained").duration).toBe(30);
     expect(() => parseTopic("Vector search in 5 seconds")).toThrow(/outside the supported/);
     expect(() => parseTopic("Vector search in 301 seconds")).toThrow(/outside the supported/);
+  });
+
+  it("shares the adaptive default workflow with Studio and the runner", () => {
+    expect(policy.defaults.workflow).toBe("adaptive");
+    expect(policy.workflows).toContain("adaptive");
+    expect(policy.templates).toEqual(["classic", "archon", "anthropic"]);
   });
 
   it("rejects malformed flag pairs", () => {

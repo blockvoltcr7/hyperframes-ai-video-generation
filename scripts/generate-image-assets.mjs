@@ -13,7 +13,7 @@ const ALLOWED_BACKGROUNDS = new Set(["transparent", "opaque", "auto"]);
 const ALLOWED_QUALITIES = new Set(["low", "medium", "high", "auto"]);
 const ALLOWED_ROLES = new Set(["background", "cutout", "illustration", "texture", "plate"]);
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const values = { project: undefined, asset: undefined, source: undefined, api: false, dryRun: false, force: false };
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index];
@@ -26,9 +26,17 @@ function parseArgs(argv) {
     else throw new Error(`Unknown or incomplete argument: ${value}`);
   }
   if (!values.project) throw new Error("Usage: node scripts/generate-image-assets.mjs videos/<slug> [--dry-run | --api | --asset <id> --source <file>] [--force]");
+  if (values.dryRun && values.api) throw new Error("Choose exactly one execution mode: --dry-run or --api");
   if (values.source && !values.asset) throw new Error("--source requires exactly one --asset id");
   if (values.source && values.api) throw new Error("Choose either --source or --api, not both");
   return values;
+}
+
+function loadRepoEnv() {
+  const envPath = path.join(REPO_ROOT, ".env");
+  if (fsSync.existsSync(envPath) && typeof process.loadEnvFile === "function") {
+    process.loadEnvFile(envPath);
+  }
 }
 
 function safeProjectPath(input) {
@@ -111,6 +119,7 @@ async function generate(request, apiKey) {
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
+  loadRepoEnv();
   const project = safeProjectPath(options.project);
   const planPath = path.join(project, "asset-plan.json");
   const plan = await readJson(planPath);
@@ -155,9 +164,6 @@ async function main() {
 
   if (!options.api) throw new Error("Choose --dry-run, import a Codex-generated file with --asset <id> --source <file>, or explicitly opt into API billing with --api");
 
-  if (!process.env.OPENAI_API_KEY && fsSync.existsSync(path.join(REPO_ROOT, ".env")) && typeof process.loadEnvFile === "function") {
-    process.loadEnvFile(path.join(REPO_ROOT, ".env"));
-  }
   if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is required to generate images; run with --dry-run to validate the plan without spending credits");
 
   manifest.generator = "openai-images-api";

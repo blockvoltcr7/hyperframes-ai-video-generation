@@ -46,9 +46,14 @@ export const GeneratedVideoPlanSchema = z.object({
   shots: z.array(GeneratedVideoShotSchema).min(1),
 });
 
+export const LONGCAT_I2V_ENDPOINT = "fal-ai/longcat-video/distilled/image-to-video/720p";
+export const PIXVERSE_C1_ENDPOINT = "fal-ai/pixverse/c1/image-to-video";
+
 export const FalGeneratedVideoPlanSchema = GeneratedVideoPlanSchema.superRefine((plan, context) => {
   if (plan.provider !== "fal.ai") context.addIssue({ code: z.ZodIssueCode.custom, path: ["provider"], message: "Fal execution requires provider fal.ai" });
-  if (plan.model !== "fal-ai/longcat-video/distilled/image-to-video/720p") context.addIssue({ code: z.ZodIssueCode.custom, path: ["model"], message: "Unsupported Fal image-to-video endpoint" });
+  const isLongCat = plan.model === LONGCAT_I2V_ENDPOINT;
+  const isPixVerse = plan.model === PIXVERSE_C1_ENDPOINT;
+  if (!isLongCat && !isPixVerse) context.addIssue({ code: z.ZodIssueCode.custom, path: ["model"], message: "Unsupported Fal image-to-video endpoint" });
   if (plan.maxCostUsd == null) context.addIssue({ code: z.ZodIssueCode.custom, path: ["maxCostUsd"], message: "Fal execution requires maxCostUsd" });
   if (!plan.integrationFiles?.length) context.addIssue({ code: z.ZodIssueCode.custom, path: ["integrationFiles"], message: "Fal execution requires explicit integrationFiles" });
   plan.shots.forEach((shot, index) => {
@@ -56,12 +61,23 @@ export const FalGeneratedVideoPlanSchema = GeneratedVideoPlanSchema.superRefine(
     for (const [field, value] of required) {
       if (value == null) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, field], message: `Fal execution requires ${field}` });
     }
-    if (shot.endFrame) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "endFrame"], message: "LongCat supports only an opening frame" });
+    if (shot.endFrame) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "endFrame"], message: "Fal image-to-video supports only an opening frame" });
     if (shot.audioPolicy !== "none") context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "audioPolicy"], message: "Fal image-to-video must be silent" });
-    if (shot.aspectRatio !== "16:9") context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "aspectRatio"], message: "LongCat input must be pre-normalized to 16:9" });
-    if (shot.durationSeconds !== 8) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "durationSeconds"], message: "Calibrated LongCat execution requires exactly 8 seconds" });
-    if (shot.numFrames != null && shot.numFrames !== 240) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "numFrames"], message: "Calibrated LongCat execution requires exactly 240 frames" });
-    if (shot.fps != null && shot.fps !== 30) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "fps"], message: "LongCat 720p profile uses 30 fps" });
+    if (shot.aspectRatio !== "16:9") context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "aspectRatio"], message: "Fal input must be pre-normalized to 16:9" });
+    if (isLongCat) {
+      if (shot.durationSeconds !== 8) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "durationSeconds"], message: "Calibrated LongCat execution requires exactly 8 seconds" });
+      if (shot.numFrames != null && shot.numFrames !== 240) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "numFrames"], message: "Calibrated LongCat execution requires exactly 240 frames" });
+      if (shot.fps != null && shot.fps !== 30) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "fps"], message: "LongCat 720p profile uses 30 fps" });
+    }
+    if (isPixVerse) {
+      if (!Number.isInteger(shot.durationSeconds) || shot.durationSeconds < 1 || shot.durationSeconds > 15) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "durationSeconds"], message: "PixVerse C1 durationSeconds must be an integer from 1 through 15" });
+      }
+      if (shot.fps != null && shot.fps !== 30) context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "fps"], message: "PixVerse C1 canonical profile uses 30 fps" });
+      if (shot.numFrames != null && shot.fps != null && shot.numFrames !== shot.durationSeconds * shot.fps) {
+        context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "numFrames"], message: "PixVerse C1 numFrames must equal durationSeconds*fps" });
+      }
+    }
     if (shot.numFrames != null && shot.fps != null && Math.abs(shot.numFrames / shot.fps - shot.durationSeconds) > 1 / shot.fps) {
       context.addIssue({ code: z.ZodIssueCode.custom, path: ["shots", index, "durationSeconds"], message: "durationSeconds must match numFrames/fps" });
     }
@@ -120,7 +136,7 @@ const GeneratedVideoRawProbeSchema = z.object({
   codec: z.literal("h264"),
   width: z.literal(1280),
   height: z.union([z.literal(704), z.literal(720)]),
-  fps: z.literal(30),
+  fps: z.number().min(12).max(60),
   frameCount: z.number().int().positive(),
   durationSeconds: z.number().positive(),
   hasAudio: z.literal(false),

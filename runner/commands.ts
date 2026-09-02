@@ -6,14 +6,22 @@ import crypto from "node:crypto";
 import { projectPath, REPO_ROOT, STUDIO_ROOT } from "./paths.js";
 import type { JobSummary, PreflightCheck } from "./types.js";
 import { assertProjectReady } from "./project-contracts.js";
+import { ALLOWED_IMAGE_MODES, ALLOWED_TEMPLATES, ALLOWED_WORKFLOWS, DEFAULT_IMAGES, DEFAULT_TEMPLATE, DEFAULT_WORKFLOW } from "./generation-policy.js";
 
 const jobs = new Map<string, { summary: JobSummary; child?: ReturnType<typeof spawn> }>();
 const JOB_STATE_PATH = path.join(STUDIO_ROOT, "state", "jobs.json");
-const ALLOWED_TEMPLATES = new Set(["classic", "archon", "anthropic"]);
-const ALLOWED_WORKFLOWS = new Set(["template", "adaptive"]);
-const ALLOWED_IMAGE_MODES = new Set(["off", "auto", "required"]);
+const JOB_OUTPUT_LIMIT = 20_000;
 let activeMutationJob: string | null = null;
 const activePreviews = new Map<string, string>();
+
+export function appendBoundedOutput(current: string, chunk: string, limit = JOB_OUTPUT_LIMIT): string {
+  return `${current}${chunk}`.slice(-limit);
+}
+
+export function previewUrlFromOutput(output: string): string | undefined {
+  const url = output.match(/https?:\/\/(?:127\.0\.0\.1|localhost):\d+(?:\/[^\s]*)?/i)?.[0];
+  return url?.replace(/[),.]+$/, "");
+}
 
 async function hydrateJobs() {
   try {
@@ -81,13 +89,11 @@ export async function runJob(input: { type: JobSummary["type"]; projectSlug?: st
   jobs.set(job.id, { summary: job, child });
   job.status = "running";
   await persistJobs();
-  const chunks: string[] = [];
   const append = (chunk: Buffer) => {
     const text = chunk.toString();
-    chunks.push(text);
-    job.output = chunks.join("").slice(-20000);
-    const url = job.output.match(/https?:\/\/localhost:\d+(?:\/[^\s]*)?/i)?.[0];
-    if (url) job.previewUrl = url.replace(/[),.]+$/, "");
+    job.output = appendBoundedOutput(job.output, text);
+    const url = previewUrlFromOutput(job.output);
+    if (url) job.previewUrl = url;
     if (input.type === "preview") {
       try {
         const payload = JSON.parse(text.trim());
@@ -112,7 +118,7 @@ export async function runJob(input: { type: JobSummary["type"]; projectSlug?: st
     }
     job.finishedAt = new Date().toISOString();
     if (activeMutationJob === job.id) activeMutationJob = null;
-    if (input.type === "preview" && input.projectSlug && job.status !== "succeeded" && activePreviews.get(input.projectSlug) === job.id) activePreviews.delete(input.projectSlug);
+    if (input.type === "preview" && input.projectSlug && activePreviews.get(input.projectSlug) === job.id) activePreviews.delete(input.projectSlug);
     await persistJobs();
   });
   return job;
@@ -141,9 +147,9 @@ export async function stopPreview(slug: string) {
 function commandFor(input: { type: JobSummary["type"]; projectSlug?: string; topic?: string; template?: string; workflow?: string; images?: string }, renderOutput?: string): string[] {
   switch (input.type) {
     case "generation": {
-      const template = input.template ?? "classic";
-      const workflow = input.workflow ?? "template";
-      const images = input.images ?? "auto";
+      const template = input.template ?? DEFAULT_TEMPLATE;
+      const workflow = input.workflow ?? DEFAULT_WORKFLOW;
+      const images = input.images ?? DEFAULT_IMAGES;
       if (!ALLOWED_TEMPLATES.has(template)) throw new Error("Template is not enabled in the studio");
       if (!ALLOWED_WORKFLOWS.has(workflow)) throw new Error("Generation workflow is not enabled in the studio");
       if (!ALLOWED_IMAGE_MODES.has(images)) throw new Error("Image policy is not enabled in the studio");
