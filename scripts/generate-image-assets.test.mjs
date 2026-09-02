@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildImageRequest, validateAssetPlan } from "./generate-image-assets.mjs";
+import { buildImageRequest, parseArgs, validateAssetPlan } from "./generate-image-assets.mjs";
 
 const validPlan = {
   version: 1,
@@ -39,6 +39,10 @@ describe("image asset planning", () => {
     invalid.assets[0].background = "transparent";
 
     expect(() => validateAssetPlan(invalid)).toThrow(/PNG or WebP/);
+  });
+
+  it("rejects combining --dry-run with --api", () => {
+    expect(() => parseArgs(["videos/demo", "--dry-run", "--api"])).toThrow(/exactly one execution mode/);
   });
 
   it("rejects transparent requests for GPT Image 2", () => {

@@ -6,7 +6,7 @@ const status = v.union(v.literal("queued"), v.literal("claimed"), v.literal("run
 export const listRecent = query({ args: {}, handler: async (ctx) => ctx.db.query("jobs").order("desc").take(50) });
 
 export const enqueue = mutation({
-  args: { projectId: v.optional(v.id("projects")), driver: v.union(v.literal("archon"), v.literal("hyperframes"), v.literal("openai")), type: v.string(), idempotencyKey: v.string(), command: v.array(v.string()) },
+  args: { projectId: v.optional(v.id("projects")), driver: v.union(v.literal("codex"), v.literal("hyperframes")), type: v.string(), idempotencyKey: v.string(), command: v.array(v.string()) },
   handler: async (ctx, args) => {
     const duplicate = await ctx.db.query("jobs").withIndex("by_idempotency", (q) => q.eq("idempotencyKey", args.idempotencyKey)).filter((q) => q.or(q.eq(q.field("status"), "queued"), q.eq(q.field("status"), "claimed"), q.eq(q.field("status"), "running"))).first();
     if (duplicate) throw new Error("An active job with this idempotency key already exists");

@@ -46,14 +46,16 @@ The Python scripts read the repository `.env`. Do not commit it.
 Create a short directly:
 
 ```bash
-npm run create:short -- --template classic --topic "What is RAG?"
+npm run create:short -- --workflow adaptive --template classic --topic "What is RAG?"
 ```
 
 Optional duration phrases are parsed from the topic:
 
 ```bash
-npm run create:short -- --template classic --topic "duration 45s, Kubernetes operators"
+npm run create:short -- --workflow adaptive --template classic --topic "duration 45s, Kubernetes operators"
 ```
+
+Omitting `--workflow` now defaults to `adaptive` (`$faceless-explainer`). Pass `--workflow template` for the legacy four-phase `$diy-yt-creator` playbooks.
 
 Available templates:
 

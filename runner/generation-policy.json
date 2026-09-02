@@ -1,0 +1,10 @@
+{
+  "templates": ["classic", "archon", "anthropic"],
+  "workflows": ["adaptive", "template"],
+  "imageModes": ["off", "auto", "required"],
+  "defaults": {
+    "workflow": "adaptive",
+    "template": "classic",
+    "images": "auto"
+  }
+}

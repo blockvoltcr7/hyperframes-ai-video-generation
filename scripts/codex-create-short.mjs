@@ -6,10 +6,12 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
+import policy from "../runner/generation-policy.json" with { type: "json" };
+
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const ALLOWED_TEMPLATES = new Set(["classic", "archon", "anthropic"]);
-const ALLOWED_WORKFLOWS = new Set(["template", "adaptive"]);
-const ALLOWED_IMAGE_MODES = new Set(["off", "auto", "required"]);
+const ALLOWED_TEMPLATES = new Set(policy.templates);
+const ALLOWED_WORKFLOWS = new Set(policy.workflows);
+const ALLOWED_IMAGE_MODES = new Set(policy.imageModes);
 
 export function readArgs(argv) {
   const values = new Map();
@@ -66,9 +68,9 @@ function preflight(workflow, template, slug) {
 export function main(argv = process.argv.slice(2)) {
 try {
   const values = readArgs(argv);
-  const workflow = values.get("workflow") ?? "template";
-  const template = values.get("template") ?? "classic";
-  const images = values.get("images") ?? "auto";
+  const workflow = values.get("workflow") ?? policy.defaults.workflow;
+  const template = values.get("template") ?? policy.defaults.template;
+  const images = values.get("images") ?? policy.defaults.images;
   const rawTopic = values.get("topic")?.trim();
   if (!ALLOWED_WORKFLOWS.has(workflow)) throw new Error(`Generation workflow is not enabled: ${workflow}`);
   if (!ALLOWED_TEMPLATES.has(template)) throw new Error(`Template is not enabled: ${template}`);

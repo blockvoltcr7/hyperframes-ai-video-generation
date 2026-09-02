@@ -130,6 +130,33 @@ describe("project contracts", () => {
     expect(FalGeneratedVideoPlanSchema.safeParse({ ...executable, shots: [{ ...executable.shots[0], durationSeconds: 4, numFrames: 120 }] }).success).toBe(false);
   });
 
+  it("validates an executable PixVerse C1 image-to-video plan", () => {
+    const executable = {
+      schemaVersion: 1,
+      provider: "fal.ai",
+      model: "fal-ai/pixverse/c1/image-to-video",
+      maxCostUsd: 0.5,
+      integrationFiles: ["index.html"],
+      shots: [{ id: "shot-1", purpose: "Establish flow", referenceAssets: ["assets/generated/flow.png"], startFrame: "assets/generated/flow.png", output: "assets/generated/video/flow-v1.mp4", prompt: "A restrained camera push follows the fixed flow while preserving all objects and their original arrangement.", camera: "slow push", durationSeconds: 15, numFrames: 450, fps: 30, aspectRatio: "16:9", continuityNotes: "preserve violet node positions", audioPolicy: "none", fallback: "animated-still" }],
+    };
+    expect(FalGeneratedVideoPlanSchema.safeParse(executable).success).toBe(true);
+    expect(FalGeneratedVideoPlanSchema.safeParse({ ...executable, shots: [{ ...executable.shots[0], durationSeconds: 16, numFrames: 480 }] }).success).toBe(false);
+    expect(FalGeneratedVideoPlanSchema.safeParse({ ...executable, shots: [{ ...executable.shots[0], numFrames: 240 }] }).success).toBe(false);
+  });
+
+  it("accepts PixVerse raw probes at non-30 fps while keeping canonical 30 fps", async () => {
+    const { dir, report } = await createReadyGeneratedVideoProject();
+    const manifestPath = path.join(dir, "assets", "generated", "video", "manifest.json");
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
+    manifest.assets[0].model = "fal-ai/pixverse/c1/image-to-video";
+    manifest.assets[0].rawDownload.fps = 24;
+    manifest.assets[0].media.raw.fps = 24;
+    report.provenance[0].model = "fal-ai/pixverse/c1/image-to-video";
+    await fs.writeFile(manifestPath, JSON.stringify(manifest));
+    await writeFreshQa(dir, report);
+    await expect(assertProjectReady(dir)).resolves.toBeDefined();
+  });
+
   it("accepts reviewed QA provenance matching every generated-video manifest asset", async () => {
     const { dir } = await createReadyGeneratedVideoProject();
     await expect(assertProjectReady(dir)).resolves.toBeDefined();

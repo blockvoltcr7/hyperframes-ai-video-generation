@@ -15,7 +15,7 @@
     "dev:studio": "vite --config studio/vite.config.ts",
     "dev:runner": "tsx runner/server.ts",
     "build": "vite build --config studio/vite.config.ts",
-    "test": "vitest run",
+    "test": "vitest run && python3 scripts/tests/test_compute_timings.py && python3 scripts/tests/test_tts_lib.py",
     "typecheck": "tsc --noEmit",
     "convex": "convex dev --cmd \"npm run dev:studio\""
   },
