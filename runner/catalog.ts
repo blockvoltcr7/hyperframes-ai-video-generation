@@ -51,7 +51,9 @@ export async function scanProjects(): Promise<ProjectSummary[]> {
     const has = (kind: Artifact["kind"], minimumBytes = 1) => artifacts.some((item) => item.kind === kind && item.exists && item.sizeBytes >= minimumBytes);
     const hasAlignedNarration = (has("transcript", 3) && artifacts.some((item) => item.relativePath === "audio/narration.wav" && item.exists && item.sizeBytes > 1024))
       || artifacts.some((item) => item.relativePath === "audio_meta.json" && item.exists && item.sizeBytes > 10);
-    const contract = await readProjectContract(projectDir).catch(() => undefined);
+    // The Studio polls the catalog every few seconds while jobs run; reuse the digest when
+    // no governed file changed so large media is not re-hashed on every poll.
+    const contract = await readProjectContract(projectDir, { reuseUnchanged: true }).catch(() => undefined);
     const contractReady = contract && contract.artifacts.ok && contract.fresh && contract.qa?.status === "passed" && contract.qa.visualEvidence.reviewed;
     projects.push({
       slug,
