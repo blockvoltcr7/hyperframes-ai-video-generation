@@ -7,12 +7,28 @@ import { projectPath, REPO_ROOT, STUDIO_ROOT } from "./paths.js";
 import type { JobSummary, PreflightCheck } from "./types.js";
 import { assertProjectReady } from "./project-contracts.js";
 import { ALLOWED_IMAGE_MODES, ALLOWED_TEMPLATES, ALLOWED_WORKFLOWS, DEFAULT_IMAGES, DEFAULT_TEMPLATE, DEFAULT_WORKFLOW } from "./generation-policy.js";
+import { RunnerError } from "./errors.js";
+import { createJsonStateFile } from "./state-file.js";
 
+export interface JobRequest {
+  type: JobSummary["type"];
+  projectSlug?: string;
+  topic?: string;
+  template?: string;
+  workflow?: string;
+  images?: string;
+}
+
+const JOB_TYPES: ReadonlySet<string> = new Set<JobSummary["type"]>(["generation", "check", "preview", "render"]);
 const jobs = new Map<string, { summary: JobSummary; child?: ReturnType<typeof spawn> }>();
-const JOB_STATE_PATH = path.join(STUDIO_ROOT, "state", "jobs.json");
+const jobState = createJsonStateFile<JobSummary[]>(path.join(STUDIO_ROOT, "state", "jobs.json"));
 const JOB_OUTPUT_LIMIT = 20_000;
 let activeMutationJob: string | null = null;
 const activePreviews = new Map<string, string>();
+
+export function isJobType(value: unknown): value is JobSummary["type"] {
+  return typeof value === "string" && JOB_TYPES.has(value);
+}
 
 export function appendBoundedOutput(current: string, chunk: string, limit = JOB_OUTPUT_LIMIT): string {
   return `${current}${chunk}`.slice(-limit);
@@ -24,112 +40,165 @@ export function previewUrlFromOutput(output: string): string | undefined {
 }
 
 async function hydrateJobs() {
-  try {
-    const stored = JSON.parse(await fs.readFile(JOB_STATE_PATH, "utf8")) as JobSummary[];
-    for (const summary of stored) {
-      if (summary.status === "queued" || summary.status === "running") {
-        summary.status = "failed";
-        summary.error = "Runner restarted before this job reached a terminal state";
-        summary.finishedAt = new Date().toISOString();
-      }
-      jobs.set(summary.id, { summary });
+  const stored = await jobState.read();
+  if (!Array.isArray(stored)) return;
+  for (const summary of stored) {
+    if (summary.status === "queued" || summary.status === "running") {
+      summary.status = "failed";
+      summary.error = "Runner restarted before this job reached a terminal state";
+      summary.finishedAt = new Date().toISOString();
     }
-  } catch { /* first run or invalid legacy state */ }
+    jobs.set(summary.id, { summary });
+  }
 }
 
-async function persistJobs() {
-  await fs.mkdir(path.dirname(JOB_STATE_PATH), { recursive: true });
-  const temp = `${JOB_STATE_PATH}.${process.pid}.tmp`;
-  await fs.writeFile(temp, `${JSON.stringify(listJobs(), null, 2)}\n`);
-  await fs.rename(temp, JOB_STATE_PATH);
+function persistJobs(): Promise<void> {
+  return jobState.write(listJobs);
 }
 
 await hydrateJobs();
 
-function createJob(summary: Omit<JobSummary, "id" | "startedAt" | "status" | "output">, id = crypto.randomUUID()): JobSummary {
-  const job: JobSummary = { ...summary, id, startedAt: new Date().toISOString(), status: "queued", output: "" };
-  jobs.set(id, { summary: job });
-  void persistJobs();
-  return job;
-}
-
 export function getJob(id: string): JobSummary | undefined { return jobs.get(id)?.summary; }
 export function listJobs(): JobSummary[] { return [...jobs.values()].map((item) => item.summary).reverse(); }
 
-export async function runJob(input: { type: JobSummary["type"]; projectSlug?: string; topic?: string; template?: string; workflow?: string; images?: string }): Promise<JobSummary> {
+// Jobs are `npx`/`node` wrappers around the real work (HyperFrames CLI, esbuild, headless
+// Chrome, Codex). Signalling only the wrapper leaves that tree running, so each job gets its
+// own process group and is stopped as a group.
+const USE_PROCESS_GROUPS = process.platform !== "win32";
+
+function terminateJobProcess(child: ReturnType<typeof spawn>, signal: NodeJS.Signals = "SIGTERM") {
+  if (child.exitCode !== null || child.signalCode !== null || !child.pid) return;
+  if (USE_PROCESS_GROUPS) {
+    try { process.kill(-child.pid, signal); return; } catch { /* group already gone; fall back to the direct child */ }
+  }
+  child.kill(signal);
+}
+
+function isActive(summary: JobSummary) {
+  return summary.status === "queued" || summary.status === "running";
+}
+
+/** Stop every active job (used on runner shutdown so cancelled work does not outlive the runner). */
+export async function shutdownJobs(reason: string, graceMs = 3000): Promise<void> {
+  const active = [...jobs.values()].filter((record) => record.child && isActive(record.summary));
+  const exits = active.map((record) => new Promise<void>((resolve) => {
+    if (record.child!.exitCode !== null || record.child!.signalCode !== null) return resolve();
+    record.child!.once("close", () => resolve());
+    setTimeout(resolve, graceMs).unref();
+  }));
+  for (const record of active) {
+    record.summary.status = "cancelled";
+    record.summary.error = reason;
+    record.summary.finishedAt = new Date().toISOString();
+    terminateJobProcess(record.child!);
+  }
+  activeMutationJob = null;
+  activePreviews.clear();
+  await Promise.all([persistJobs(), ...exits]);
+}
+
+export async function runJob(input: JobRequest): Promise<JobSummary> {
+  if (!isJobType(input.type)) throw new RunnerError(`Unsupported job type: ${String(input.type)}`);
+  const isMutation = input.type === "generation" || input.type === "render";
+  if (isMutation && activeMutationJob) throw new RunnerError("A generation or render job is already running", 409);
+
   const project = input.projectSlug ? projectPath(input.projectSlug) : undefined;
-  if (input.projectSlug && !(await fs.stat(project!).catch(() => null))) throw new Error("Project does not exist");
+  if (project && !(await fs.stat(project).catch(() => null))) throw new RunnerError("Project does not exist", 404);
   if (input.type === "render" && input.projectSlug) await assertRenderReady(input.projectSlug);
 
-  const jobId = crypto.randomUUID();
-  const renderPaths = input.type === "render" && input.projectSlug ? renderOutputPaths(input.projectSlug, project!) : undefined;
+  const renderPaths = input.type === "render" && input.projectSlug && project ? renderOutputPaths(input.projectSlug, project) : undefined;
   if (renderPaths) {
-    if (await fs.stat(renderPaths.finalPath).catch(() => null)) throw new Error("Render output already exists; remove it before starting another render");
+    if (await fs.stat(renderPaths.finalPath).catch(() => null)) throw new RunnerError("Render output already exists; remove it before starting another render", 409);
     await fs.mkdir(path.dirname(renderPaths.finalPath), { recursive: true });
   }
   const command = commandFor(input, renderPaths?.partRelativePath);
-  const isMutation = input.type === "generation" || input.type === "render";
-  if (isMutation && activeMutationJob) throw new Error("A generation or render job is already running");
-  if (input.type === "preview" && input.projectSlug) {
-    if (activePreviews.has(input.projectSlug)) throw new Error("A preview is already running for this project");
-    try {
-      const status = JSON.parse(await captureProcess("npx", ["--no-install", "hyperframes", "preview", `videos/${input.projectSlug}`, "--status", "--json"]));
-      if (status?.result?.state === "running") throw new Error(`A managed preview is already running at ${status.result.studioUrl ?? status.result.serverUrl}`);
-    } catch (error) {
-      if (error instanceof Error && error.message.startsWith("A managed preview")) throw error;
-      // A missing preview is the normal start state; the start command owns any real failure.
-    }
+
+  // Reserve the exclusive slots synchronously so two overlapping requests cannot both pass the
+  // checks while one of them is awaiting the managed-preview status probe below.
+  const jobId = crypto.randomUUID();
+  if (isMutation && activeMutationJob) throw new RunnerError("A generation or render job is already running", 409);
+  if (isMutation) activeMutationJob = jobId;
+  const previewSlug = input.type === "preview" ? input.projectSlug : undefined;
+  if (previewSlug) {
+    if (activePreviews.has(previewSlug)) throw new RunnerError("A preview is already running for this project", 409);
+    activePreviews.set(previewSlug, jobId);
   }
-  const job = createJob({ driver: input.type === "generation" ? "codex" : "hyperframes", type: input.type, projectSlug: input.projectSlug, command }, jobId);
-  if (isMutation) activeMutationJob = job.id;
-  if (input.type === "preview" && input.projectSlug) activePreviews.set(input.projectSlug, job.id);
-  const logDir = path.join(STUDIO_ROOT, "logs", job.id);
-  await fs.mkdir(logDir, { recursive: true });
-  const child = spawn(command[0], command.slice(1), { cwd: REPO_ROOT, env: process.env, shell: false });
-  jobs.set(job.id, { summary: job, child });
-  job.status = "running";
-  await persistJobs();
-  const append = (chunk: Buffer) => {
-    const text = chunk.toString();
-    job.output = appendBoundedOutput(job.output, text);
-    const url = previewUrlFromOutput(job.output);
-    if (url) job.previewUrl = url;
-    if (input.type === "preview") {
-      try {
-        const payload = JSON.parse(text.trim());
-        if (payload?.result?.studioUrl) job.previewUrl = payload.result.studioUrl;
-        if (payload?.result?.pid) job.previewPid = payload.result.pid;
-      } catch { /* logs can contain non-JSON lines */ }
-    }
+  const releaseReservations = () => {
+    if (activeMutationJob === jobId) activeMutationJob = null;
+    if (previewSlug && activePreviews.get(previewSlug) === jobId) activePreviews.delete(previewSlug);
   };
-  child.stdout?.on("data", append);
-  child.stderr?.on("data", append);
-  child.stdout?.pipe(fsSync.createWriteStream(path.join(logDir, "stdout.log")));
-  child.stderr?.pipe(fsSync.createWriteStream(path.join(logDir, "stderr.log")));
-  child.on("error", (error) => { job.status = "failed"; job.error = error.message; job.finishedAt = new Date().toISOString(); if (activeMutationJob === job.id) activeMutationJob = null; void persistJobs(); });
-  child.on("close", async (code, signal) => {
-    if (job.status === "cancelled") return;
-    job.status = code === 0 ? "succeeded" : "failed";
-    if (signal) job.error = `Process ended with signal ${signal}`;
-    if (code && !job.error) job.error = `Process exited with code ${code}`;
-    if (code === 0 && renderPaths) {
-      try { await fs.rename(renderPaths.partPath, renderPaths.finalPath); }
-      catch (error) { job.status = "failed"; job.error = error instanceof Error ? error.message : "Could not finalize render"; }
+  const discardPartialRender = async () => {
+    if (renderPaths) await fs.rm(renderPaths.partPath, { force: true }).catch(() => undefined);
+  };
+
+  try {
+    if (previewSlug) {
+      let status: { result?: { state?: string; studioUrl?: string; serverUrl?: string } } | undefined;
+      // A missing managed preview is the normal start state; the start command owns any real failure.
+      try { status = JSON.parse(await captureProcess("npx", ["--no-install", "hyperframes", "preview", `videos/${previewSlug}`, "--status", "--json"])); } catch { /* not running */ }
+      if (status?.result?.state === "running") throw new RunnerError(`A managed preview is already running at ${status.result.studioUrl ?? status.result.serverUrl}`, 409);
     }
-    job.finishedAt = new Date().toISOString();
-    if (activeMutationJob === job.id) activeMutationJob = null;
-    if (input.type === "preview" && input.projectSlug && activePreviews.get(input.projectSlug) === job.id) activePreviews.delete(input.projectSlug);
+
+    const job: JobSummary = { id: jobId, driver: input.type === "generation" ? "codex" : "hyperframes", type: input.type, projectSlug: input.projectSlug, command, startedAt: new Date().toISOString(), status: "queued", output: "" };
+    const logDir = path.join(STUDIO_ROOT, "logs", job.id);
+    await fs.mkdir(logDir, { recursive: true });
+    const child = spawn(command[0], command.slice(1), { cwd: REPO_ROOT, env: process.env, shell: false, detached: USE_PROCESS_GROUPS });
+    jobs.set(job.id, { summary: job, child });
+    job.status = "running";
+    const append = (chunk: Buffer) => {
+      const text = chunk.toString();
+      job.output = appendBoundedOutput(job.output, text);
+      const url = previewUrlFromOutput(job.output);
+      if (url) job.previewUrl = url;
+      if (input.type === "preview") {
+        try {
+          const payload = JSON.parse(text.trim());
+          if (payload?.result?.studioUrl) job.previewUrl = payload.result.studioUrl;
+          if (payload?.result?.pid) job.previewPid = payload.result.pid;
+        } catch { /* logs can contain non-JSON lines */ }
+      }
+    };
+    child.stdout?.on("data", append);
+    child.stderr?.on("data", append);
+    child.stdout?.pipe(fsSync.createWriteStream(path.join(logDir, "stdout.log")));
+    child.stderr?.pipe(fsSync.createWriteStream(path.join(logDir, "stderr.log")));
+    // Node emits "close" after "error" (with a negative code), so "close" is the single place
+    // that finalizes the job, releases slots, and persists.
+    child.on("error", (error) => { job.error = error.message; });
+    child.on("close", async (code, signal) => {
+      if (job.status === "cancelled") {
+        await discardPartialRender();
+        return;
+      }
+      job.status = code === 0 ? "succeeded" : "failed";
+      if (signal) job.error = `Process ended with signal ${signal}`;
+      if (code && !job.error) job.error = `Process exited with code ${code}`;
+      if (renderPaths) {
+        if (code === 0) {
+          try { await fs.rename(renderPaths.partPath, renderPaths.finalPath); }
+          catch (error) { job.status = "failed"; job.error = error instanceof Error ? error.message : "Could not finalize render"; }
+        }
+        if (job.status === "failed") await discardPartialRender();
+      }
+      job.finishedAt = new Date().toISOString();
+      releaseReservations();
+      await persistJobs();
+    });
     await persistJobs();
-  });
-  return job;
+    return job;
+  } catch (error) {
+    releaseReservations();
+    await discardPartialRender();
+    throw error;
+  }
 }
 
 export function cancelJob(id: string): JobSummary | undefined {
   const record = jobs.get(id);
   if (!record) return undefined;
-  if (record.summary.status === "succeeded" || record.summary.status === "failed" || record.summary.status === "cancelled") return record.summary;
+  if (!isActive(record.summary)) return record.summary;
   record.summary.status = "cancelled";
-  record.child?.kill("SIGTERM");
+  if (record.child) terminateJobProcess(record.child);
   record.summary.finishedAt = new Date().toISOString();
   if (activeMutationJob === id) activeMutationJob = null;
   if (record.summary.projectSlug && activePreviews.get(record.summary.projectSlug) === id) activePreviews.delete(record.summary.projectSlug);
@@ -144,27 +213,29 @@ export async function stopPreview(slug: string) {
   return JSON.parse(output);
 }
 
-function commandFor(input: { type: JobSummary["type"]; projectSlug?: string; topic?: string; template?: string; workflow?: string; images?: string }, renderOutput?: string): string[] {
+function commandFor(input: JobRequest, renderOutput?: string): string[] {
   switch (input.type) {
     case "generation": {
       const template = input.template ?? DEFAULT_TEMPLATE;
       const workflow = input.workflow ?? DEFAULT_WORKFLOW;
       const images = input.images ?? DEFAULT_IMAGES;
-      if (!ALLOWED_TEMPLATES.has(template)) throw new Error("Template is not enabled in the studio");
-      if (!ALLOWED_WORKFLOWS.has(workflow)) throw new Error("Generation workflow is not enabled in the studio");
-      if (!ALLOWED_IMAGE_MODES.has(images)) throw new Error("Image policy is not enabled in the studio");
-      if (!input.topic?.trim()) throw new Error("A topic is required");
+      if (!ALLOWED_TEMPLATES.has(template)) throw new RunnerError("Template is not enabled in the studio");
+      if (!ALLOWED_WORKFLOWS.has(workflow)) throw new RunnerError("Generation workflow is not enabled in the studio");
+      if (!ALLOWED_IMAGE_MODES.has(images)) throw new RunnerError("Image policy is not enabled in the studio");
+      if (!input.topic?.trim()) throw new RunnerError("A topic is required");
       return ["node", "scripts/codex-create-short.mjs", "--workflow", workflow, "--template", template, "--images", images, "--topic", input.topic.trim()];
     }
     case "check":
-      if (!input.projectSlug) throw new Error("A project is required");
+      if (!input.projectSlug) throw new RunnerError("A project is required");
       return ["npx", "--no-install", "hyperframes", "check", `videos/${input.projectSlug}`, "--json", "--strict", "--at-transitions"];
     case "preview":
-      if (!input.projectSlug) throw new Error("A project is required");
+      if (!input.projectSlug) throw new RunnerError("A project is required");
       return ["npx", "--no-install", "hyperframes", "preview", `videos/${input.projectSlug}`, "--background", "--no-open", "--json"];
     case "render":
-      if (!input.projectSlug) throw new Error("A project is required");
+      if (!input.projectSlug) throw new RunnerError("A project is required");
       return ["npx", "--no-install", "hyperframes", "render", `videos/${input.projectSlug}`, "--output", renderOutput ?? `videos/${input.projectSlug}/out/${input.projectSlug}.mp4`];
+    default:
+      throw new RunnerError(`Unsupported job type: ${String((input as { type: unknown }).type)}`);
   }
 }
 
@@ -189,13 +260,13 @@ async function assertRenderReady(slug: string) {
   try {
     await assertProjectReady(projectPath(slug), { requireReview: true });
   } catch (error) {
-    throw new Error(`Render blocked by project contract: ${error instanceof Error ? error.message : "project is not ready"}`);
+    throw new RunnerError(`Render blocked by project contract: ${error instanceof Error ? error.message : "project is not ready"}`, 409);
   }
   try {
     await captureProcess("npx", ["--no-install", "hyperframes", "check", `videos/${slug}`, "--json", "--strict", "--at-transitions"]);
   } catch (error) {
     const detail = error instanceof Error ? error.message : "strict check failed";
-    throw new Error(`Render blocked because the current project did not pass strict HyperFrames validation: ${detail}`);
+    throw new RunnerError(`Render blocked because the current project did not pass strict HyperFrames validation: ${detail}`, 409);
   }
 }
 
@@ -209,14 +280,7 @@ export async function preflight(): Promise<PreflightCheck[]> {
     ["codex", "Codex CLI", "codex", ["--version"]],
   ] as const) {
     try {
-      const output = await new Promise<string>((resolve, reject) => {
-        const child = spawn(command, args, { cwd: REPO_ROOT, env: process.env, shell: false });
-        let text = "";
-        child.stdout.on("data", (chunk) => { text += chunk.toString(); });
-        child.stderr.on("data", (chunk) => { text += chunk.toString(); });
-        child.on("error", reject);
-        child.on("close", (code) => code === 0 ? resolve(text.trim()) : reject(new Error(text.trim() || `exit ${code}`)));
-      });
+      const output = await captureProcess(command, [...args]);
       checks.push({ id, label, status: "pass", detail: output.split("\n")[0] || "Available" });
     } catch (error) {
       checks.push({ id, label, status: "fail", detail: error instanceof Error ? error.message : "Unavailable" });

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { resolveRepoPath } from "./paths.js";
-import { appendBoundedOutput, previewUrlFromOutput, renderOutputPaths, runJob } from "./commands.js";
+import { appendBoundedOutput, isJobType, previewUrlFromOutput, renderOutputPaths, runJob } from "./commands.js";
+import { RunnerError, statusForError } from "./errors.js";
 import { DEFAULT_WORKFLOW } from "./generation-policy.js";
 
 describe("runner filesystem policy", () => {
@@ -28,6 +29,27 @@ describe("runner filesystem policy", () => {
 
   it("defaults generation to the shared adaptive workflow", () => {
     expect(DEFAULT_WORKFLOW).toBe("adaptive");
+  });
+
+  it("rejects unknown job types before touching the filesystem or spawning", async () => {
+    expect(isJobType("render")).toBe(true);
+    expect(isJobType("shell")).toBe(false);
+    expect(isJobType(undefined)).toBe(false);
+    await expect(runJob({ type: "shell" as never, projectSlug: "demo" })).rejects.toThrow(/Unsupported job type: shell/);
+  });
+
+  it("rejects invalid project slugs and reports missing projects as 404", async () => {
+    await expect(runJob({ type: "check", projectSlug: "../etc" })).rejects.toThrow(/Invalid project slug/);
+    const missing = await runJob({ type: "check", projectSlug: "definitely-missing-project-4176" }).catch((error: unknown) => error);
+    expect(missing).toBeInstanceOf(RunnerError);
+    expect(statusForError(missing)).toBe(404);
+    expect((missing as Error).message).toMatch(/Project does not exist/);
+  });
+
+  it("maps plain errors to 400 and runner errors to their declared status", () => {
+    expect(statusForError(new Error("bad input"))).toBe(400);
+    expect(statusForError(new RunnerError("conflict", 409))).toBe(409);
+    expect(statusForError("not an error")).toBe(400);
   });
 
   it("keeps a rolling job output buffer instead of retaining every chunk", () => {
