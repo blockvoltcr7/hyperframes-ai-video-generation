@@ -31,6 +31,13 @@ class ComputeTimingsTest(unittest.TestCase):
         script = "<!-- pronunciation -->\n\nOne two.\n\nThree four.\n\nFive six.\n\nSeven eight."
         self.assertEqual(len(split_phases(script)), 4)
 
+    def test_split_phases_strips_every_break_tag_form(self):
+        script = 'One <break time="0.5s"/> two.\n\nThree<break/> four.\n\nFive <BREAK time="1s"> six.\n\nSeven eight.'
+        phases = split_phases(script)
+        self.assertEqual(len(phases), 4)
+        self.assertNotIn("break", " ".join(phases).lower())
+        self.assertEqual(phases[1], "Three four.")
+
     def test_fails_closed_on_token_transcript_mismatch(self):
         project = write_project(
             "Alpha beta.\n\nGamma delta.\n\nEpsilon zeta.\n\nEta theta.",
