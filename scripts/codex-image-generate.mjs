@@ -69,9 +69,13 @@ async function runCodex(prompt) {
       cwd: os.tmpdir(), env: process.env, shell: false, stdio: ["pipe", "pipe", "pipe"],
     });
     let stderr = "";
-    child.stderr.on("data", (chunk) => { stderr += chunk.toString(); });
+    let stdout = "";
+    // Both pipes must be drained: an unread stdout pipe fills its OS buffer and codex blocks
+    // on write, so "close" never fires and the script hangs with no error.
+    child.stdout.on("data", (chunk) => { stdout = `${stdout}${chunk}`.slice(-2000); });
+    child.stderr.on("data", (chunk) => { stderr = `${stderr}${chunk}`.slice(-2000); });
     child.on("error", reject);
-    child.on("close", (code) => code === 0 ? resolve() : reject(new Error(stderr.trim().slice(-2000) || `codex exec exited ${code}`)));
+    child.on("close", (code) => code === 0 ? resolve() : reject(new Error(stderr.trim() || stdout.trim() || `codex exec exited ${code}`)));
     child.stdin.end(prompt);
   });
 }

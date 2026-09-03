@@ -32,7 +32,24 @@ export function App() {
   useEffect(() => { void refresh(); }, []);
 
   useEffect(() => {
-    if (!jobs.some((job) => job.status === "running" || job.status === "queued")) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+      const target = event.target as HTMLElement | null;
+      if (target && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))) return;
+      if (event.key === "1") { setView("projects"); setSelected(null); }
+      else if (event.key === "2") { setView("create"); setSelected(null); }
+      else if (event.key === "3") void loadHealth();
+      else return;
+      event.preventDefault();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  // Re-arm polling only when activity starts or stops, not on every 2s refresh of `jobs`.
+  const hasActiveJobs = jobs.some((job) => job.status === "running" || job.status === "queued");
+  useEffect(() => {
+    if (!hasActiveJobs) return;
     const timer = window.setInterval(async () => {
       try {
         const [jobList, catalog] = await Promise.all([api.jobs(), api.catalog()]);
@@ -41,7 +58,7 @@ export function App() {
       } catch { /* keep the last known state while the runner restarts */ }
     }, 2000);
     return () => window.clearInterval(timer);
-  }, [jobs]);
+  }, [hasActiveJobs]);
 
   async function loadHealth() {
     setView("health");

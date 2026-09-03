@@ -1,10 +1,33 @@
 import type { JobSummary, PreflightCheck, ProjectSummary } from "../../../runner/types";
 
+/**
+ * Turn a runner response into its JSON payload or a readable error. When the runner is down
+ * the Vite proxy answers with an HTML 502/504 page, so the body cannot be assumed to be JSON.
+ */
+export async function parseRunnerResponse<T>(response: { ok: boolean; status: number; text(): Promise<string> }): Promise<T> {
+  const raw = await response.text();
+  let payload: unknown;
+  try { payload = raw ? JSON.parse(raw) : undefined; } catch { payload = undefined; }
+  if (response.ok) {
+    if (payload === undefined) throw new Error(`Runner returned an unreadable response (HTTP ${response.status})`);
+    return payload as T;
+  }
+  const message = payload && typeof payload === "object" && typeof (payload as { error?: unknown }).error === "string"
+    ? (payload as { error: string }).error
+    : response.status === 502 || response.status === 504
+      ? "Local runner is unavailable. Start it with `npm run dev:runner`."
+      : `Runner request failed (HTTP ${response.status})`;
+  throw new Error(message);
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, { ...init, headers: { "content-type": "application/json", ...(init?.headers ?? {}) } });
-  const payload = await response.json();
-  if (!response.ok) throw new Error(payload.error ?? "Runner request failed");
-  return payload;
+  let response: Response;
+  try {
+    response = await fetch(path, { ...init, headers: { "content-type": "application/json", ...(init?.headers ?? {}) } });
+  } catch {
+    throw new Error("Local runner is unreachable. Start it with `npm run dev:runner`.");
+  }
+  return parseRunnerResponse<T>(response);
 }
 
 export const api = {
