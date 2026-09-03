@@ -23,7 +23,9 @@ Keep fast iteration, visual review, and expensive delivery separate so a stale o
 * `Preview` starts a local HyperFrames preview server and does not require an MP4.
 * `Render` first runs a fresh strict HyperFrames check and blocks when the current project does not pass.
 * Render output collisions are rejected instead of being overwritten implicitly.
-* The runner uses a valid temporary media filename before renaming it to the final output, avoiding FFmpeg output-format errors caused by extensionless `.part` files.
+* The runner uses a valid temporary media filename before renaming it to the final output, avoiding FFmpeg output-format errors caused by extensionless `.part` files. A failed or cancelled render deletes its partial file.
+* HyperFrames preview and render write `.waveform-cache/`, `.thumbnails/`, and `.transcode-cache/` inside the project. The QA source digest ignores every hidden directory plus `out/`, `renders/`, `node_modules/`, and `qa/`, so previewing a project does not make its QA report stale.
+* Each job runs in its own process group. Cancelling a job or stopping the runner also stops the HyperFrames CLI, esbuild service, and headless Chrome it launched; interrupted jobs are persisted as `cancelled` with the reason.
 * Fal slot activation changes the governed HTML and adds unreviewed generated-video provenance. Rebuild the QA report from the activated sources, review fresh visual evidence, and rerun strict validation before render.
 * A narration replacement changes audio metadata, timeline references, and caption timings. Verify the provider ledger and local WAVs, rebuild captions, and inspect playback before strict validation.
 * A full-scene video layer requires an early and late snapshot with no black/stale extraction warning. A valid first frame does not prove the clip decodes at the scene boundary.
