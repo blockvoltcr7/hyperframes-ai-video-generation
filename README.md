@@ -130,7 +130,7 @@ The Studio provides:
 - preview and explicit render jobs;
 - a durable local job ledger, recent output, cancellation, managed preview ownership, and explicit preview shutdown.
 
-The runner binds to `127.0.0.1:4317`. It uses argument arrays with `shell: false`, restricts project paths to allowlisted repository roots, protects environment files, allows only known templates, and serializes generation/render mutations.
+The runner binds to `127.0.0.1:4317` (override with `STUDIO_RUNNER_PORT`). It uses argument arrays with `shell: false`, restricts project paths to allowlisted repository roots, protects environment files, allows only known templates, and serializes generation/render mutations. Each job runs in its own process group, so cancelling a job or stopping the runner (`SIGINT`/`SIGTERM`) also stops the HyperFrames CLI, esbuild, and headless Chrome it spawned; interrupted jobs are recorded as `cancelled` in `.studio/state/jobs.json`. The API answers `404` for unknown projects or jobs, `409` when a job conflicts with running work or an existing render, and `400` for invalid requests.
 
 ## Generation pipeline
 

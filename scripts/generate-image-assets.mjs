@@ -44,7 +44,23 @@ function safeProjectPath(input) {
   const videosRoot = path.join(REPO_ROOT, "videos") + path.sep;
   if (!project.startsWith(videosRoot)) throw new Error("Project must be inside videos/");
   if (!fsSync.existsSync(project) || !fsSync.statSync(project).isDirectory()) throw new Error(`Project does not exist: ${input}`);
-  return project;
+  // A symlinked videos/<slug> passes the string check above; resolve it like the Fal runner does.
+  const realProject = fsSync.realpathSync(project);
+  const realVideosRoot = fsSync.realpathSync(path.join(REPO_ROOT, "videos")) + path.sep;
+  if (!realProject.startsWith(realVideosRoot)) throw new Error("Project resolves outside videos/");
+  return realProject;
+}
+
+async function writeManifest(manifestPath, manifest) {
+  await fs.mkdir(path.dirname(manifestPath), { recursive: true });
+  const temporary = `${manifestPath}.${crypto.randomUUID()}.tmp`;
+  try {
+    await fs.writeFile(temporary, `${JSON.stringify(manifest, null, 2)}\n`);
+    await fs.rename(temporary, manifestPath);
+  } catch (error) {
+    await fs.rm(temporary, { force: true }).catch(() => undefined);
+    throw error;
+  }
 }
 
 function outputFormat(output) {
@@ -156,8 +172,7 @@ async function main() {
       content_sha256: hash(bytes),
       accepted_at: new Date().toISOString(),
     });
-    await fs.mkdir(path.dirname(manifestPath), { recursive: true });
-    await fs.writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+    await writeManifest(manifestPath, manifest);
     console.log(`[image-assets] accepted ${id} -> ${path.relative(REPO_ROOT, destination)}`);
     return;
   }
@@ -170,7 +185,8 @@ async function main() {
   for (const { id, output, request } of requests) {
     const destination = safeOutputPath(project, output);
     if (fsSync.existsSync(destination) && !options.force) {
-      console.log(`[image-assets] skip ${id}: ${output} already exists`);
+      const recorded = manifest.assets.some((item) => item.id === id);
+      console.log(`[image-assets] skip ${id}: ${output} already exists${recorded ? "" : " but is missing from manifest.json; rerun with --force to regenerate and record it"}`);
       continue;
     }
     console.log(`[image-assets] generating ${id} -> ${output}`);
@@ -192,11 +208,12 @@ async function main() {
       generated_at: new Date().toISOString(),
     };
     manifest.assets = manifest.assets.filter((item) => item.id !== id).concat(entry);
+    // Each billed image is recorded as soon as it lands. Writing the manifest only after the
+    // whole batch meant a crash mid-batch left files on disk that a rerun would skip as
+    // "already exists" without ever adding them to the manifest.
+    await writeManifest(manifestPath, manifest);
   }
-  await fs.mkdir(path.dirname(manifestPath), { recursive: true });
-  const temporaryManifest = `${manifestPath}.${crypto.randomUUID()}.tmp`;
-  await fs.writeFile(temporaryManifest, `${JSON.stringify(manifest, null, 2)}\n`);
-  await fs.rename(temporaryManifest, manifestPath);
+  await writeManifest(manifestPath, manifest);
   console.log(`[image-assets] manifest ${path.relative(REPO_ROOT, manifestPath)}`);
 }
 

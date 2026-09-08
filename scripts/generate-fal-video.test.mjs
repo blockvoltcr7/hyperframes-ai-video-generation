@@ -496,6 +496,10 @@ describe("Fal resumable queue lifecycle", () => {
     },
   );
 
+  it.each(["FAILED", "CANCELLED", "CANCELED", "EXPIRED"])("does not re-poll a request that already ended with %s", (terminalStatus) => {
+    expect(() => resumeDecision({ fingerprint: "same", requestId: "req-1", status: terminalStatus }, "same")).toThrow(/cannot be resumed; choose a new shot id\/output/);
+  });
+
   it("refuses a duplicate submission after an ambiguous crash", () => {
     expect(() => resumeDecision({ fingerprint: "same", status: "submitting" }, "same")).toThrow(/ambiguous/);
     expect(() => resumeDecision({ fingerprint: "old", requestId: "req-1", status: "IN_QUEUE" }, "new")).toThrow(/different shot inputs/);

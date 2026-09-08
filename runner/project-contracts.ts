@@ -252,32 +252,64 @@ export async function validateProjectArtifacts(projectDir: string, workflow: Wor
   return { ok: missing.length === 0, missing };
 }
 
-export async function computeProjectSourceDigest(projectDir: string): Promise<string> {
+// Directories that are outputs or tool caches rather than governed inputs. HyperFrames
+// preview/render write `.waveform-cache`, `.thumbnails`, and `.transcode-cache` into the
+// project, so every hidden directory is excluded or a preview would make QA stale.
+const UNGOVERNED_DIRECTORIES = new Set(["out", "renders", "node_modules", "qa"]);
+
+async function listGovernedFiles(projectDir: string): Promise<string[]> {
   const included: string[] = [];
   async function collect(dir: string) {
     for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
-      if (["out", ".hyperframes", "node_modules", "qa"].includes(entry.name)) continue;
+      if (entry.name.startsWith(".") || UNGOVERNED_DIRECTORIES.has(entry.name)) continue;
       const absolute = path.join(dir, entry.name);
       if (entry.isDirectory()) await collect(absolute);
-      else if (!entry.name.startsWith(".")) included.push(absolute);
+      else included.push(absolute);
     }
   }
   await collect(projectDir);
-  included.sort((a, b) => path.relative(projectDir, a).localeCompare(path.relative(projectDir, b)));
-  const hash = crypto.createHash("sha256");
-  for (const file of included) {
-    hash.update(path.relative(projectDir, file).split(path.sep).join("/"));
-    hash.update(await fs.readFile(file));
-  }
-  return hash.digest("hex");
+  return included.sort((a, b) => path.relative(projectDir, a).localeCompare(path.relative(projectDir, b)));
 }
 
-export async function readProjectContract(projectDir: string) {
+const digestCache = new Map<string, { signature: string; digest: string }>();
+
+export interface SourceDigestOptions {
+  /**
+   * Reuse the previous digest when every governed file has the same path, size, and mtime.
+   * Intended for catalog polling; render gating must keep the default exact byte hash.
+   */
+  reuseUnchanged?: boolean;
+}
+
+export async function computeProjectSourceDigest(projectDir: string, options: SourceDigestOptions = {}): Promise<string> {
+  const files = await listGovernedFiles(projectDir);
+  const relativeOf = (file: string) => path.relative(projectDir, file).split(path.sep).join("/");
+  const cacheKey = path.resolve(projectDir);
+
+  let signature: string | undefined;
+  if (options.reuseUnchanged) {
+    const stats = await Promise.all(files.map((file) => fs.stat(file)));
+    signature = files.map((file, index) => `${relativeOf(file)}\0${stats[index].size}\0${stats[index].mtimeMs}`).join("\n");
+    const cached = digestCache.get(cacheKey);
+    if (cached && cached.signature === signature) return cached.digest;
+  }
+
+  const hash = crypto.createHash("sha256");
+  for (const file of files) {
+    hash.update(relativeOf(file));
+    hash.update(await fs.readFile(file));
+  }
+  const digest = hash.digest("hex");
+  if (signature !== undefined) digestCache.set(cacheKey, { signature, digest });
+  return digest;
+}
+
+export async function readProjectContract(projectDir: string, options: SourceDigestOptions = {}) {
   const manifest = WorkflowManifestSchema.parse(JSON.parse(await fs.readFile(path.join(projectDir, "workflow-run.json"), "utf8")));
   const artifacts = await validateProjectArtifacts(projectDir, manifest.workflow);
   let qa: QaReport | undefined;
   try { qa = QaReportSchema.parse(JSON.parse(await fs.readFile(path.join(projectDir, "qa", "report.json"), "utf8"))); } catch { /* reported by caller */ }
-  const digest = await computeProjectSourceDigest(projectDir);
+  const digest = await computeProjectSourceDigest(projectDir, options);
   const fresh = qa?.sourceDigest === digest;
   return { manifest, artifacts, qa, digest, fresh };
 }

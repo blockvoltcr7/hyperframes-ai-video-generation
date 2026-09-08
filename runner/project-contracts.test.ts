@@ -110,6 +110,33 @@ describe("project contracts", () => {
     expect(await computeProjectSourceDigest(dir)).toBe(second);
   });
 
+  it("ignores HyperFrames preview caches and hidden directories so a preview does not stale QA", async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "hyperframes-digest-cache-"));
+    await fs.writeFile(path.join(dir, "index.html"), "composition");
+    const before = await computeProjectSourceDigest(dir);
+    for (const cacheDir of [".waveform-cache", ".thumbnails", ".transcode-cache", ".hyperframes", "out", "renders"]) {
+      await fs.mkdir(path.join(dir, cacheDir), { recursive: true });
+      await fs.writeFile(path.join(dir, cacheDir, "artifact.bin"), cacheDir);
+    }
+    await fs.writeFile(path.join(dir, ".DS_Store"), "junk");
+    expect(await computeProjectSourceDigest(dir)).toBe(before);
+    await fs.mkdir(path.join(dir, "assets"));
+    await fs.writeFile(path.join(dir, "assets", "logo.svg"), "<svg/>");
+    expect(await computeProjectSourceDigest(dir)).not.toBe(before);
+  });
+
+  it("reuses an unchanged digest for polling without missing real edits", async () => {
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "hyperframes-digest-reuse-"));
+    await fs.writeFile(path.join(dir, "index.html"), "one");
+    const exact = await computeProjectSourceDigest(dir);
+    expect(await computeProjectSourceDigest(dir, { reuseUnchanged: true })).toBe(exact);
+    expect(await computeProjectSourceDigest(dir, { reuseUnchanged: true })).toBe(exact);
+    await fs.writeFile(path.join(dir, "index.html"), "one-two");
+    const changed = await computeProjectSourceDigest(dir, { reuseUnchanged: true });
+    expect(changed).not.toBe(exact);
+    expect(changed).toBe(await computeProjectSourceDigest(dir));
+  });
+
   it("validates provider-neutral generated shots and locale review", () => {
     expect(GeneratedVideoPlanSchema.safeParse({ schemaVersion: 1, shots: [{ id: "shot-1", purpose: "Establish flow", referenceAssets: ["assets/flow.png"], camera: "slow push", durationSeconds: 4, aspectRatio: "16:9", continuityNotes: "preserve violet node positions", audioPolicy: "none", fallback: "animated-still" }] }).success).toBe(true);
     expect(LocaleBundleSchema.safeParse({ schemaVersion: 1, locale: "en-US", direction: "ltr", strings: { title: "Goal Mode" }, overflowReviewed: false }).success).toBe(true);

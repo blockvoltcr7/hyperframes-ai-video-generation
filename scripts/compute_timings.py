@@ -36,7 +36,7 @@ from pathlib import Path
 
 
 _HTML_COMMENT_RE = re.compile(r'<!--.*?-->', re.DOTALL)
-_BREAK_TAG_RE = re.compile(r'<break\s[^>]*/?>', re.IGNORECASE)
+_BREAK_TAG_RE = re.compile(r'<break\b[^>]*/?>', re.IGNORECASE)
 _LETTER_OR_DIGIT_RE = re.compile(r'[A-Za-z0-9]')
 
 

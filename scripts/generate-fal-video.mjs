@@ -712,6 +712,9 @@ export function resumeDecision(existing, fingerprint) {
     throw new Error("Fal submission state is ambiguous: the request may have been accepted before its id was saved. Reconcile it in Fal request history; refusing to risk duplicate billing");
   }
   if (existing.status === "completed") return "completed";
+  if (TERMINAL_FAILURE_STATUSES.has(existing.status)) {
+    throw new Error(`Fal request ${existing.requestId ?? "unknown"} ended with status ${existing.status} and cannot be resumed; choose a new shot id/output before submitting again`);
+  }
   if (existing.requestId) return "resume";
   if (existing.status === "prepared") return "submit";
   throw new Error(`Cannot resume Fal job from state ${existing.status ?? "unknown"}`);

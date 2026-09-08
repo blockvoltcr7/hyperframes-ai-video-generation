@@ -76,7 +76,7 @@ PHASE_BREAK_SECONDS = 0.4
 #     to insert deterministic silence between phase blocks instead.
 #   - [SCENE: ...] markers — scene-boundary breadcrumbs for the operator only.
 _HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
-_BREAK_TAG_RE = re.compile(r"<break\s[^>]*/?>", re.IGNORECASE)
+_BREAK_TAG_RE = re.compile(r"<break\b[^>]*/?>", re.IGNORECASE)
 _SCENE_TAG_RE = re.compile(r"\[SCENE:[^\]]*\]\s*\n?", re.IGNORECASE)
 _LETTER_OR_DIGIT_RE = re.compile(r"[A-Za-z0-9]")
 

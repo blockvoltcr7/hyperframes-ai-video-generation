@@ -31,6 +31,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import os
 import re
 import subprocess
 import wave
@@ -329,6 +330,11 @@ def generate_chunk(
     pcm_bytes = decode_mp3_to_pcm(mp3_bytes)
 
     align = resp.normalized_alignment or resp.alignment
+    if align is None:
+        raise RuntimeError(
+            "ElevenLabs returned audio without character alignment; word timestamps "
+            "cannot be derived, so this chunk was not written. Retry the request."
+        )
     words: list[dict] = []
     current: dict | None = None
     for ch, t0, t1 in zip(
@@ -376,6 +382,63 @@ def load_history(history_path: Path) -> dict | None:
         return None
     with open(history_path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def write_json_atomic(path: Path, payload, **dump_kwargs) -> None:
+    """Write JSON through a sibling temp file + ``os.replace``.
+
+    History, transcript, and chunk-sync files gate what the next run reuses,
+    so a crash mid-write must leave the previous valid file rather than
+    truncated JSON that breaks ``load_history``.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    try:
+        with open(temp, "w", encoding="utf-8") as f:
+            json.dump(payload, f, **dump_kwargs)
+        os.replace(temp, path)
+    except BaseException:
+        try:
+            temp.unlink()
+        except OSError:
+            pass
+        raise
+
+
+def generation_config(
+    *,
+    voice_id: str,
+    model_id: str,
+    voice_settings,
+    pronunciation_dictionary_locators: list[dict] | None,
+    inter_chunk_silence_ms: int,
+) -> dict:
+    """The provider inputs that make a cached chunk WAV reusable.
+
+    Stored in ``transcript-history.json`` and compared on the next run: a
+    chunk whose text is unchanged is still stale if the voice, model, voice
+    settings, pronunciation dictionaries, or chunk gap changed.
+    """
+    return {
+        "voice_id": voice_id,
+        "model_id": model_id,
+        "voice_settings": {
+            "stability": voice_settings.stability,
+            "similarity_boost": voice_settings.similarity_boost,
+            "style": voice_settings.style,
+            "speed": voice_settings.speed,
+            "use_speaker_boost": voice_settings.use_speaker_boost,
+        },
+        "pronunciation_dictionary_locators": pronunciation_dictionary_locators or [],
+        "inter_chunk_silence_ms": inter_chunk_silence_ms,
+    }
+
+
+def history_matches_config(history: dict | None, config: dict) -> bool:
+    """True when every cached chunk in ``history`` was generated with ``config``."""
+    if history is None:
+        return False
+    return all(history.get(key) == value for key, value in config.items())
 
 
 def diff_chunks(
@@ -437,7 +500,17 @@ def generate_chunked(
     if not new_chunks:
         raise ValueError("split_into_chunks returned no chunks for input text")
 
+    config = generation_config(
+        voice_id=voice_id,
+        model_id=model_id,
+        voice_settings=voice_settings,
+        pronunciation_dictionary_locators=pronunciation_dictionary_locators,
+        inter_chunk_silence_ms=inter_chunk_silence_ms,
+    )
     history = None if force else load_history(history_path)
+    if history is not None and not history_matches_config(history, config):
+        log("[tts] voice/model/settings changed since the last run — regenerating every chunk")
+        history = None
     changed, unchanged = diff_chunks(new_chunks, history)
     if force:
         changed = list(range(len(new_chunks)))
@@ -469,8 +542,7 @@ def generate_chunked(
                 pronunciation_dictionary_locators=pronunciation_dictionary_locators,
             )
             write_pcm_as_wav(pcm_bytes, str(chunk_wav))
-            with open(chunk_sync, "w", encoding="utf-8") as f:
-                json.dump({"words": words}, f, indent=2)
+            write_json_atomic(chunk_sync, {"words": words}, indent=2)
             duration = get_wav_duration(str(chunk_wav))
 
         chunks_data.append({"words": words, "duration": duration})
@@ -502,26 +574,10 @@ def generate_chunked(
         inter_chunk_silence_ms=inter_chunk_silence_ms,
     )
 
-    transcript_json.parent.mkdir(parents=True, exist_ok=True)
-    with open(transcript_json, "w", encoding="utf-8") as f:
-        json.dump(merged_words, f, ensure_ascii=False, indent=2)
+    write_json_atomic(transcript_json, merged_words, ensure_ascii=False, indent=2)
 
-    bundle = {
-        "voice_id": voice_id,
-        "model_id": model_id,
-        "voice_settings": {
-            "stability": voice_settings.stability,
-            "similarity_boost": voice_settings.similarity_boost,
-            "style": voice_settings.style,
-            "speed": voice_settings.speed,
-            "use_speaker_boost": voice_settings.use_speaker_boost,
-        },
-        "pronunciation_dictionary_locators": pronunciation_dictionary_locators or [],
-        "inter_chunk_silence_ms": inter_chunk_silence_ms,
-        "chunks": history_entries,
-    }
-    with open(history_path, "w", encoding="utf-8") as f:
-        json.dump(bundle, f, indent=2)
+    bundle = {**config, "chunks": history_entries}
+    write_json_atomic(history_path, bundle, indent=2)
 
     total_duration = get_wav_duration(str(narration_wav))
     return {

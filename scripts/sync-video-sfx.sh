@@ -98,6 +98,15 @@ if [ "${#CUES[@]}" -eq 0 ]; then
   exit 1
 fi
 
+# Cue names are joined straight into library and target paths, so reject anything
+# that is not a plain lowercase slug before it can escape those directories.
+for cue in "${CUES[@]}"; do
+  if [[ ! "$cue" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+    echo "[sfx-sync] ERROR: invalid cue name '$cue' (use lowercase letters, digits, and single hyphens)" >&2
+    exit 1
+  fi
+done
+
 # Validate every cue exists in the library before copying anything
 MISSING=()
 for cue in "${CUES[@]}"; do

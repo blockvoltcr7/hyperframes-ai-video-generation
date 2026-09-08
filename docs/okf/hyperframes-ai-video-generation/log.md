@@ -1,5 +1,9 @@
 # Bundle Update Log
 
+## 2026-09-03
+
+* **Preview and render gates**: Documented that HyperFrames preview caches are excluded from the QA source digest, that failed or cancelled renders remove their partial file, and that jobs are stopped as whole process groups on cancel or runner shutdown.
+
 ## 2026-08-27
 
 * **Narration replacement**: Added the Fish Audio project-local request/config/generator/ledger contract, native timestamp caption rebuild, hash-based WAV verification, and prior-voice preservation rule.

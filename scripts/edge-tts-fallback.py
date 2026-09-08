@@ -27,6 +27,26 @@ def strip_punctuation(word: str) -> str:
     return re.sub(r"^[\W_]+|[\W_]+$", "", word)
 
 
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+_BREAK_TAG_RE = re.compile(r"<break\b[^>]*/?>", re.IGNORECASE)
+_SCENE_TAG_RE = re.compile(r"\[SCENE:[^\]]*\]\s*\n?", re.IGNORECASE)
+
+
+def clean_script_text(raw: str) -> str:
+    """Strip everything the other TTS CLIs strip before synthesis.
+
+    HTML comments are pronunciation headers for humans, ``<break>`` tags are
+    read by edge-tts as literal text rather than silence, and ``[SCENE:]``
+    markers are operator breadcrumbs. Leaving any of them in would speak them
+    aloud and inject phantom words into ``transcript.json``, breaking the
+    word-count alignment that ``compute_timings.py`` relies on.
+    """
+    text = _HTML_COMMENT_RE.sub("", raw)
+    text = _BREAK_TAG_RE.sub("", text)
+    text = _SCENE_TAG_RE.sub("", text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
 async def synthesize(text: str, voice: str, rate: str, out_mp3: Path) -> list[dict]:
     """Run edge-tts streaming, capture WordBoundary events, write MP3, return words."""
     communicate = edge_tts.Communicate(text, voice, rate=rate)
@@ -80,19 +100,20 @@ def main() -> int:
     ap.add_argument("--rate", default="+10%")
     args = ap.parse_args()
 
-    proj = args.project_dir
+    # Match the other TTS CLIs: relative project paths resolve against the repo
+    # root, not the caller's cwd.
+    repo_root = Path(__file__).resolve().parent.parent
+    proj = args.project_dir if args.project_dir.is_absolute() else (repo_root / args.project_dir).resolve()
     script_path = proj / "script.txt"
     if not script_path.exists():
         print(f"[edge-tts] script not found: {script_path}", file=sys.stderr)
         return 1
 
     raw = script_path.read_text(encoding="utf-8")
-    # Strip HTML comments (pronunciation headers) and SSML break tags before TTS.
-    # edge-tts reads <break> tags as literal text rather than silence, so we remove
-    # them and let natural sentence rhythm provide pacing.
-    text = re.sub(r"<!--.*?-->", "", raw, flags=re.DOTALL)
-    text = re.sub(r"<break[^>]*/?>", "", text)
-    text = text.strip()
+    text = clean_script_text(raw)
+    if not text:
+        print(f"[edge-tts] {script_path} is empty after stripping comments, breaks, and [SCENE:] markers", file=sys.stderr)
+        return 1
     print(f"[edge-tts] voice={args.voice} rate={args.rate}")
     print(f"[edge-tts] chars={len(text)}")
 
